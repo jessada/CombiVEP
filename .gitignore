@@ -1,0 +1,16 @@
+*.pyc
+*.bak
+*~
+*.cvf
+MANIFEST
+build/
+dist/
+*big_data/
+*tmp/
+combivep/refdb/test/tmp
+*disable*
+*obsolete*
+combivep/data/LJB/
+combivep/data/UCSC/
+CombiVEP.egg-info/
+
