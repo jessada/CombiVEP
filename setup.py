@@ -15,7 +15,7 @@ setup(
                   },
     data_files=[('CombiVEP/CBV', ['combivep/data/CBV/training.cbv', 'combivep/data/CBV/test.cbv']),
                 ],
-	url='http://pypi.python.org/pypi/combivep/',
+	url='http://pypi.python.org/pypi/CombiVEP/',
 	license='LICENSE.txt',
 	description='Combined Variant Effect Predictors',
 	long_description=open('README.txt').read(),
