@@ -1,0 +1,7 @@
+#!/usr/bin/python
+from combivep.devtools.report import demo_training
+
+demo_training()
+
+
+

@@ -1,0 +1,66 @@
+##fileformat=VCFv4.1
+##FORMAT=<ID=DP,Number=1,Type=Integer,Description="# high-quality bases">
+##FORMAT=<ID=GL,Number=3,Type=Float,Description="Likelihoods for RR,RA,AA genotypes (R=ref,A=alt)">
+##FORMAT=<ID=GQ,Number=1,Type=Integer,Description="Genotype Quality">
+##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
+##FORMAT=<ID=PL,Number=.,Type=Integer,Description="List of Phred-scaled genotype likelihoods, number of values is (#ALT+1)*(#ALT+2)/2">
+##FORMAT=<ID=SP,Number=1,Type=Integer,Description="Phred-scaled strand bias P-value">
+##INFO=<ID=AC1,Number=1,Type=Float,Description="Max-likelihood estimate of the first ALT allele count (no HWE assumption)">
+##INFO=<ID=AF1,Number=1,Type=Float,Description="Max-likelihood estimate of the first ALT allele frequency (assuming HWE)">
+##INFO=<ID=CGT,Number=1,Type=String,Description="The most probable constrained genotype configuration in the trio">
+##INFO=<ID=CLR,Number=1,Type=Integer,Description="Log ratio of genotype likelihoods with and without the constraint">
+##INFO=<ID=DP,Number=1,Type=Integer,Description="Raw read depth">
+##INFO=<ID=DP4,Number=4,Type=Integer,Description="# high-quality ref-forward bases, ref-reverse, alt-forward and alt-reverse bases">
+##INFO=<ID=FQ,Number=1,Type=Float,Description="Phred probability of all samples being the same">
+##INFO=<ID=G3,Number=3,Type=Float,Description="ML estimate of genotype frequencies">
+##INFO=<ID=HWE,Number=1,Type=Float,Description="Chi^2 based HWE test P-value based on G3">
+##INFO=<ID=INDEL,Number=0,Type=Flag,Description="Indicates that the variant is an INDEL.">
+##INFO=<ID=MQ,Number=1,Type=Integer,Description="Root-mean-square mapping quality of covering reads">
+##INFO=<ID=PC2,Number=2,Type=Integer,Description="Phred probability of the nonRef allele frequency in group1 samples being larger (,smaller) than in group2.">
+##INFO=<ID=PCHI2,Number=1,Type=Float,Description="Posterior weighted chi^2 P-value for testing the association between group1 and group2 samples.">
+##INFO=<ID=PR,Number=1,Type=Integer,Description="# permutations yielding a smaller PCHI2.">
+##INFO=<ID=PV4,Number=4,Type=Float,Description="P-values for strand bias, baseQ bias, mapQ bias and tail distance bias">
+##INFO=<ID=QCHI2,Number=1,Type=Integer,Description="Phred scaled PCHI2.">
+##INFO=<ID=UGT,Number=1,Type=String,Description="The most probable unconstrained genotype configuration in the trio">
+##LeftAlignVariants="analysis_type=LeftAlignVariants input_file=[] read_buffer_size=null phone_home=STANDARD read_filter=[] intervals=null excludeIntervals=null interval_set_rule=UNION interval_merging=ALL reference_sequence=/home/jessada/development/scilifelab/master_data/reference/Homo_sapiens.GRCh37.57.dna.concat.fa rodBind=[] nonDeterministicRandomSeed=false downsampling_type=BY_SAMPLE downsample_to_fraction=null downsample_to_coverage=1000 baq=OFF baqGapOpenPenalty=40.0 performanceLog=null useOriginalQualities=false defaultBaseQualities=-1 validation_strictness=SILENT unsafe=null num_threads=1 num_cpu_threads=null num_io_threads=null num_bam_file_handles=null read_group_black_list=null pedigree=[] pedigreeString=[] pedigreeValidationType=STRICT allow_intervals_with_unindexed_bam=false logging_level=INFO log_to_file=null help=false variant=(RodBinding name=variant source=/home/jessada/development/scilifelab/master_data/200danes/vcf/SRR028888.var.flt.vcf) out=org.broadinstitute.sting.gatk.io.stubs.VCFWriterStub NO_HEADER=org.broadinstitute.sting.gatk.io.stubs.VCFWriterStub sites_only=org.broadinstitute.sting.gatk.io.stubs.VCFWriterStub filter_mismatching_base_and_quals=false"
+##contig=<ID=1,length=249250621>
+##contig=<ID=10,length=135534747>
+##contig=<ID=11,length=135006516>
+##contig=<ID=12,length=133851895>
+##contig=<ID=13,length=115169878>
+##contig=<ID=14,length=107349540>
+##contig=<ID=15,length=102531392>
+##contig=<ID=16,length=90354753>
+##contig=<ID=17,length=81195210>
+##contig=<ID=18,length=78077248>
+##contig=<ID=19,length=59128983>
+##contig=<ID=2,length=243199373>
+##contig=<ID=20,length=63025520>
+##contig=<ID=21,length=48129895>
+##contig=<ID=22,length=51304566>
+##contig=<ID=3,length=198022430>
+##contig=<ID=4,length=191154276>
+##contig=<ID=5,length=180915260>
+##contig=<ID=6,length=171115067>
+##contig=<ID=7,length=159138663>
+##contig=<ID=8,length=146364022>
+##contig=<ID=9,length=141213431>
+##contig=<ID=MT,length=16569>
+##contig=<ID=X,length=155270560>
+##contig=<ID=Y,length=59373566>
+##reference=file:///home/jessada/development/scilifelab/master_data/reference/Homo_sapiens.GRCh37.57.dna.concat.fa
+##samtoolsVersion=0.1.17 (r973:277)
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	unknown
+1	887560	.	A	C	28	.	AC1=1;AF1=0.5;DP=7;DP4=1,1,2,1;FQ=11.3;MQ=43;PV4=1,0.43,0.12,0.16	GT:PL:GQ	0/1:58,0,38:41
+1	1158631	.	A	G	63	.	AC1=1;AF1=0.5;DP=17;DP4=9,1,2,3;FQ=66;MQ=53;PV4=0.077,1,0.00048,0.091	GT:PL:GQ	0/1:93,0,141:96
+1	1249187	.	G	A	110	.	AC1=2;AF1=1;DP=14;DP4=0,0,6,3;FQ=-54;MQ=35	GT:PL:GQ	1/1:143,27,0:51
+1	1276077	.	G	A	16.10	.	AC1=1;AF1=0.5;DP=7;DP4=4,0,3,0;FQ=18.4;MQ=47;PV4=1,1,0.039,0.46	GT:PL:GQ	0/1:46,0,54:48
+1	1276973	.	G	GACAC	18	.	AC1=2;AF1=1;DP=6;DP4=0,0,1,3;FQ=-46.5;INDEL;MQ=17	GT:GQ:PL	1/1:20:58,12,0
+1	1278237	.	T	C	99.10	.	AC1=2;AF1=1;DP=8;DP4=0,0,5,2;FQ=-48;MQ=40	GT:PL:GQ	1/1:132,21,0:39
+1	1333436	.	C	A	48	.	AC1=1;AF1=0.5;DP=8;DP4=1,2,2,2;FQ=27;MQ=44;PV4=1,1,0.16,0.27	GT:PL:GQ	0/1:78,0,54:57
+3	361508	.	C	T	19.10	.	AC1=1;AF1=0.5;DP=7;DP4=0,3,0,3;FQ=20.9;MQ=51;PV4=1,0.38,0.03,1	GT:PL:GQ	0/1:49,0,54:51
+3	14174427	.	A	T	180	.	AC1=2;AF1=1;DP=23;DP4=0,0,9,10;FQ=-84;MQ=40	GT:PL:GQ	1/1:213,57,0:99
+3	10264480	.	C	G	161	.	AC1=2;AF1=1;DP=14;DP4=0,0,5,7;FQ=-63;MQ=40	GT:PL:GQ	1/1:194,36,0:69
+3	25836088	.	C	A	72.10	.	AC1=2;AF1=1;DP=7;DP4=0,0,5,1;FQ=-45;MQ=42	GT:PL:GQ	1/1:105,18,0:33
+20	17474690	.	T	G	62	.	AC1=1;AF1=0.5;DP=16;DP4=7,2,1,5;FQ=65;MQ=50;PV4=0.041,0.018,0.00091,1	GT:PL:GQ	0/1:92,0,158:95
+X	56296488	.	G	C	116	.	AC1=2;AF1=1;DP=10;DP4=0,0,4,5;FQ=-54;MQ=41	GT:PL:GQ	1/1:149,27,0:51

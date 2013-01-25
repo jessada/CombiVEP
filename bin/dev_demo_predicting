@@ -1,0 +1,7 @@
+#!/usr/bin/python
+from combivep.devtools.report import demo_predicting
+
+demo_predicting()
+
+
+

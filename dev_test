@@ -1,0 +1,5 @@
+#!/bin/bash
+
+
+
+python -tt -m unittest discover -v -s combivep/devtools

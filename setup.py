@@ -5,7 +5,7 @@ import pkgutil
 
 setup(
 	name='CombiVEP',
-	version='0.1.1',
+	version='0.1.2',
 	author='Jessada Thutkawkorapin',
 	author_email='jessada115@hotmail.com',
 	packages=['combivep', 'combivep.engine', 'combivep.refdb', 'combivep.preproc'],
