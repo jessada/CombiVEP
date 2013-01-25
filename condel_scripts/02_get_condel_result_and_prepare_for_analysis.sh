@@ -41,7 +41,7 @@ done
 : ${prediction_result_file=$PREDICTION_RESULT_FILE_DEFAULT}
 
 #display parameter
-cat <<EOF
+cat <<EOF 1>&2
 configuration:
 prediction result file : $prediction_result_file
 EOF

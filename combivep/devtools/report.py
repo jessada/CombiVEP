@@ -28,18 +28,24 @@ def demo_predicting():
                                     )
 
 def generate_performance_report():
-    data = np.loadtxt(devtools_settings.PUBLICATION_PREDICTION_RESULT, dtype='S20')
-    false_positive_rates, true_positive_rates = calculate_roc(data[data[:, 4] == '1'][:, 5:11].astype(np.float), 
-                                                              data[data[:, 4] == '0'][:, 5:11].astype(np.float), 
-                                                              np.linspace(0, 1, 101))
+    data      = np.loadtxt(devtools_settings.PUBLICATION_PREDICTION_RESULT, dtype='S20')
+    min_value = np.amin(data[:, 5:13].astype(np.float))
+    max_value = np.amax(data[:, 5:13].astype(np.float))
+
+    #produce roc data from CombiVEP, Phylop, SIFT, PP2, LRT, MT, GERP, Condel
+    fp_rates, tp_rates = calculate_roc(data[data[:, 4] == '1'][:, 5:13].astype(np.float),
+                                       data[data[:, 4] == '0'][:, 5:13].astype(np.float),
+                                       np.linspace(min_value, max_value, 5001))
     fig = plt.figure()
     ax = fig.add_subplot(111)
-    ax.plot(false_positive_rates[:, 0], true_positive_rates[:, 0], 'k',
-            false_positive_rates[:, 1], true_positive_rates[:, 1], 'm--',
-            false_positive_rates[:, 2], true_positive_rates[:, 2], 'c--',
-            false_positive_rates[:, 3], true_positive_rates[:, 3], 'g--',
-            false_positive_rates[:, 4], true_positive_rates[:, 4], 'k--',
-            false_positive_rates[:, 5], true_positive_rates[:, 5], 'r--',
+    ax.plot(fp_rates[:, 0], tp_rates[:, 0], 'k',
+            fp_rates[:, 1], tp_rates[:, 1], 'm--',
+            fp_rates[:, 2], tp_rates[:, 2], 'c--',
+            fp_rates[:, 3], tp_rates[:, 3], 'g--',
+            fp_rates[:, 4], tp_rates[:, 4], 'k--',
+            fp_rates[:, 5], tp_rates[:, 5], 'r--',
+            fp_rates[:, 6], tp_rates[:, 6], 'b--',
+            fp_rates[:, 7], tp_rates[:, 7], 'r',
             )
     ax.set_ylabel('true positive rate')
     ax.set_xlabel('false positive rate')
