@@ -3,6 +3,7 @@ import numpy as np
 import os
 from combivep.devtools.utils import filter_cbv_data
 from combivep.devtools.utils import calculate_roc
+from combivep.devtools.utils import print_preproc
 from combivep.app import train_combivep_using_cbv_data
 import combivep.settings as combivep_settings
 import combivep.devtools.settings as devtools_settings
@@ -104,6 +105,53 @@ def generate_performance_report():
 #            devtools_settings.PUBLICATION_SCORE_DISTRIBUTION_FIGURE,
             )
 
+def generate_preproc_report():
+    original_neutral_records    = 21561
+    original_pathogenic_records = 21401
+    print_preproc("", "Neutral SNPs", "Pathogenic SNPs")
+    print_preproc("Parsed VariBench samples", str(original_neutral_records), str(original_pathogenic_records))
+
+    uncertain_neutral_records    = 47
+    uncertain_pathogenic_records = 52
+    print_preproc("Uncertain", str(uncertain_neutral_records), str(uncertain_pathogenic_records))
+
+    clean_training_file = os.path.join(combivep_settings.COMBIVEP_CENTRAL_TEST_CBV_DIR, 'training.cbv.clean')
+    clean_test_file     = os.path.join(combivep_settings.COMBIVEP_CENTRAL_TEST_CBV_DIR, 'test.cbv.clean')
+    data = np.loadtxt(clean_training_file, dtype='S20')
+    clean_pathogenic_training_records = data[data[:, 4] == '1'].shape[0]
+    clean_neutral_training_records    = data[data[:, 4] == '0'].shape[0]
+    data = np.loadtxt(clean_test_file, dtype='S20')
+    clean_pathogenic_test_records = data[data[:, 4] == '1'].shape[0]
+    clean_neutral_test_records    = data[data[:, 4] == '0'].shape[0]
+    print_preproc("Unknown reference",
+                  str(original_neutral_records - (clean_neutral_test_records+clean_neutral_training_records+uncertain_neutral_records)),
+                  str(original_pathogenic_records - (clean_pathogenic_test_records+clean_pathogenic_training_records+uncertain_pathogenic_records)),
+                  )
+
+    scores_training_file = os.path.join(combivep_settings.COMBIVEP_CENTRAL_TEST_CBV_DIR, 'training.cbv.scores')
+    scores_test_file     = os.path.join(combivep_settings.COMBIVEP_CENTRAL_TEST_CBV_DIR, 'test.cbv.scores')
+    data = np.loadtxt(scores_training_file, dtype='S20')
+    scores_pathogenic_training_records = data[data[:, 4] == '1'].shape[0]
+    scores_neutral_training_records    = data[data[:, 4] == '0'].shape[0]
+    data = np.loadtxt(scores_test_file, dtype='S20')
+    scores_pathogenic_test_records = data[data[:, 4] == '1'].shape[0]
+    scores_neutral_test_records    = data[data[:, 4] == '0'].shape[0]
+    print_preproc("Unidentified by effect predictors",
+                  str((clean_neutral_test_records+clean_neutral_training_records) - (scores_neutral_test_records+scores_neutral_training_records)),
+                  str((clean_pathogenic_test_records+clean_pathogenic_training_records) - (scores_pathogenic_test_records+scores_pathogenic_training_records)),
+                  )
+    print_preproc("Ready to be used by CombiVEP & Condel",
+                  str(scores_neutral_test_records+scores_neutral_training_records),
+                  str(scores_pathogenic_test_records+scores_pathogenic_training_records),
+                  )
+    print_preproc("Training dataset",
+                  str(scores_neutral_training_records),
+                  str(scores_pathogenic_training_records),
+                  )
+    print_preproc("Test dataset",
+                  str(scores_neutral_test_records),
+                  str(scores_pathogenic_test_records),
+                  )
 
 
 

@@ -1,7 +1,7 @@
 #!/usr/bin/python
-from combivep.devtools.report import filter_all_cbv
+from combivep.devtools.report import generate_preproc_report
 
-filter_all_cbv()
+generate_preproc_report()
 
 
 
