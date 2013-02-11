@@ -9,7 +9,9 @@ PUBLICATION_RAW_PREDICTION_RESULT      = os.path.join(PUBLICATION_RESOURCES_ROOT
 PUBLICATION_CONDEL_PREDICTION_RESULT   = os.path.join(PUBLICATION_RESOURCES_ROOT, 'full_prediction_result')
 PUBLICATION_FIGURES_DIR                = os.path.join(PUBLICATION_RESOURCES_ROOT, 'figures')
 PUBLICATION_SCORES_DISTRIBUTION_FIGURE = os.path.join(PUBLICATION_FIGURES_DIR, 'scores_dist.eps')
-PUBLICATION_ROC_CURVE_FIGURE           = os.path.join(PUBLICATION_FIGURES_DIR, 'roc_curve.eps')
+PUBLICATION_ROC_FIGURE                 = os.path.join(PUBLICATION_FIGURES_DIR, 'roc_curve.eps')
+PUBLICATION_AUC_FIGURE                 = os.path.join(PUBLICATION_FIGURES_DIR, 'auc_curve.eps')
+PUBLICATION_SCORE_DISTRIBUTION_FIGURE  = os.path.join(PUBLICATION_FIGURES_DIR, 'score_distribution.eps')
 
 
 

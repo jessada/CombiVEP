@@ -2,8 +2,9 @@
 import subprocess
 from combivep.devtools.report import generate_performance_report
 
-performance_report = generate_performance_report()
-p = subprocess.Popen('evince ' + performance_report, shell=True)
+figures = generate_performance_report()
+for figure in figures:
+    p = subprocess.Popen('evince ' + figure, shell=True)
 
 
 
