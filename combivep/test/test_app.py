@@ -53,8 +53,9 @@ class TestApp(SafeGeneralTester):
                                         )
         self.assertTrue(os.path.exists(output_file), msg='Predictor does not functional properly')
         f = open(output_file, 'r')
-        self.assertEqual(f.readline().strip(), '#CHROM\tPOS\tREF\tALT\tACTUAL_DELETERIOUS_EFFECT\tPREDICTED_DELETERIOUS_PROBABILITY')
-        self.assertEqual(f.readline().strip(), '1\t35227264\tT\tC\t1\t0.968087\t0.96\t0.031\t1.000000\t0.838867\t4.45\t0.2605')
+#        self.assertEqual(f.readline().strip(), '#CHROM\tPOS\tREF\tALT\tACTUAL_DELETERIOUS_EFFECT\tPREDICTED_DELETERIOUS_PROBABILITY')
+        self.assertEqual(f.readline().strip(), '#CHROM\tPOS\tREF\tALT\tACTUAL_DELETERIOUS_EFFECT\tPREDICTED_DELETERIOUS_PROBABILITY\tPHYLOP_SCORE\tSIFT_SCORE\tPP2_SCORE\tLRT_SCORT\tMT_SCORE\tGERP_SCORE')
+        self.assertEqual(f.readline().strip(), '1\t35227264\tT\tC\t1\t0.2605\t0.968087\t0.96\t0.031\t1.000000\t0.838867\t4.45')
         f.close()
 
     def test_predict_deleterious_probability_vcf(self):
@@ -71,8 +72,9 @@ class TestApp(SafeGeneralTester):
                                         )
         self.assertTrue(os.path.exists(output_file), msg='Predictor does not functional properly')
         f = open(output_file, 'r')
-        self.assertEqual(f.readline().strip(), '#CHROM\tPOS\tREF\tALT\tACTUAL_DELETERIOUS_EFFECT\tPREDICTED_DELETERIOUS_PROBABILITY')
-        self.assertEqual(f.readline().strip(), '3\t361508\tC\tT\tNone\t0.024209\t0.0\t0\t0.950380\t0.000019\t-2.66\t0.0001')
+#        self.assertEqual(f.readline().strip(), '#CHROM\tPOS\tREF\tALT\tACTUAL_DELETERIOUS_EFFECT\tPREDICTED_DELETERIOUS_PROBABILITY')
+        self.assertEqual(f.readline().strip(), '#CHROM\tPOS\tREF\tALT\tACTUAL_DELETERIOUS_EFFECT\tPREDICTED_DELETERIOUS_PROBABILITY\tPHYLOP_SCORE\tSIFT_SCORE\tPP2_SCORE\tLRT_SCORT\tMT_SCORE\tGERP_SCORE')
+        self.assertEqual(f.readline().strip(), '3\t361508\tC\tT\tNone\t0.0001\t0.024209\t0.0\t0\t0.950380\t0.000019\t-2.66')
         f.close()
 
     def tearDown(self):

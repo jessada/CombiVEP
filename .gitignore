@@ -12,5 +12,5 @@ combivep/refdb/test/tmp
 *obsolete*
 combivep/data/LJB/
 combivep/data/UCSC/
-CombiVEP.egg-info/
+*egg-info/
 
