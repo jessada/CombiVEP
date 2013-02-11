@@ -71,7 +71,8 @@ def calculate_roc(pathogenic_dataset, neutral_dataset, roc_range):
         true_positive_rates[i, :]  = np.matrix(np.sum(pathogenic_dataset > roc_range[i], axis=0).astype(np.float))/ pathogenic_data_size
     return (false_positive_rates, true_positive_rates)
 
-
+def print_preproc(col1, col2, col3):
+    print "%-40s%25s%25s" % (col1, col2, col3)
 
 
 
