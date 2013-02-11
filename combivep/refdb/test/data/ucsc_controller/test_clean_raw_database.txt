@@ -1,0 +1,7 @@
+585	chr3	63619	63620	rs184353718	0	+	T	T	C/T	genomic	single	by-1000genomes	0	0	unknown	exact	1		1	1000GENOMES,	2	C,T,	2.000000,2182.000000,	0.000900,0.999100,	
+585	chr3	63686	63686	rs10703596	0	+	-	-	-/ATAA	genomic	insertion	unknown	0	0	unknown	between	1		1	DEVINE_LAB,	0				
+585	chr5	63690	63690	rs34817363	0	+	-	-	-/G	genomic	insertion	unknown	0	0	unknown	between	1		1	ABI,	0				
+585	chr5	63873	63874	rs139307681	0	+	C	C	C/T	genomic	single	by-1000genomes	0	0	unknown	exact	1		1	1000GENOMES,	2	C,T,	2158.000000,26.000000,	0.988100,0.011900,	
+585	chr7	63992	63993	rs72355957	0	+	A	A	-/AATA/AATAAATAAATA	genomic	mixed	unknown	0	0	unknown	exact	1	ObservedMismatch	2	DEVINE_LAB,GMI,	0				
+585	chr7	63992	63996	rs200594441	0	+	AATA	AATA	-/AATA	genomic	deletion	unknown	0	0	unknown	range	1		1	GMI,	0				
+585	chr7	63993	63993	rs71921890	0	+	-	-	-/AATA	genomic	insertion	unknown	0	0	unknown	between	1		1	DEVINE_LAB,	0				
