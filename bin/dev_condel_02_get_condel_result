@@ -8,7 +8,7 @@
 script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 #define default values
-PREDICTION_RESULT_FILE_DEFAULT="/home/jessada/development/scilifelab/assignments/20121119_CombiVEP_publication/resources/prediction_result"
+RAW_PREDICTION_RESULT_FILE_DEFAULT="/home/jessada/development/scilifelab/assignments/20121119_CombiVEP_publication/resources/prediction_result"
 
 usage=$(
 cat <<EOF
@@ -38,7 +38,7 @@ while getopts "p:" OPTION; do
 done
 
 #setting default values:
-: ${prediction_result_file=$PREDICTION_RESULT_FILE_DEFAULT}
+: ${raw_prediction_result_file=$RAW_PREDICTION_RESULT_FILE_DEFAULT}
 
 #display parameter
 cat <<EOF 1>&2
@@ -85,8 +85,8 @@ nawk -F $'\t' '{printf("%s:%s:%s\n", $2, $3, $15)}' < $tmp_condel_result >> $tmp
 grep "^[0-9]" $tmp_file | awk -F ':' '{printf("%d\t%d\t%s\t%.3f\t%02d|%012d|%s|%.3f\t%02d|%012d|%s\n", $1, $2, $3, $4, $1, $2, $3, $4, $1, $2, $3)}' | sort -k5 -r | uniq -f5 | sort -k5 >> $parsed_condel_result_file
 grep -v "^[0-9]" $tmp_file | awk -F ':' '{printf("%s\t%d\t%s\t%.3f\t%s|%012d|%s|%.3f\t%s|%012d|%s\n", $1, $2, $3, $4, $1, $2, $3, $4, $1, $2, $3)}' | sort -k5 -r | uniq -f5 | sort -k5 >> $parsed_condel_result_file
 
-grep -v "^#" $prediction_result_file | grep "^[0-9]" | awk -F'\t' '{ printf "%s\t%02d|%012d|%s\n", $0, $1, $2, $4}' | sort -k 13 >> $parsed_existing_prediction_result
-grep -v "^#" $prediction_result_file | grep -v "^[0-9]" | awk -F'\t' '{ printf "%s\t%s|%012d|%s\n", $0, $1, $2, $4}' | sort -k 13 >> $parsed_existing_prediction_result
+grep -v "^#" $raw_prediction_result_file | grep "^[0-9]" | awk -F'\t' '{ printf "%s\t%02d|%012d|%s\n", $0, $1, $2, $4}' | sort -k 13 >> $parsed_existing_prediction_result
+grep -v "^#" $raw_prediction_result_file | grep -v "^[0-9]" | awk -F'\t' '{ printf "%s\t%s|%012d|%s\n", $0, $1, $2, $4}' | sort -k 13 >> $parsed_existing_prediction_result
 
 echo -e "#CHROM\tPOS\tREF\tALT\tACTUAL_DELETERIOUS_EFFECT\tPREDICTED_DELETERIOUS_PROBABILITY\tPHYLOP_SCORE\tSIFT_SCORE\tPP2_SCORE\tLRT_SCORT\tMT_SCORE\tGERP_SCORE\tCONDEL_SCORE"
 join -t $'\t' -1 6 -2 13 -o 2.1,2.2,2.3,2.4,2.5,2.6,2.7,2.8,2.9,2.10,2.11,2.12,1.4 $parsed_condel_result_file $parsed_existing_prediction_result

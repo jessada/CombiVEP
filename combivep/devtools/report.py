@@ -23,12 +23,12 @@ def demo_predicting():
     predict_deleterious_probability(os.path.join(combivep_settings.COMBIVEP_CENTRAL_TEST_CBV_DIR, 'test.cbv.scores'),
                                     params_file=devtools_settings.PUBLICATION_PARAMETER_FILE,
                                     file_type=combivep_settings.FILE_TYPE_CBV,
-                                    output_file=devtools_settings.PUBLICATION_PREDICTION_RESULT,
+                                    output_file=devtools_settings.PUBLICATION_RAW_PREDICTION_RESULT,
                                     config_file=combivep_settings.COMBIVEP_CONFIGURATION_FILE,
                                     )
 
 def generate_performance_report():
-    data      = np.loadtxt(devtools_settings.PUBLICATION_PREDICTION_RESULT, dtype='S20')
+    data      = np.loadtxt(devtools_settings.PUBLICATION_CONDEL_PREDICTION_RESULT, dtype='S20')
     min_value = np.amin(data[:, 5:13].astype(np.float))
     max_value = np.amax(data[:, 5:13].astype(np.float))
 
