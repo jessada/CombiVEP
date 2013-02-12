@@ -1,4 +1,3 @@
-#!/usr/bin/python
 from combivep.devtools.report import filter_all_cbv
 
 filter_all_cbv()

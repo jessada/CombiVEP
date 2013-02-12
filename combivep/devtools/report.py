@@ -4,6 +4,7 @@ import os
 from combivep.devtools.utils import filter_cbv_data
 from combivep.devtools.utils import calculate_roc
 from combivep.devtools.utils import print_preproc
+from combivep.devtools.utils import print_precision
 from combivep.app import train_combivep_using_cbv_data
 import combivep.settings as combivep_settings
 import combivep.devtools.settings as devtools_settings
@@ -29,7 +30,7 @@ def demo_predicting():
                                     config_file=combivep_settings.COMBIVEP_CONFIGURATION_FILE,
                                     )
 
-def generate_performance_report():
+def generate_figures():
     header_data = np.loadtxt(devtools_settings.PUBLICATION_CONDEL_PREDICTION_RESULT, dtype='S20')[:, :5]
     scores_data = np.loadtxt(devtools_settings.PUBLICATION_CONDEL_PREDICTION_RESULT, dtype='S20')[:, 5:13].astype(np.float)
     min_value   = np.amin(scores_data)
@@ -65,7 +66,7 @@ def generate_performance_report():
     ax.set_ylabel('true positive rate')
     ax.set_xlabel('false positive rate')
     ax.legend(bbox_to_anchor=(0.9999, 0.0001), loc=4)
-    fig.savefig(devtools_settings.PUBLICATION_ROC_FIGURE, bbox_inches='tight', pad_inches=0.01)
+    fig.savefig(devtools_settings.PUBLICATION_ROC_FIGURE, bbox_inches='tight', pad_inches=0.05)
 
     #produce auc data from roc data
     fig  = plt.figure()
@@ -81,28 +82,37 @@ def generate_performance_report():
     ax.set_ylim([0.7, 0.9])
     ax.set_xticks(np.array(ind) + 0.15)
     ax.set_xticklabels(predictor_names, rotation=30)
-    fig.savefig(devtools_settings.PUBLICATION_AUC_FIGURE, bbox_inches='tight', pad_inches=0.01)
+    fig.savefig(devtools_settings.PUBLICATION_AUC_FIGURE, bbox_inches='tight', pad_inches=0.05)
 
-#    #plot scores distribution
-#    fig        = plt.figure()
-#    ax         = fig.add_subplot(211)
-#    hist_range = (-0.005, 1.005)
-#    pathogenic_hist, bins = np.histogram(scores_data[header_data[:, 4] == '1'][:, 0], bins = 100, range = hist_range)
-#    neutral_hist, bins    = np.histogram(scores_data[header_data[:, 4] == '0'][:, 0], bins = 100, range = hist_range)
-#    center = (bins[:-1]+bins[1:])/2
-#    ax.plot(center, pathogenic_hist, 'r--')
-#    ax.plot(center, neutral_hist, 'b--')
-#    ax = fig.add_subplot(212)
-#    pathogenic_hist, bins = np.histogram(scores_data[header_data[:, 4] == '1'][:, 7], bins = 100, range = hist_range)
-#    neutral_hist, bins    = np.histogram(scores_data[header_data[:, 4] == '0'][:, 7], bins = 100, range = hist_range)
-#    center = (bins[:-1]+bins[1:])/2
-#    ax.plot(center, pathogenic_hist, 'r--')
-#    ax.plot(center, neutral_hist, 'b--')
-#    fig.savefig(devtools_settings.PUBLICATION_SCORE_DISTRIBUTION_FIGURE, bbox_inches='tight', pad_inches=0.01)
-#
+    #plot scores distribution
+    fig        = plt.figure()
+    ax         = fig.add_subplot(211)
+    hist_range = (-0.005, 1.005)
+    pathogenic_hist, bins = np.histogram(scores_data[header_data[:, 4] == '1'][:, 0], bins = 100, range = hist_range)
+    neutral_hist, bins    = np.histogram(scores_data[header_data[:, 4] == '0'][:, 0], bins = 100, range = hist_range)
+    center = (bins[:-1]+bins[1:])/2
+    ax.plot(center, pathogenic_hist, 'r--', label='pathogenic variants')
+    ax.plot(center, neutral_hist, 'b--', label='neutral variants')
+    ax.set_title('CombiVEP score distributuion')
+    ax.set_ylabel('samples')
+    ax.set_xlabel('score')
+    ax.legend(bbox_to_anchor=(0.999, 0.999), loc=1)
+    ax = fig.add_subplot(212)
+    pathogenic_hist, bins = np.histogram(scores_data[header_data[:, 4] == '1'][:, 7], bins = 100, range = hist_range)
+    neutral_hist, bins    = np.histogram(scores_data[header_data[:, 4] == '0'][:, 7], bins = 100, range = hist_range)
+    center = (bins[:-1]+bins[1:])/2
+    ax.plot(center, pathogenic_hist, 'r--', label='pathogenic variants')
+    ax.plot(center, neutral_hist, 'b--', label='neutral variants')
+    ax.set_title('Condel score distributuion')
+    ax.set_ylabel('samples')
+    ax.set_xlabel('score')
+    ax.legend(bbox_to_anchor=(0.999, 0.999), loc=1)
+    fig.tight_layout()
+    fig.savefig(devtools_settings.PUBLICATION_SCORE_DISTRIBUTION_FIGURE, bbox_inches='tight', pad_inches=0.05)
+
     return (devtools_settings.PUBLICATION_ROC_FIGURE,
             devtools_settings.PUBLICATION_AUC_FIGURE,
-#            devtools_settings.PUBLICATION_SCORE_DISTRIBUTION_FIGURE,
+            devtools_settings.PUBLICATION_SCORE_DISTRIBUTION_FIGURE,
             )
 
 def generate_preproc_report():
@@ -153,8 +163,41 @@ def generate_preproc_report():
                   str(scores_pathogenic_test_records),
                   )
 
+def generate_precision_performance_report():
+    discriminant_ratio = 0.5
+    prediction_result  = np.loadtxt(devtools_settings.PUBLICATION_CONDEL_PREDICTION_RESULT, dtype='S20')
 
+    cbv_positive_samples = prediction_result[prediction_result[:, 5].astype(np.float) > discriminant_ratio]
+    cbv_true_positive_prediction  = cbv_positive_samples[cbv_positive_samples[:, 4] == '1'].shape[0]
+    cbv_false_positive_prediction = cbv_positive_samples[cbv_positive_samples[:, 4] == '0'].shape[0]
+    cbv_negative_samples = prediction_result[prediction_result[:, 5].astype(np.float) <= discriminant_ratio]
+    cbv_true_negative_prediction  = cbv_negative_samples[cbv_negative_samples[:, 4] == '0'].shape[0]
+    cbv_false_negative_prediction = cbv_negative_samples[cbv_negative_samples[:, 4] == '1'].shape[0]
 
+    cbv_accuracy         = float(cbv_true_positive_prediction+cbv_true_negative_prediction)/(cbv_true_positive_prediction+cbv_true_negative_prediction+cbv_false_positive_prediction+cbv_false_negative_prediction)
+    cbv_sensitivity      = float(cbv_true_positive_prediction)/(cbv_true_positive_prediction+cbv_false_negative_prediction)
+    cbv_specificity      = float(cbv_true_negative_prediction)/(cbv_true_negative_prediction+cbv_false_positive_prediction)
+    cbv_balance_accuracy = (cbv_sensitivity+cbv_specificity)/2
 
+    cdl_positive_samples = prediction_result[prediction_result[:, 12].astype(np.float) > discriminant_ratio]
+    cdl_true_positive_prediction  = cdl_positive_samples[cdl_positive_samples[:, 4] == '1'].shape[0]
+    cdl_false_positive_prediction = cdl_positive_samples[cdl_positive_samples[:, 4] == '0'].shape[0]
+    cdl_negative_samples = prediction_result[prediction_result[:, 12].astype(np.float) <= discriminant_ratio]
+    cdl_true_negative_prediction  = cdl_negative_samples[cdl_negative_samples[:, 4] == '0'].shape[0]
+    cdl_false_negative_prediction = cdl_negative_samples[cdl_negative_samples[:, 4] == '1'].shape[0]
 
+    cdl_accuracy         = float(cdl_true_positive_prediction+cdl_true_negative_prediction)/(cdl_true_positive_prediction+cdl_true_negative_prediction+cdl_false_positive_prediction+cdl_false_negative_prediction)
+    cdl_sensitivity      = float(cdl_true_positive_prediction)/(cdl_true_positive_prediction+cdl_false_negative_prediction)
+    cdl_specificity      = float(cdl_true_negative_prediction)/(cdl_true_negative_prediction+cdl_false_positive_prediction)
+    cdl_balance_accuracy = (cdl_sensitivity+cdl_specificity)/2
+
+    print_precision("", "Condel", "CombiVEP")
+    print_precision("False positive samples", str(cdl_false_positive_prediction), str(cbv_false_positive_prediction))
+    print_precision("True negative samples",  str(cdl_true_negative_prediction),  str(cbv_true_negative_prediction))
+    print_precision("False negative samples", str(cdl_false_negative_prediction), str(cbv_false_negative_prediction))
+    print_precision("True positive samples",  str(cdl_true_positive_prediction),  str(cbv_true_positive_prediction))
+    print_precision("Accuracy",               "%.4f" % cdl_accuracy,              "%.4f" % cbv_accuracy)
+    print_precision("Sensitivity",            "%.4f" % cdl_sensitivity,           "%.4f" % cbv_sensitivity)
+    print_precision("Specificity",            "%.4f" % cdl_specificity,           "%.4f" % cbv_specificity)
+    print_precision("Balance accuracy",       "%.4f" % cdl_balance_accuracy,      "%.4f" % cbv_balance_accuracy)
 
