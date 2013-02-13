@@ -25,9 +25,6 @@ class DataSet(list):
     def set_shuffle_seed(self, shuffle_seed):
         self.shuffle_seed = shuffle_seed
 
-#    def append(self, item):
-#        super(DataSet, self).append(item)
-
     def __add__(self, other):
         for item in other:
             super(DataSet, self).append(item)
