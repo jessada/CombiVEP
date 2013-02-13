@@ -26,7 +26,7 @@ class TestApp(SafeGeneralTester):
         params_file  = os.path.join(self.working_dir, 'params.npz')
         #run test
         train_combivep_using_cbv_data(test_file,
-                                      random_seed=20,
+                                      random_seed=1,
                                       n_hidden_nodes=7,
                                       iterations=50,
                                       figure_dir=self.working_dir,

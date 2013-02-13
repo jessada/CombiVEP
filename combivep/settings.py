@@ -57,9 +57,9 @@ TMP_LJB_CLEAN_DB_FILE        = os.path.join(COMBIVEP_WORKING_DIR, 'tmp_ljb_clean
 # > > > > > > > > > > > > > MLP configuration < < < < < < < < < <
 #general model configuration
 MLP_COEFFICIENT       = 0.9
-STEP_SIZE             = 0.00016
+STEP_SIZE             = 0.0005
 MAXIMUM_ALLOWED_ERROR = 0.35
-MINIMUM_IMPROVEMENT   = 0.00000001
+MINIMUM_IMPROVEMENT   = 0.000000001
 
 #default model argument values
 DEFAULT_ITERATIONS    = 30000

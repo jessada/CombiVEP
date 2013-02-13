@@ -14,7 +14,30 @@ PUBLICATION_AUC_FIGURE                 = os.path.join(PUBLICATION_FIGURES_DIR, '
 PUBLICATION_SCORE_DISTRIBUTION_FIGURE  = os.path.join(PUBLICATION_FIGURES_DIR, 'score_distribution.eps')
 
 
+# > > > > > > > > > > > > > file type < < < < < < < < < <
+#file type
+FILE_TYPE_SCORES = 'scores' #CombiVEP format
 
+#SNP information key
+KEY_SCORES_CHROM   = 'SCORES_chrom'
+KEY_SCORES_POS     = 'SCORES_pos'
+KEY_SCORES_REF     = 'SCORES_ref'
+KEY_SCORES_ALT     = 'SCORES_alt'
+KEY_SCORES_TARGETS = 'SCORES_targets'
+
+#SCORES index
+#0-based index, used by python
+SCORES_0_INDEX_CHROM        = 0
+SCORES_0_INDEX_POS          = 1
+SCORES_0_INDEX_REF          = 2
+SCORES_0_INDEX_ALT          = 3
+SCORES_0_INDEX_TARGETS      = 4
+SCORES_0_INDEX_PHYLOP_SCORE = 5
+SCORES_0_INDEX_SIFT_SCORE   = 6
+SCORES_0_INDEX_PP2_SCORE    = 7
+SCORES_0_INDEX_LRT_SCORE    = 8
+SCORES_0_INDEX_MT_SCORE     = 9
+SCORES_0_INDEX_GERP_SCORE   = 10
 
 
 

@@ -25,9 +25,6 @@ class DataSet(list):
     def set_shuffle_seed(self, shuffle_seed):
         self.shuffle_seed = shuffle_seed
 
-#    def append(self, item):
-#        super(DataSet, self).append(item)
-
     def __add__(self, other):
         for item in other:
             super(DataSet, self).append(item)
@@ -92,7 +89,7 @@ class DataSetManager(CombiVEPBase):
         self.referer.load_config()
         self.dataset = DataSet()
 
-    def __clear_data(self):
+    def clear_data(self):
         self.dataset.clear()
 
     def load_data(self, file_name, file_type=combivep_settings.FILE_TYPE_VCF):
@@ -102,7 +99,7 @@ class DataSetManager(CombiVEPBase):
             return self.__load_cbv_data(file_name)
 
     def __load_vcf_data(self, file_name):
-        self.__clear_data()
+        self.clear_data()
         vcf_reader = VcfReader()
         vcf_reader.read(file_name)
         for rec in vcf_reader.fetch_hash_snps():
@@ -116,7 +113,7 @@ class DataSetManager(CombiVEPBase):
                                  combivep_settings.KEY_PREDICTION_SECTION : prediction})
 
     def __load_cbv_data(self, file_name):
-        self.__clear_data()
+        self.clear_data()
         cbv_reader = CbvReader()
         cbv_reader.read(file_name)
         for rec in cbv_reader.fetch_hash_snps():

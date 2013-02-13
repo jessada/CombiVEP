@@ -51,7 +51,7 @@ class Mlp(object):
         return self.__out2
 
     def backward_propagation(self, training_dataset):
-        model_error = self.calculate_error(self.__out2, training_dataset.targets)
+        model_error = np.multiply(self.calculate_error(self.__out2, training_dataset.targets), training_dataset.n_data/2)
         self.__error_signal_output = np.multiply(model_error, 
                                                  np.multiply((1-self.__out2), 
                                                              self.__out2
@@ -94,7 +94,10 @@ class Mlp(object):
         return self.__weights1, self.__weights2
 
     def calculate_error(self, actual_output, expected_output):
-        return np.subtract(actual_output, expected_output)
+        error   = np.subtract(actual_output, expected_output)
+        error = np.where(expected_output == 1, np.divide(error, (expected_output[expected_output==1].shape[0])*2), error)
+        error = np.where(expected_output == 0, np.divide(error, (expected_output[expected_output==0].shape[0])*2), error)
+        return error
 
     def export_best_parameters(self, params_file=combivep_settings.USER_PARAMETERS_FILE):
         np.savez(params_file, best_weights1=self.best_weights1, best_weights2=self.best_weights2)
