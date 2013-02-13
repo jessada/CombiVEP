@@ -5,7 +5,9 @@ from combivep.devtools.utils import filter_cbv_data
 from combivep.devtools.utils import calculate_roc
 from combivep.devtools.utils import print_preproc
 from combivep.devtools.utils import print_precision
-from combivep.app import train_combivep_using_cbv_data
+from combivep.devtools.utils import fast_training
+from combivep.devtools.utils import fast_predict
+#from combivep.app import train_combivep_using_cbv_data
 import combivep.settings as combivep_settings
 import combivep.devtools.settings as devtools_settings
 from combivep.app import predict_deleterious_probability
@@ -16,19 +18,19 @@ def filter_all_cbv():
     filter_cbv_data(os.path.join(combivep_settings.COMBIVEP_CENTRAL_TEST_CBV_DIR, 'test.cbv'))
 
 def demo_training():
-    train_combivep_using_cbv_data(os.path.join(combivep_settings.COMBIVEP_CENTRAL_TEST_CBV_DIR, 'training.cbv.scores'),
-                                  params_out_file=devtools_settings.PUBLICATION_PARAMETER_FILE,
-                                  random_seed=combivep_settings.DEMO_SEED,
-                                  figure_dir=devtools_settings.PUBLICATION_FIGURES_DIR,
-                                  )
+    fast_training(os.path.join(combivep_settings.COMBIVEP_CENTRAL_TEST_CBV_DIR, 'training.cbv.scores'),
+                  params_out_file=devtools_settings.PUBLICATION_PARAMETER_FILE,
+                  random_seed=combivep_settings.DEMO_SEED,
+                  figure_dir=devtools_settings.PUBLICATION_FIGURES_DIR,
+                  )
 
 def demo_predicting():
-    predict_deleterious_probability(os.path.join(combivep_settings.COMBIVEP_CENTRAL_TEST_CBV_DIR, 'test.cbv.scores'),
-                                    params_file=devtools_settings.PUBLICATION_PARAMETER_FILE,
-                                    file_type=combivep_settings.FILE_TYPE_CBV,
-                                    output_file=devtools_settings.PUBLICATION_RAW_PREDICTION_RESULT,
-                                    config_file=combivep_settings.COMBIVEP_CONFIGURATION_FILE,
-                                    )
+    fast_predict(os.path.join(combivep_settings.COMBIVEP_CENTRAL_TEST_CBV_DIR, 'test.cbv.scores'),
+                 params_file=devtools_settings.PUBLICATION_PARAMETER_FILE,
+                 file_type=combivep_settings.FILE_TYPE_CBV,
+                 output_file=devtools_settings.PUBLICATION_RAW_PREDICTION_RESULT,
+                 config_file=combivep_settings.COMBIVEP_CONFIGURATION_FILE,
+                 )
 
 def generate_figures():
     header_data = np.loadtxt(devtools_settings.PUBLICATION_CONDEL_PREDICTION_RESULT, dtype='S20')[:, :5]
