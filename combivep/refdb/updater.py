@@ -5,7 +5,6 @@ import sys
 import zipfile
 import combivep.settings as cbv_const
 from combivep.template import CombiVEPBase
-#import combivep.template as main_template
 
 
 def ungz(gz_file):
@@ -21,11 +20,18 @@ def ungz(gz_file):
 
 
 def unzip(zip_file, out_dir):
+    """
+
+    unzip file to the output directory
+    then return the name of unzipped file together with their path
+
+    """
+
     unzip_files = zipfile.ZipFile(zip_file)
     out_files = []
     for unzip_file in unzip_files.namelist():
         (dir_name, file_name) = os.path.split(unzip_file)
-        unzip_out_dir = os.path.join(out_dir, dir_name)
+        unzip_out_dir         = os.path.join(out_dir, dir_name)
         if not os.path.exists(unzip_out_dir):
             os.makedirs(unzip_out_dir)
         out_file    = os.path.join(unzip_out_dir, file_name)
@@ -36,14 +42,6 @@ def unzip(zip_file, out_dir):
             fd.close()
             out_files.append(out_file)
     return out_files
-
-#def ljb_parse(input_file, output_file):
-#    cmd = 'awk -F\'\\t\' \'{printf "%s\\t%s\\t%s\\t%s\\t%s\\t%s\\t%s\\t%s\\t%s\\t%s\\t%s\\n", $1, $2, $2, $3, $4, $8, $9, $10, $11, $13, $17}\' '
-#    cmd += input_file
-#    cmd += ' | grep -Pv "\\tNA\\t" | grep -v "^#" > '
-#    cmd += output_file
-#    p = subprocess.Popen(cmd, shell=True)
-#    return os.waitpid(p.pid, 0)[1]
 
 
 class Downloader(CombiVEPBase):
@@ -80,12 +78,12 @@ class Updater(Downloader):
         Downloader.__init__(self)
         self.working_dir = cbv_const.CBV_WORKING_DIR
 
-        #specific configuration
+        #define the property of updater
         #URL of the folder that contain target files
         self.folder_url       = None
-        #pattern to find each target file
+        #pattern to find the target files
         self.files_pattern    = None
-        #pattern to find the version in the file name
+        #pattern to find the version in each file name
         self.version_pattern  = None
         #directory to store (new) reference DB
         self.local_ref_db_dir = None
@@ -93,6 +91,14 @@ class Updater(Downloader):
         self.tmp_file         = 'tmp_list'
 
     def check_new_file(self, last_version):
+        """
+
+        Check if there is a new version at the target site
+        if yes, return the new file together with its version
+        other, return 'None'
+        Please note that this function only check but not d/l anything
+
+        """
         if not self.__ready():
             return None
         self.create_dir(self.working_dir)
@@ -102,35 +108,43 @@ class Updater(Downloader):
                       output_file_name=tmp_list_file)
         files_list  = self.__parse(tmp_list_file)
         max_version = max(sorted(files_list.keys()))
-#        self.remove_dir(self.working_dir)
         if max_version <= last_version:
             return None, None
         else:
-            self.new_file    = os.path.join(self.folder_url, files_list[max_version])
             self.new_version = max_version
+            self.new_file    = os.path.join(self.folder_url,
+                                            files_list[max_version])
             return self.new_file, self.new_version
 
     def parse(self, list_file):
         return self.__parse(list_file)
 
     def __parse(self, list_file):
-        out          = {}
-        files_parser = re.compile(self.files_pattern)
-        matches      = files_parser.finditer(open(list_file).read())
+        """
+
+        extract only the file of interest together with their versions
+
+        """
+        out     = {}
+        fp      = re.compile(self.files_pattern)
+        matches = fp.finditer(open(list_file).read())
         for match in matches:
-            version_parser  = re.compile(self.version_pattern)
-            version         = version_parser.match(match.group('file_name')).group('version')
-            out[version]    = match.group('file_name')
+            vp           = re.compile(self.version_pattern)
+            file_name    = match.group('file_name')
+            version      = vp.match(file_name).group('version')
+            out[version] = file_name
         return out
 
     def download_new_file(self):
+        """download the 'new_file' and store it in 'local_db_dir'"""
         if not os.path.exists(self.local_ref_db_dir):
             os.makedirs(self.local_ref_db_dir)
-        print >> sys.stderr, 'Downloading %s . . . . ' % (self.new_file)
+        self.info('Downloading %s . . .' % (self.new_file))
         error = self.download(self.new_file, self.local_ref_db_dir)
         if error:
             return None
-        self.downloaded_file = os.path.join(self.local_ref_db_dir, os.path.basename(self.new_file))
+        self.downloaded_file = os.path.join(self.local_ref_db_dir,
+                                            os.path.basename(self.new_file))
         return self.downloaded_file
 
     def __ready(self):
@@ -176,7 +190,8 @@ class LjbUpdater(Updater):
         if not Updater.download_new_file(self):
             return False
         if self.new_file.endswith('.zip'):
-            self.raw_db_files = unzip(self.downloaded_file, self.local_ref_db_dir)
+            self.raw_db_files = unzip(self.downloaded_file,
+                                      self.local_ref_db_dir)
         else:
             self.raw_db_files = self.downloaded_file
         return self.raw_db_files

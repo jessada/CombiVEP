@@ -1,4 +1,5 @@
 import unittest
+import sys
 import os
 import shutil
 import subprocess
@@ -27,11 +28,17 @@ class CombiVEPBase(object):
     def copy_file(self, source, destination):
         shutil.copy2(source, destination)
 
+    def info(self, info_msg):
+        print >> sys.stderr, info_msg
+
+    def throw(self, err_msg):
+        raise Exception(cmd, err_msg)
+
     def exec_sh(self, cmd):
         p = subprocess.Popen(cmd, shell=True)
         error = p.wait()
         if error:
-            raise Exception("Error found during execute command '%s' with error code %d" % (cmd, error))
+            self.throw("Error found during execute command '%s' with error code %d" % (cmd, error))
 
 
 class Tester(unittest.TestCase, CombiVEPBase):
