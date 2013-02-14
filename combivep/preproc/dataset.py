@@ -81,12 +81,12 @@ class DataSet(list):
 class DataSetManager(CombiVEPBase):
 
 
-    def __init__(self, config_file=cbv_const.CBV_CFG_FILE):
+    def __init__(self, cfg_file=cbv_const.CBV_CFG_FILE):
         CombiVEPBase.__init__(self)
 
         self.referer = Referer()
-        self.referer.config_file = config_file
-        self.referer.load_config()
+        self.referer.cfg_file = cfg_file
+        self.referer.load_cfg()
         self.dataset = DataSet()
 
     def clear_data(self):

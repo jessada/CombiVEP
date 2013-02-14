@@ -15,7 +15,7 @@ class TestDataSetManager(SafePreProcTester):
         self.test_class = 'dataset_manager'
 
     def init_dataset_instance(self):
-        self.__dataset_manager = DataSetManager(config_file=cbv_const.CBV_CENTRAL_TEST_CFG_FILE)
+        self.__dataset_manager = DataSetManager(cfg_file=cbv_const.CBV_CENTRAL_TEST_CFG_FILE)
 
     def test_vcf_load(self):
         self.init_test('test_vcf_load')
@@ -104,7 +104,7 @@ class TestDataSetManager(SafePreProcTester):
     def test_add_dataset(self):
         self.init_test('test_add_dataset')
         test_file = os.path.join(self.data_dir, 'test_add_dataset1.cbv')
-        self.dataset_manager1 = DataSetManager(config_file=cbv_const.CBV_CENTRAL_TEST_CFG_FILE)
+        self.dataset_manager1 = DataSetManager(cfg_file=cbv_const.CBV_CENTRAL_TEST_CFG_FILE)
         self.dataset_manager1.load_data(test_file, file_type=cbv_const.FILE_TYPE_CBV)
         self.dataset_manager1.validate_data()
         self.dataset_manager1.calculate_scores()
@@ -112,7 +112,7 @@ class TestDataSetManager(SafePreProcTester):
         self.dataset_manager1.partition_data()
         training_dataset1 = self.dataset_manager1.get_training_data()
         test_file = os.path.join(self.data_dir, 'test_add_dataset2.cbv')
-        self.dataset_manager2 = DataSetManager(config_file=cbv_const.CBV_CENTRAL_TEST_CFG_FILE)
+        self.dataset_manager2 = DataSetManager(cfg_file=cbv_const.CBV_CENTRAL_TEST_CFG_FILE)
         self.dataset_manager2.load_data(test_file, file_type=cbv_const.FILE_TYPE_CBV)
         self.dataset_manager2.validate_data()
         self.dataset_manager2.calculate_scores()

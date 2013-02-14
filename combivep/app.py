@@ -53,7 +53,7 @@ def train_combivep_using_cbv_data(training_data_file,
                                   n_hidden_nodes=cbv_const.DEFAULT_HIDDEN_NODES,
                                   figure_dir=cbv_const.DEFAULT_FIGURE_DIR,
                                   iterations=cbv_const.DEFAULT_ITERATIONS,
-                                  config_file=cbv_const.CBV_CFG_FILE,
+                                  cfg_file=cbv_const.CBV_CFG_FILE,
                                   ):
     """
 
@@ -66,7 +66,7 @@ def train_combivep_using_cbv_data(training_data_file,
     """
     #pre-processing dataset
     print >> sys.stderr, 'pre-processing dataset, this may take a while (around 750 SNPs/mins). . . . '
-    dm = DataSetManager(config_file=config_file)
+    dm = DataSetManager(cfg_file=cfg_file)
     dm.load_data(training_data_file, file_type=cbv_const.FILE_TYPE_CBV)
     dm.validate_data()
     dm.calculate_scores()
@@ -90,7 +90,7 @@ def predict_deleterious_probability(SNPs_file,
                                     params_file=cbv_const.USER_PARAMS_FILE,
                                     file_type=cbv_const.FILE_TYPE_VCF,
                                     output_file=None,
-                                    config_file=cbv_const.CBV_CFG_FILE,
+                                    cfg_file=cbv_const.CBV_CFG_FILE,
                                     ):
     """
 
@@ -102,7 +102,7 @@ def predict_deleterious_probability(SNPs_file,
     """
     #pre-processing test dataset
     print >> sys.stderr, 'pre-processing dataset, this may take a while (around 750 SNPs/mins). . . . '
-    dm = DataSetManager(config_file=config_file)
+    dm = DataSetManager(cfg_file=cfg_file)
     dm.load_data(SNPs_file, file_type=file_type)
     dm.validate_data()
     dm.calculate_scores()

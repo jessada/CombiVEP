@@ -37,7 +37,6 @@ class Trainer(Mlp):
                                                                                  )
                                                             ), 
                                          axis=1
-#                                         ).item(0) / self.__training_dataset.n_data)
                                          ).item(0))
 
             #evaluate model using validation dataset
@@ -47,7 +46,6 @@ class Trainer(Mlp):
                                                                                    )
                                                               ),
                                            axis=1
-#                                           ).item(0) / self.__validation_dataset.n_data)
                                            ).item(0))
 
             #check ending condition (acceptable error rate and not much improvement in each iteration)
@@ -55,8 +53,6 @@ class Trainer(Mlp):
             if (current_validation_error < cbv_const.MAX_ALLOWED_ERROR) and ((best_validation_error-current_validation_error) < cbv_const.MIN_IMPROVEMENT):
                 break
 
-#            print "training error >>", self.__training_error
-#            print "validation error >>", self.__validation_error
             #otherwise save parameters and record last error
             best_validation_error = self.__validation_error[len(self.__validation_error)-1]
             self.best_weights1 = weights1
@@ -75,8 +71,6 @@ class Trainer(Mlp):
     def __save_figure(self):
         fig = plt.figure()
         ax = fig.add_subplot(111)
-#        print self.__training_error
-#        ax.plot([0.49998267, 0.49998261], label='training')
         ax.plot(self.__training_error, label='training')
         ax.plot(self.__validation_error, label='validation')
         ax.set_ylabel('average error')

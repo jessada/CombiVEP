@@ -16,15 +16,15 @@ class UcscController(UcscUpdater, Configure):
         Configure.__init__(self)
 
     def update(self):
-        self.load_config()
+        self.load_cfg()
         print >> sys.stderr, 'Checking new UCSC reference database version . . . . '
-        new_file, new_version = self.check_new_file(self.config_values[cbv_const.LATEST_UCSC_DB_VERSION])
+        new_file, new_version = self.check_new_file(self.cfg_values[cbv_const.LATEST_UCSC_DB_VERSION])
         if not new_version:
-            print >> sys.stderr, 'UCSC reference database is already up-to-date (version %s) . . . . . ' % (self.config_values[cbv_const.LATEST_UCSC_DB_VERSION])
+            print >> sys.stderr, 'UCSC reference database is already up-to-date (version %s) . . . . . ' % (self.cfg_values[cbv_const.LATEST_UCSC_DB_VERSION])
             return False
         self.download_new_file()
         new_database = self.__tabix_database()
-        self.write_ucsc_config(new_version, new_database)
+        self.write_ucsc_cfg(new_version, new_database)
         print >> sys.stderr, 'Finish updating UCSC reference database . . . . '
         return True
 
@@ -57,11 +57,11 @@ class LjbController(LjbUpdater, Configure):
         self.chromosome_list = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', 'X', 'Y']
 
     def update(self):
-        self.load_config()
+        self.load_cfg()
         print >> sys.stderr, 'Checking new LJB reference database version . . . . '
-        new_file, new_version = self.check_new_file(self.config_values[cbv_const.LATEST_LJB_DB_VERSION])
+        new_file, new_version = self.check_new_file(self.cfg_values[cbv_const.LATEST_LJB_DB_VERSION])
         if not new_version:
-            print >> sys.stderr, 'LJB reference database is already up-to-date (version %s) . . . . . ' % (self.config_values[cbv_const.LATEST_LJB_DB_VERSION])
+            print >> sys.stderr, 'LJB reference database is already up-to-date (version %s) . . . . . ' % (self.cfg_values[cbv_const.LATEST_LJB_DB_VERSION])
             return False
         self.download_new_file()
         file_prefix, dummy_ext = os.path.splitext(self.downloaded_file)
@@ -74,7 +74,7 @@ class LjbController(LjbUpdater, Configure):
         print >> sys.stderr, 'indexing ljb database . . . . . '
         self.__tabix_database(file_prefix + '.txt')
         #save file information to the configuration file
-        self.write_ljb_config(new_version, file_prefix)
+        self.write_ljb_cfg(new_version, file_prefix)
         #remove downloaded and temporary files
         self.delete_file(self.downloaded_file)
         for chromosome_file in self.__get_chromosome_files(file_prefix):

@@ -11,12 +11,12 @@ class Referer(Configure):
     def __init__(self):
         Configure.__init__(self)
 
-    def load_config(self):
-        Configure.load_config(self)
+    def load_cfg(self):
+        Configure.load_cfg(self)
         self.__ucsc_reader = UcscReader()
-        self.__ucsc_reader.read(self.config_values[cbv_const.LATEST_UCSC_FILE_NAME])
+        self.__ucsc_reader.read(self.cfg_values[cbv_const.LATEST_UCSC_FILE_NAME])
         self.__ljb_reader = LjbReader()
-        self.__ljb_reader.read(self.config_values[cbv_const.LATEST_LJB_FILE_PREFIX] + '.txt.gz')
+        self.__ljb_reader.read(self.cfg_values[cbv_const.LATEST_LJB_FILE_PREFIX] + '.txt.gz')
 
     def validate_snp(self, chrom, pos, ref, alt):
         """
