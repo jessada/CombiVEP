@@ -2,13 +2,16 @@ import os
 import sys
 import numpy as np
 import combivep.devtools.settings as devtools_settings
-from combivep.preproc.dataset import DataSetManager
 import combivep.settings as combivep_settings
+from combivep.preproc.dataset import DataSetManager
 from combivep.cfg import Configure
 from combivep.template import CombiVEPBase
 from combivep.engine.wrapper import Trainer
 from combivep.engine.wrapper import Predictor
+from collections import namedtuple
+from combivep.devtools.settings import PRECISION_MEASURES
 
+PrecisionPerformance = namedtuple("precision_performance", PRECISION_MEASURES)
 
 class ScoresReader(CombiVEPBase):
     """
@@ -35,7 +38,6 @@ class ScoresReader(CombiVEPBase):
 
     def fetch_hash_snps(self):
         for rec in self.fetch_array_snps():
-#            print rec
             snp_info = {devtools_settings.KEY_SCORES_CHROM : rec[devtools_settings.SCORES_0_INDEX_CHROM],
                         devtools_settings.KEY_SCORES_POS   : rec[devtools_settings.SCORES_0_INDEX_POS],
                         devtools_settings.KEY_SCORES_REF   : rec[devtools_settings.SCORES_0_INDEX_REF],
@@ -77,13 +79,6 @@ class FastDataSetManager(DataSetManager):
                           combivep_settings.KEY_ALT   : rec[combivep_settings.KEY_SNP_INFO_SECTION][devtools_settings.KEY_SCORES_ALT],
                           }
             prediction = {combivep_settings.KEY_TARGETS : rec[combivep_settings.KEY_PREDICTION_SECTION][devtools_settings.KEY_SCORES_TARGETS]}
-#            scores     = {combivep_settings.KEY_PHYLOP_SCORE  : rec[devtools_settings.LJB_PARSED_0_INDEX_PHYLOP_SCORE],
-#                          combivep_settings.KEY_SIFT_SCORE    : rec[devtools_settings.LJB_PARSED_0_INDEX_SIFT_SCORE],
-#                          combivep_settings.KEY_PP2_SCORE     : rec[devtools_settings.LJB_PARSED_0_INDEX_PP2_SCORE],
-#                          combivep_settings.KEY_LRT_SCORE     : rec[devtools_settings.LJB_PARSED_0_INDEX_LRT_SCORE],
-#                          combivep_settings.KEY_MT_SCORE      : rec[devtools_settings.LJB_PARSED_0_INDEX_MT_SCORE],
-#                          combivep_settings.KEY_GERP_SCORE    : rec[devtools_settings.LJB_PARSED_0_INDEX_GERP_SCORE],
-#                          }
             self.dataset.append({combivep_settings.KEY_SNP_INFO_SECTION : snp_data,
                                  combivep_settings.KEY_PREDICTION_SECTION : prediction,
                                  combivep_settings.KEY_SCORES_SECTION : rec[combivep_settings.KEY_SCORES_SECTION],
@@ -249,4 +244,18 @@ def fast_predict(SNPs_file,
                                                                                     )
     sys.stdout = sys.__stdout__
 
+def measure_precision(ratio,
+                      positive_samples_scores,
+                      negative_samples_scores,
+                      ):
+    true_positive  = len(positive_samples_scores[positive_samples_scores > ratio])
+    false_negative = len(positive_samples_scores[positive_samples_scores <= ratio])
+    true_negative  = len(negative_samples_scores[negative_samples_scores < ratio])
+    false_positive = len(negative_samples_scores[negative_samples_scores >= ratio])
 
+    accuracy         = float(true_positive+true_negative)/(true_positive+true_negative+false_positive+false_negative)
+    sensitivity      = float(true_positive)/(true_positive+false_negative)
+    specificity      = float(true_negative)/(true_negative+false_positive)
+    balance_accuracy = (sensitivity+specificity)/2
+
+    return PrecisionPerformance(true_positive, false_negative, true_negative, false_positive, accuracy, sensitivity, specificity, balance_accuracy)
