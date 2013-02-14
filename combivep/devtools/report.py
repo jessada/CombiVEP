@@ -1,17 +1,20 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import os
+import combivep.settings as combivep_settings
+import combivep.devtools.settings as devtools_settings
 from combivep.devtools.utils import filter_cbv_data
 from combivep.devtools.utils import calculate_roc
 from combivep.devtools.utils import print_preproc
 from combivep.devtools.utils import print_precision
 from combivep.devtools.utils import fast_training
 from combivep.devtools.utils import fast_predict
-#from combivep.app import train_combivep_using_cbv_data
-import combivep.settings as combivep_settings
-import combivep.devtools.settings as devtools_settings
+from combivep.devtools.utils import measure_precision
+from combivep.devtools.settings import PRECISION_MEASURES
+from combivep.devtools.settings import PREDICTOR_NAMES
 from combivep.app import predict_deleterious_probability
 from sklearn.metrics import auc
+
 
 def filter_all_cbv():
     filter_cbv_data(os.path.join(combivep_settings.COMBIVEP_CENTRAL_TEST_CBV_DIR, 'training.cbv'))
@@ -166,40 +169,16 @@ def generate_preproc_report():
                   )
 
 def generate_precision_performance_report():
-    discriminant_ratio = 0.5
     prediction_result  = np.loadtxt(devtools_settings.PUBLICATION_CONDEL_PREDICTION_RESULT, dtype='S20')
 
-    cbv_positive_samples = prediction_result[prediction_result[:, 5].astype(np.float) > discriminant_ratio]
-    cbv_true_positive_prediction  = cbv_positive_samples[cbv_positive_samples[:, 4] == '1'].shape[0]
-    cbv_false_positive_prediction = cbv_positive_samples[cbv_positive_samples[:, 4] == '0'].shape[0]
-    cbv_negative_samples = prediction_result[prediction_result[:, 5].astype(np.float) <= discriminant_ratio]
-    cbv_true_negative_prediction  = cbv_negative_samples[cbv_negative_samples[:, 4] == '0'].shape[0]
-    cbv_false_negative_prediction = cbv_negative_samples[cbv_negative_samples[:, 4] == '1'].shape[0]
+    positive_samples = prediction_result[prediction_result[:, 4] == '1'][:, 5:13].astype(np.float)
+    negative_samples = prediction_result[prediction_result[:, 4] == '0'][:, 5:13].astype(np.float)
+    precision_performances = []
+    for i in xrange(negative_samples.shape[1]):
+        precision_performances.append(measure_precision(0.5, positive_samples[:, i], negative_samples[:, i]))
 
-    cbv_accuracy         = float(cbv_true_positive_prediction+cbv_true_negative_prediction)/(cbv_true_positive_prediction+cbv_true_negative_prediction+cbv_false_positive_prediction+cbv_false_negative_prediction)
-    cbv_sensitivity      = float(cbv_true_positive_prediction)/(cbv_true_positive_prediction+cbv_false_negative_prediction)
-    cbv_specificity      = float(cbv_true_negative_prediction)/(cbv_true_negative_prediction+cbv_false_positive_prediction)
-    cbv_balance_accuracy = (cbv_sensitivity+cbv_specificity)/2
+    print "%-20s" % "", "".join(map(lambda x: "%11s" % x, PREDICTOR_NAMES))
+    for i in xrange(len(PRECISION_MEASURES)):
+        print "%-20s" % PRECISION_MEASURES[i], "".join(map(lambda x: "%11s" % ("%.4f" % x[i]), precision_performances))
 
-    cdl_positive_samples = prediction_result[prediction_result[:, 12].astype(np.float) > discriminant_ratio]
-    cdl_true_positive_prediction  = cdl_positive_samples[cdl_positive_samples[:, 4] == '1'].shape[0]
-    cdl_false_positive_prediction = cdl_positive_samples[cdl_positive_samples[:, 4] == '0'].shape[0]
-    cdl_negative_samples = prediction_result[prediction_result[:, 12].astype(np.float) <= discriminant_ratio]
-    cdl_true_negative_prediction  = cdl_negative_samples[cdl_negative_samples[:, 4] == '0'].shape[0]
-    cdl_false_negative_prediction = cdl_negative_samples[cdl_negative_samples[:, 4] == '1'].shape[0]
-
-    cdl_accuracy         = float(cdl_true_positive_prediction+cdl_true_negative_prediction)/(cdl_true_positive_prediction+cdl_true_negative_prediction+cdl_false_positive_prediction+cdl_false_negative_prediction)
-    cdl_sensitivity      = float(cdl_true_positive_prediction)/(cdl_true_positive_prediction+cdl_false_negative_prediction)
-    cdl_specificity      = float(cdl_true_negative_prediction)/(cdl_true_negative_prediction+cdl_false_positive_prediction)
-    cdl_balance_accuracy = (cdl_sensitivity+cdl_specificity)/2
-
-    print_precision("", "Condel", "CombiVEP")
-    print_precision("False positive samples", str(cdl_false_positive_prediction), str(cbv_false_positive_prediction))
-    print_precision("True negative samples",  str(cdl_true_negative_prediction),  str(cbv_true_negative_prediction))
-    print_precision("False negative samples", str(cdl_false_negative_prediction), str(cbv_false_negative_prediction))
-    print_precision("True positive samples",  str(cdl_true_positive_prediction),  str(cbv_true_positive_prediction))
-    print_precision("Accuracy",               "%.4f" % cdl_accuracy,              "%.4f" % cbv_accuracy)
-    print_precision("Sensitivity",            "%.4f" % cdl_sensitivity,           "%.4f" % cbv_sensitivity)
-    print_precision("Specificity",            "%.4f" % cdl_specificity,           "%.4f" % cbv_specificity)
-    print_precision("Balance accuracy",       "%.4f" % cdl_balance_accuracy,      "%.4f" % cbv_balance_accuracy)
 

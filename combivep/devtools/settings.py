@@ -39,5 +39,8 @@ SCORES_0_INDEX_LRT_SCORE    = 8
 SCORES_0_INDEX_MT_SCORE     = 9
 SCORES_0_INDEX_GERP_SCORE   = 10
 
+# > > > > > > > > > > > > > data structure < < < < < < < < < <
+PREDICTOR_NAMES = ('CombiVEP', 'Phylop', 'SIFT', 'PP2', 'LRT', 'MT', 'GERP', 'Condel')
+PRECISION_MEASURES = ('true_postive', 'false_negative', 'true_negative', 'false_positive', 'accuracy', 'sensitivity', 'specificity', 'balance_accuracy')
 
 
