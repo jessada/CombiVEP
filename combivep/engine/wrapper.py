@@ -1,7 +1,7 @@
 import os.path
 import numpy as np
 import matplotlib.pyplot as plt
-import combivep.settings as combivep_settings
+import combivep.settings as cbv_const
 from combivep.engine.mlp import Mlp
 
 class Trainer(Mlp):
@@ -10,9 +10,9 @@ class Trainer(Mlp):
 
     def __init__(self, training_dataset,
                        validation_dataset,
-                       seed=combivep_settings.DEFAULT_SEED, 
-                       n_hidden_nodes=combivep_settings.DEFAULT_HIDDEN_NODES, 
-                       figure_dir=combivep_settings.DEFAULT_FIGURE_DIR):
+                       seed=cbv_const.DEFAULT_SEED, 
+                       n_hidden_nodes=cbv_const.DEFAULT_HIDDEN_NODES, 
+                       figure_dir=cbv_const.DEFAULT_FIGURE_DIR):
         Mlp.__init__(self, training_dataset.n_features,
                                         seed=seed,
                                         n_hidden_nodes=n_hidden_nodes)
@@ -22,7 +22,7 @@ class Trainer(Mlp):
         self.__n_hidden_nodes     = n_hidden_nodes
         self.__figure_dir         = figure_dir
 
-    def train(self, iterations=combivep_settings.DEFAULT_ITERATIONS):
+    def train(self, iterations=cbv_const.DEFAULT_ITERATIONS):
         self.__training_error   = []
         self.__validation_error = []
         running_round    = 0
@@ -52,7 +52,7 @@ class Trainer(Mlp):
 
             #check ending condition (acceptable error rate and not much improvement in each iteration)
             current_validation_error = self.__validation_error[len(self.__validation_error)-1]
-            if (current_validation_error < combivep_settings.MAXIMUM_ALLOWED_ERROR) and ((best_validation_error-current_validation_error) < combivep_settings.MINIMUM_IMPROVEMENT):
+            if (current_validation_error < cbv_const.MAXIMUM_ALLOWED_ERROR) and ((best_validation_error-current_validation_error) < cbv_const.MINIMUM_IMPROVEMENT):
                 break
 
 #            print "training error >>", self.__training_error

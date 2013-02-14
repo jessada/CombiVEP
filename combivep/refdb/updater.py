@@ -3,7 +3,7 @@ import os
 import re
 import sys
 import zipfile
-import combivep.settings as combivep_settings
+import combivep.settings as cbv_const
 from combivep.template import CombiVEPBase
 #import combivep.template as main_template
 
@@ -78,7 +78,7 @@ class Updater(Downloader):
 
     def __init__(self):
         Downloader.__init__(self)
-        self.working_dir = combivep_settings.COMBIVEP_WORKING_DIR
+        self.working_dir = cbv_const.CBV_WORKING_DIR
 
         #specific configuration
         #URL of the folder that contain target files
@@ -145,10 +145,10 @@ class UcscUpdater(Updater):
         Updater.__init__(self)
 
         #specific configuration
-        self.folder_url       = combivep_settings.UCSC_FOLDER_URL
-        self.files_pattern    = combivep_settings.UCSC_FILES_PATTERN
-        self.version_pattern  = combivep_settings.UCSC_VERSION_PATTERN
-        self.local_ref_db_dir = combivep_settings.USER_UCSC_REF_DB_DIR
+        self.folder_url       = cbv_const.UCSC_FOLDER_URL
+        self.files_pattern    = cbv_const.UCSC_FILES_PATTERN
+        self.version_pattern  = cbv_const.UCSC_VERSION_PATTERN
+        self.local_ref_db_dir = cbv_const.USER_UCSC_REF_DB_DIR
 
     def download_new_file(self):
         if not Updater.download_new_file(self):
@@ -167,10 +167,10 @@ class LjbUpdater(Updater):
         Updater.__init__(self)
 
         #specific configuration
-        self.folder_url       = combivep_settings.LJB_FOLDER_URL
-        self.files_pattern    = combivep_settings.LJB_FILES_PATTERN
-        self.version_pattern  = combivep_settings.LJB_VERSION_PATTERN
-        self.local_ref_db_dir = combivep_settings.USER_LJB_REF_DB_DIR
+        self.folder_url       = cbv_const.LJB_FOLDER_URL
+        self.files_pattern    = cbv_const.LJB_FILES_PATTERN
+        self.version_pattern  = cbv_const.LJB_VERSION_PATTERN
+        self.local_ref_db_dir = cbv_const.USER_LJB_REF_DB_DIR
 
     def download_new_file(self):
         if not Updater.download_new_file(self):

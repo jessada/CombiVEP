@@ -1,10 +1,10 @@
 import sys
 import os
 import pysam
-import combivep.settings as combivep_settings
+import combivep.settings as cbv_const
 from combivep.refdb.updater import UcscUpdater
 from combivep.refdb.updater import LjbUpdater
-from combivep.cfg import Configure
+from combivep.config import Configure
 
 
 class UcscController(UcscUpdater, Configure):
@@ -18,9 +18,9 @@ class UcscController(UcscUpdater, Configure):
     def update(self):
         self.load_config()
         print >> sys.stderr, 'Checking new UCSC reference database version . . . . '
-        new_file, new_version = self.check_new_file(self.config_values[combivep_settings.LATEST_UCSC_DATABASE_VERSION])
+        new_file, new_version = self.check_new_file(self.config_values[cbv_const.LATEST_UCSC_DB_VERSION])
         if not new_version:
-            print >> sys.stderr, 'UCSC reference database is already up-to-date (version %s) . . . . . ' % (self.config_values[combivep_settings.LATEST_UCSC_DATABASE_VERSION])
+            print >> sys.stderr, 'UCSC reference database is already up-to-date (version %s) . . . . . ' % (self.config_values[cbv_const.LATEST_UCSC_DB_VERSION])
             return False
         self.download_new_file()
         new_database = self.__tabix_database()
@@ -41,9 +41,9 @@ class UcscController(UcscUpdater, Configure):
         print >> sys.stderr, 'indexing ucsc database . . . . . '
         return pysam.tabix_index(file_name,
                                  force     = True,
-                                 seq_col   = combivep_settings.UCSC_0_INDEX_CHROM,
-                                 start_col = combivep_settings.UCSC_0_INDEX_START_POS,
-                                 end_col   = combivep_settings.UCSC_0_INDEX_END_POS,
+                                 seq_col   = cbv_const.UCSC_0_IDX_CHROM,
+                                 start_col = cbv_const.UCSC_0_IDX_START_POS,
+                                 end_col   = cbv_const.UCSC_0_IDX_END_POS,
                                  zerobased = True)
 
 
@@ -59,9 +59,9 @@ class LjbController(LjbUpdater, Configure):
     def update(self):
         self.load_config()
         print >> sys.stderr, 'Checking new LJB reference database version . . . . '
-        new_file, new_version = self.check_new_file(self.config_values[combivep_settings.LATEST_LJB_DATABASE_VERSION])
+        new_file, new_version = self.check_new_file(self.config_values[cbv_const.LATEST_LJB_DB_VERSION])
         if not new_version:
-            print >> sys.stderr, 'LJB reference database is already up-to-date (version %s) . . . . . ' % (self.config_values[combivep_settings.LATEST_LJB_DATABASE_VERSION])
+            print >> sys.stderr, 'LJB reference database is already up-to-date (version %s) . . . . . ' % (self.config_values[cbv_const.LATEST_LJB_DB_VERSION])
             return False
         self.download_new_file()
         file_prefix, dummy_ext = os.path.splitext(self.downloaded_file)
@@ -111,40 +111,40 @@ class LjbController(LjbUpdater, Configure):
         cmd = []
         #remove records that any of the scores are 'NA'
         cmd.append('awk -F\'\\t\' \'($')
-        cmd.append(str(combivep_settings.LJB_RAW_1_INDEX_PHYLOP_SCORE))
+        cmd.append(str(cbv_const.LJB_RAW_1_IDX_PHYLOP_SCORE))
         cmd.append(' !~ /[A-Z]/) && ($')
-        cmd.append(str(combivep_settings.LJB_RAW_1_INDEX_SIFT_SCORE))
+        cmd.append(str(cbv_const.LJB_RAW_1_IDX_SIFT_SCORE))
         cmd.append(' !~ /[A-Z]/) && ($')
-        cmd.append(str(combivep_settings.LJB_RAW_1_INDEX_PP2_SCORE))
+        cmd.append(str(cbv_const.LJB_RAW_1_IDX_PP2_SCORE))
         cmd.append(' !~ /[A-Z]/) && ($')
-        cmd.append(str(combivep_settings.LJB_RAW_1_INDEX_LRT_SCORE))
+        cmd.append(str(cbv_const.LJB_RAW_1_IDX_LRT_SCORE))
         cmd.append(' !~ /[A-Z]/) && ($')
-        cmd.append(str(combivep_settings.LJB_RAW_1_INDEX_MT_SCORE))
+        cmd.append(str(cbv_const.LJB_RAW_1_IDX_MT_SCORE))
         cmd.append(' !~ /[A-Z]/) && ($')
-        cmd.append(str(combivep_settings.LJB_RAW_1_INDEX_GERP_SCORE))
+        cmd.append(str(cbv_const.LJB_RAW_1_IDX_GERP_SCORE))
         cmd.append(' !~ /[A-Z]/)\' ')
         cmd.append(input_file)
         #reformat the columns
         cmd.append(' | awk -F\'\\t\' \'{printf "%s\\t%s\\t%s\\t%s\\t%s\\t%s\\t%s\\t%s\\t%s\\t%s\\n", $')
-        cmd.append(str(combivep_settings.LJB_RAW_1_INDEX_CHROM))
+        cmd.append(str(cbv_const.LJB_RAW_1_IDX_CHROM))
         cmd.append(', $')
-        cmd.append(str(combivep_settings.LJB_RAW_1_INDEX_POS))
+        cmd.append(str(cbv_const.LJB_RAW_1_IDX_POS))
         cmd.append(', $')
-        cmd.append(str(combivep_settings.LJB_RAW_1_INDEX_REF))
+        cmd.append(str(cbv_const.LJB_RAW_1_IDX_REF))
         cmd.append(', $')
-        cmd.append(str(combivep_settings.LJB_RAW_1_INDEX_ALT))
+        cmd.append(str(cbv_const.LJB_RAW_1_IDX_ALT))
         cmd.append(', $')
-        cmd.append(str(combivep_settings.LJB_RAW_1_INDEX_PHYLOP_SCORE))
+        cmd.append(str(cbv_const.LJB_RAW_1_IDX_PHYLOP_SCORE))
         cmd.append(', $')
-        cmd.append(str(combivep_settings.LJB_RAW_1_INDEX_SIFT_SCORE))
+        cmd.append(str(cbv_const.LJB_RAW_1_IDX_SIFT_SCORE))
         cmd.append(', $')
-        cmd.append(str(combivep_settings.LJB_RAW_1_INDEX_PP2_SCORE))
+        cmd.append(str(cbv_const.LJB_RAW_1_IDX_PP2_SCORE))
         cmd.append(', $')
-        cmd.append(str(combivep_settings.LJB_RAW_1_INDEX_LRT_SCORE))
+        cmd.append(str(cbv_const.LJB_RAW_1_IDX_LRT_SCORE))
         cmd.append(', $')
-        cmd.append(str(combivep_settings.LJB_RAW_1_INDEX_MT_SCORE))
+        cmd.append(str(cbv_const.LJB_RAW_1_IDX_MT_SCORE))
         cmd.append(', $')
-        cmd.append(str(combivep_settings.LJB_RAW_1_INDEX_GERP_SCORE))
+        cmd.append(str(cbv_const.LJB_RAW_1_IDX_GERP_SCORE))
         cmd.append('}\' ')
         #redirect output to a file
         cmd.append(' | sort -k2 -n ')
@@ -164,9 +164,9 @@ class LjbController(LjbUpdater, Configure):
         """ tabix into gz and tbi file """
         return pysam.tabix_index(file_name,
                                  force     = True,
-                                 seq_col   = combivep_settings.LJB_PARSED_0_INDEX_CHROM,
-                                 start_col = combivep_settings.LJB_PARSED_0_INDEX_POS,
-                                 end_col   = combivep_settings.LJB_PARSED_0_INDEX_POS,
+                                 seq_col   = cbv_const.LJB_PARSED_0_IDX_CHROM,
+                                 start_col = cbv_const.LJB_PARSED_0_IDX_POS,
+                                 end_col   = cbv_const.LJB_PARSED_0_IDX_POS,
                                  zerobased = False)
 
 

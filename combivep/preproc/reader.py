@@ -1,5 +1,5 @@
 import pysam
-import combivep.settings as combivep_settings
+import combivep.settings as cbv_const
 from combivep.template import CombiVEPBase
 
 
@@ -23,16 +23,16 @@ class UcscReader(CombiVEPBase):
 
     def fetch_hash_snps(self, chromosome, start_pos, end_pos):
         for rec in self.fetch_array_snps(chromosome, start_pos, end_pos):
-            if len(rec) != combivep_settings.UCSC_EXPECTED_LENGTH :
-                raise Exception("Invalid formatting is found in file '%s'>> Chrom : %s\tStart pos : %s\tEnd pos : %s" % (self.db_file_name, rec[combivep_settings.UCSC_0_INDEX_CHROM], rec[combivep_settings.UCSC_0_INDEX_START_POS], rec[combivep_settings.UCSC_0_INDEX_END_POS]))
-            snp_info = {combivep_settings.KEY_UCSC_CHROM     : rec[combivep_settings.UCSC_0_INDEX_CHROM], 
-                        combivep_settings.KEY_UCSC_START_POS : rec[combivep_settings.UCSC_0_INDEX_START_POS],
-                        combivep_settings.KEY_UCSC_END_POS   : rec[combivep_settings.UCSC_0_INDEX_END_POS],
-                        combivep_settings.KEY_UCSC_STRAND    : rec[combivep_settings.UCSC_0_INDEX_STRAND],
-                        combivep_settings.KEY_UCSC_REF       : rec[combivep_settings.UCSC_0_INDEX_REF],
-                        combivep_settings.KEY_UCSC_OBSERVED  : rec[combivep_settings.UCSC_0_INDEX_OBSERVED],
+            if len(rec) != cbv_const.UCSC_EXPECTED_LENGTH :
+                raise Exception("Invalid formatting is found in file '%s'>> Chrom : %s\tStart pos : %s\tEnd pos : %s" % (self.db_file_name, rec[cbv_const.UCSC_0_IDX_CHROM], rec[cbv_const.UCSC_0_IDX_START_POS], rec[cbv_const.UCSC_0_IDX_END_POS]))
+            snp_info = {cbv_const.KEY_UCSC_CHROM     : rec[cbv_const.UCSC_0_IDX_CHROM], 
+                        cbv_const.KEY_UCSC_START_POS : rec[cbv_const.UCSC_0_IDX_START_POS],
+                        cbv_const.KEY_UCSC_END_POS   : rec[cbv_const.UCSC_0_IDX_END_POS],
+                        cbv_const.KEY_UCSC_STRAND    : rec[cbv_const.UCSC_0_IDX_STRAND],
+                        cbv_const.KEY_UCSC_REF       : rec[cbv_const.UCSC_0_IDX_REF],
+                        cbv_const.KEY_UCSC_OBSERVED  : rec[cbv_const.UCSC_0_IDX_OBSERVED],
                         }
-            yield {combivep_settings.KEY_SNP_INFO_SECTION : snp_info}
+            yield {cbv_const.KEY_SNP_INFO_SECTION : snp_info}
 
 
 class LjbReader(CombiVEPBase):
@@ -52,36 +52,36 @@ class LjbReader(CombiVEPBase):
 
     def fetch_hash_snps(self, chromosome, start_pos, end_pos):
         for rec in self.fetch_array_snps(chromosome, start_pos, end_pos):
-            if len(rec) != combivep_settings.LJB_PARSED_EXPECTED_LENGTH :
-                raise Exception("Invalid formatting is found in file '%s'>> Chrom : %s\tpos : %s" % (self.db_file_name, rec[combivep_settings.LJB_PARSED_0_INDEX_CHROM], rec[combivep_settings.LJB_PARSED_0_INDEX_POS]))
-            snp_info = {combivep_settings.KEY_LJB_CHROM : rec[combivep_settings.LJB_PARSED_0_INDEX_CHROM],
-                        combivep_settings.KEY_LJB_POS   : rec[combivep_settings.LJB_PARSED_0_INDEX_POS],
-                        combivep_settings.KEY_LJB_REF   : rec[combivep_settings.LJB_PARSED_0_INDEX_REF],
-                        combivep_settings.KEY_LJB_ALT   : rec[combivep_settings.LJB_PARSED_0_INDEX_ALT],
+            if len(rec) != cbv_const.LJB_PARSED_EXPECTED_LENGTH :
+                raise Exception("Invalid formatting is found in file '%s'>> Chrom : %s\tpos : %s" % (self.db_file_name, rec[cbv_const.LJB_PARSED_0_IDX_CHROM], rec[cbv_const.LJB_PARSED_0_IDX_POS]))
+            snp_info = {cbv_const.KEY_LJB_CHROM : rec[cbv_const.LJB_PARSED_0_IDX_CHROM],
+                        cbv_const.KEY_LJB_POS   : rec[cbv_const.LJB_PARSED_0_IDX_POS],
+                        cbv_const.KEY_LJB_REF   : rec[cbv_const.LJB_PARSED_0_IDX_REF],
+                        cbv_const.KEY_LJB_ALT   : rec[cbv_const.LJB_PARSED_0_IDX_ALT],
                         }
-            scores   = {combivep_settings.KEY_PHYLOP_SCORE  : rec[combivep_settings.LJB_PARSED_0_INDEX_PHYLOP_SCORE],
-                        combivep_settings.KEY_SIFT_SCORE    : rec[combivep_settings.LJB_PARSED_0_INDEX_SIFT_SCORE],
-                        combivep_settings.KEY_PP2_SCORE     : rec[combivep_settings.LJB_PARSED_0_INDEX_PP2_SCORE],
-                        combivep_settings.KEY_LRT_SCORE     : rec[combivep_settings.LJB_PARSED_0_INDEX_LRT_SCORE],
-                        combivep_settings.KEY_MT_SCORE      : rec[combivep_settings.LJB_PARSED_0_INDEX_MT_SCORE],
-                        combivep_settings.KEY_GERP_SCORE    : rec[combivep_settings.LJB_PARSED_0_INDEX_GERP_SCORE],
+            scores   = {cbv_const.KEY_PHYLOP_SCORE  : rec[cbv_const.LJB_PARSED_0_IDX_PHYLOP_SCORE],
+                        cbv_const.KEY_SIFT_SCORE    : rec[cbv_const.LJB_PARSED_0_IDX_SIFT_SCORE],
+                        cbv_const.KEY_PP2_SCORE     : rec[cbv_const.LJB_PARSED_0_IDX_PP2_SCORE],
+                        cbv_const.KEY_LRT_SCORE     : rec[cbv_const.LJB_PARSED_0_IDX_LRT_SCORE],
+                        cbv_const.KEY_MT_SCORE      : rec[cbv_const.LJB_PARSED_0_IDX_MT_SCORE],
+                        cbv_const.KEY_GERP_SCORE    : rec[cbv_const.LJB_PARSED_0_IDX_GERP_SCORE],
                         }
-            yield {combivep_settings.KEY_SNP_INFO_SECTION : snp_info,
-                   combivep_settings.KEY_SCORES_SECTION   : scores,
+            yield {cbv_const.KEY_SNP_INFO_SECTION : snp_info,
+                   cbv_const.KEY_SCORES_SECTION   : scores,
                    }
 
     def get_scores(self, chromosome, pos, ref, alt):
         for rec in self.fetch_array_snps(chromosome, pos, pos):
-            if rec[combivep_settings.LJB_PARSED_0_INDEX_REF] != ref:
+            if rec[cbv_const.LJB_PARSED_0_IDX_REF] != ref:
                 continue
-            if rec[combivep_settings.LJB_PARSED_0_INDEX_ALT] != alt:
+            if rec[cbv_const.LJB_PARSED_0_IDX_ALT] != alt:
                 continue
-            return {combivep_settings.KEY_PHYLOP_SCORE  : rec[combivep_settings.LJB_PARSED_0_INDEX_PHYLOP_SCORE],
-                    combivep_settings.KEY_SIFT_SCORE    : rec[combivep_settings.LJB_PARSED_0_INDEX_SIFT_SCORE],
-                    combivep_settings.KEY_PP2_SCORE     : rec[combivep_settings.LJB_PARSED_0_INDEX_PP2_SCORE],
-                    combivep_settings.KEY_LRT_SCORE     : rec[combivep_settings.LJB_PARSED_0_INDEX_LRT_SCORE],
-                    combivep_settings.KEY_MT_SCORE      : rec[combivep_settings.LJB_PARSED_0_INDEX_MT_SCORE],
-                    combivep_settings.KEY_GERP_SCORE    : rec[combivep_settings.LJB_PARSED_0_INDEX_GERP_SCORE],
+            return {cbv_const.KEY_PHYLOP_SCORE  : rec[cbv_const.LJB_PARSED_0_IDX_PHYLOP_SCORE],
+                    cbv_const.KEY_SIFT_SCORE    : rec[cbv_const.LJB_PARSED_0_IDX_SIFT_SCORE],
+                    cbv_const.KEY_PP2_SCORE     : rec[cbv_const.LJB_PARSED_0_IDX_PP2_SCORE],
+                    cbv_const.KEY_LRT_SCORE     : rec[cbv_const.LJB_PARSED_0_IDX_LRT_SCORE],
+                    cbv_const.KEY_MT_SCORE      : rec[cbv_const.LJB_PARSED_0_IDX_MT_SCORE],
+                    cbv_const.KEY_GERP_SCORE    : rec[cbv_const.LJB_PARSED_0_IDX_GERP_SCORE],
                     }
         return None
 
@@ -104,12 +104,12 @@ class VcfReader(CombiVEPBase):
 
     def fetch_hash_snps(self):
         for rec in self.fetch_array_snps():
-            snp_info = {combivep_settings.KEY_VCF_CHROM : rec[combivep_settings.VCF_0_INDEX_CHROM],
-                        combivep_settings.KEY_VCF_POS   : rec[combivep_settings.VCF_0_INDEX_POS],
-                        combivep_settings.KEY_VCF_REF   : rec[combivep_settings.VCF_0_INDEX_REF],
-                        combivep_settings.KEY_VCF_ALT   : rec[combivep_settings.VCF_0_INDEX_ALT],
+            snp_info = {cbv_const.KEY_VCF_CHROM : rec[cbv_const.VCF_0_IDX_CHROM],
+                        cbv_const.KEY_VCF_POS   : rec[cbv_const.VCF_0_IDX_POS],
+                        cbv_const.KEY_VCF_REF   : rec[cbv_const.VCF_0_IDX_REF],
+                        cbv_const.KEY_VCF_ALT   : rec[cbv_const.VCF_0_IDX_ALT],
                         }
-            yield {combivep_settings.KEY_SNP_INFO_SECTION : snp_info}
+            yield {cbv_const.KEY_SNP_INFO_SECTION : snp_info}
 
 
 class CbvReader(CombiVEPBase):
@@ -137,14 +137,14 @@ class CbvReader(CombiVEPBase):
 
     def fetch_hash_snps(self):
         for rec in self.fetch_array_snps():
-            snp_info = {combivep_settings.KEY_CBV_CHROM : rec[combivep_settings.CBV_0_INDEX_CHROM],
-                        combivep_settings.KEY_CBV_POS   : rec[combivep_settings.CBV_0_INDEX_POS],
-                        combivep_settings.KEY_CBV_REF   : rec[combivep_settings.CBV_0_INDEX_REF],
-                        combivep_settings.KEY_CBV_ALT   : rec[combivep_settings.CBV_0_INDEX_ALT],
+            snp_info = {cbv_const.KEY_CBV_CHROM : rec[cbv_const.CBV_0_IDX_CHROM],
+                        cbv_const.KEY_CBV_POS   : rec[cbv_const.CBV_0_IDX_POS],
+                        cbv_const.KEY_CBV_REF   : rec[cbv_const.CBV_0_IDX_REF],
+                        cbv_const.KEY_CBV_ALT   : rec[cbv_const.CBV_0_IDX_ALT],
                         }
-            prediction = {combivep_settings.KEY_CBV_TARGETS : rec[combivep_settings.CBV_0_INDEX_TARGETS]}
-            yield {combivep_settings.KEY_SNP_INFO_SECTION   : snp_info,
-                   combivep_settings.KEY_PREDICTION_SECTION : prediction,
+            prediction = {cbv_const.KEY_CBV_TARGETS : rec[cbv_const.CBV_0_IDX_TARGETS]}
+            yield {cbv_const.KEY_SNP_INFO_SECTION   : snp_info,
+                   cbv_const.KEY_PREDICTION_SECTION : prediction,
                    }
 
 

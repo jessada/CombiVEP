@@ -1,7 +1,7 @@
 import unittest
 import os
 import combivep.refdb.test.template as test_template
-import combivep.settings as combivep_settings
+import combivep.settings as cbv_const
 import combivep.refdb.updater as combivep_updater
 
 
@@ -75,7 +75,7 @@ class TestUcscUpdater(test_template.SafeRefDBTester):
         self.__ucsc_updater                  = combivep_updater.UcscUpdater()
         self.__ucsc_updater.working_dir      = self.working_dir
         self.__ucsc_updater.files_pattern    = r"""href="(?P<file_name>snp\d{3}.sql)">.*>.*(?P<date>\d{2}-[a-zA-Z]{3}-\d{4})"""
-        self.__ucsc_updater.tmp_file         = combivep_settings.UCSC_LIST_FILE_NAME
+        self.__ucsc_updater.tmp_file         = cbv_const.UCSC_LIST_FILE_NAME
         self.__ucsc_updater.local_ref_db_dir = self.working_dir
 
     @unittest.skip("temporary disable due to high bandwidth usage")
@@ -120,7 +120,7 @@ class TestUcscUpdater(test_template.SafeRefDBTester):
         self.assertTrue(os.path.exists(downloaded_file), msg='some thing went wrong in UCSC updating process: file %s does not exist' % (downloaded_file))
 
 #    def test_full_update2(self):
-#        self.__ucsc_updater.files_pattern = combivep_settings.UCSC_FILES_PATTERN
+#        self.__ucsc_updater.files_pattern = cbv_const.UCSC_FILES_PATTERN
 #        new_file = self.__ucsc_updater.check_new_file('135')
 #        self.assertTrue(new_file.endswith('.gz'), msg='some thing went wrong in UCSC updating process: new file is not the correct file')
 #        ungz_file = self.__ucsc_updater.download_new_file()
@@ -150,7 +150,7 @@ class TestLJBUpdater(test_template.SafeRefDBTester):
         self.__ljb_updater                  = combivep_updater.LjbUpdater()
         self.__ljb_updater.working_dir      = self.working_dir
         self.__ljb_updater.files_pattern    = r"""href="(?P<file_name>dbNSFPv[\d.]*.readme.txt)">"""
-        self.__ljb_updater.tmp_file         = combivep_settings.LJB_LIST_FILE_NAME
+        self.__ljb_updater.tmp_file         = cbv_const.LJB_LIST_FILE_NAME
         self.__ljb_updater.local_ref_db_dir = self.working_dir
 
     def test_update1(self):
@@ -184,7 +184,7 @@ class TestLJBUpdater(test_template.SafeRefDBTester):
 
 #    @unittest.skip("temporary disable due to high bandwidth usage")
 #    def test_full_update2(self):
-#        self.__ljb_updater.files_pattern = combivep_settings.LJB_FILES_PATTERN
+#        self.__ljb_updater.files_pattern = cbv_const.LJB_FILES_PATTERN
 #        new_file = self.__ljb_updater.check_new_file('1.2')
 #        self.assertTrue(new_file.endswith('.zip'), msg='some thing went wrong in LJB updating process: new file is not the correct file')
 #        unzipped_files = self.__ljb_updater.download_new_file()

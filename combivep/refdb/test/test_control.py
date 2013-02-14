@@ -2,7 +2,7 @@ import unittest
 import os
 import filecmp
 from combivep.refdb.test.template import SafeRefDBTester
-import combivep.settings as combivep_settings
+import combivep.settings as cbv_const
 from combivep.refdb.control import UcscController
 from combivep.refdb.control import LjbController
 from combivep.preproc.reader import UcscReader
@@ -56,7 +56,7 @@ class TestUcscController(SafeRefDBTester):
         readable = False
         for rec in ucsc_reader.fetch_array_snps('chr3', 108572604, 108572605):
             readable = True
-            self.assertEqual(rec[combivep_settings.UCSC_0_INDEX_START_POS], '108572604', "Database tabixing doesn't work correctly")
+            self.assertEqual(rec[cbv_const.UCSC_0_IDX_START_POS], '108572604', "Database tabixing doesn't work correctly")
             break
         self.assertTrue(readable, "Tabixed ucsc database is not readable")
 
@@ -120,7 +120,7 @@ class TestLjbController(SafeRefDBTester):
         readable = False
         for rec in ljb_reader.fetch_array_snps('3', 108549516, 108549517): #to be tested again
             readable = True
-            self.assertEqual(rec[combivep_settings.LJB_PARSED_0_INDEX_POS], '108549517', "Database tabixing doesn't work correctly")
+            self.assertEqual(rec[cbv_const.LJB_PARSED_0_IDX_POS], '108549517', "Database tabixing doesn't work correctly")
             break
         self.assertTrue(readable, "Tabixed ljb database is not readable")
 

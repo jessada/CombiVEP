@@ -2,8 +2,8 @@ import unittest
 import os
 import filecmp
 from combivep.test.template import SafeGeneralTester
-import combivep.settings as combivep_settings
-from combivep.cfg import Configure
+import combivep.settings as cbv_const
+from combivep.config import Configure
 
 
 class TestConfigure(SafeGeneralTester):
@@ -38,10 +38,10 @@ class TestConfigure(SafeGeneralTester):
         self.__configure.config_file = test_file
         #run test
         out = self.__configure.load_config()
-        self.assertEqual(out[combivep_settings.LATEST_UCSC_DATABASE_VERSION], '7.5', "Configure cannot load configuration correctly")
-        self.assertEqual(out[combivep_settings.LATEST_UCSC_FILE_NAME], 'ucsc_file7.5.txt', "Configure cannot load configuration correctly")
-        self.assertEqual(out[combivep_settings.LATEST_LJB_DATABASE_VERSION], '4.4', "Configure cannot load configuration correctly")
-        self.assertEqual(out[combivep_settings.LATEST_LJB_FILE_PREFIX], '/home/jessada/development/scilifelab/projects/CombiVEP/combivep/refdb/test/data/ljb_controller/dummy_dbNSFP_light1.3', "Configure cannot load configuration correctly")
+        self.assertEqual(out[cbv_const.LATEST_UCSC_DB_VERSION], '7.5', "Configure cannot load configuration correctly")
+        self.assertEqual(out[cbv_const.LATEST_UCSC_FILE_NAME], 'ucsc_file7.5.txt', "Configure cannot load configuration correctly")
+        self.assertEqual(out[cbv_const.LATEST_LJB_DB_VERSION], '4.4', "Configure cannot load configuration correctly")
+        self.assertEqual(out[cbv_const.LATEST_LJB_FILE_PREFIX], '/home/jessada/development/scilifelab/projects/CombiVEP/combivep/refdb/test/data/ljb_controller/dummy_dbNSFP_light1.3', "Configure cannot load configuration correctly")
 
     def test_update_ljb_config(self):
         #init

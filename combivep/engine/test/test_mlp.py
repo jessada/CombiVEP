@@ -2,9 +2,9 @@ import unittest
 import os
 import numpy as np
 from combivep.engine.mlp import Mlp
-from combivep.engine.dataset import DataSet
+from combivep.engine.moc_dataset import DataSet
 from combivep.engine.test.template import SafeEngineTester
-import combivep.settings as combivep_settings
+import combivep.settings as cbv_const
 
 class TestMlp(SafeEngineTester):
 
@@ -25,7 +25,7 @@ class TestMlp(SafeEngineTester):
         random.
 
         """
-        training_dataset   = DataSet(os.path.join(combivep_settings.COMBIVEP_CENTRAL_TEST_DATASET_DIR,
+        training_dataset   = DataSet(os.path.join(cbv_const.CBV_CENTRAL_TEST_DATASET_DIR,
                                                                    'dummy_training_dataset'))
         mlp = Mlp(training_dataset.n_features, seed=20)
         self.assertEqual(round(mlp.get_weights1()[0][1], 4), 0.0090, msg='MLP is not ready for test because the random value is not fix')
@@ -38,7 +38,7 @@ class TestMlp(SafeEngineTester):
         working properly.
 
         """
-        training_dataset   = DataSet(os.path.join(combivep_settings.COMBIVEP_CENTRAL_TEST_DATASET_DIR,
+        training_dataset   = DataSet(os.path.join(cbv_const.CBV_CENTRAL_TEST_DATASET_DIR,
                                                                    'dummy_training_dataset'))
         mlp = Mlp(training_dataset.n_features, seed=20)
         out = mlp.forward_propagation(training_dataset)
@@ -51,7 +51,7 @@ class TestMlp(SafeEngineTester):
         "weight update"
 
         """
-        training_dataset   = DataSet(os.path.join(combivep_settings.COMBIVEP_CENTRAL_TEST_DATASET_DIR,
+        training_dataset   = DataSet(os.path.join(cbv_const.CBV_CENTRAL_TEST_DATASET_DIR,
                                                                    'dummy_training_dataset'))
         mlp = Mlp(training_dataset.n_features, seed=20)
         mlp.forward_propagation(training_dataset)

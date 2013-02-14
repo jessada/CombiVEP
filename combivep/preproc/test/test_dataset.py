@@ -1,7 +1,7 @@
 import unittest
 import os
 from combivep.preproc.test.template import SafePreProcTester
-import combivep.settings as combivep_settings
+import combivep.settings as cbv_const
 from combivep.preproc.dataset import DataSetManager
 
 
@@ -15,7 +15,7 @@ class TestDataSetManager(SafePreProcTester):
         self.test_class = 'dataset_manager'
 
     def init_dataset_instance(self):
-        self.__dataset_manager = DataSetManager(config_file=combivep_settings.COMBIVEP_CENTRAL_TEST_CONFIGURATION_FILE)
+        self.__dataset_manager = DataSetManager(config_file=cbv_const.CBV_CENTRAL_TEST_CONFIG_FILE)
 
     def test_vcf_load(self):
         self.init_test('test_vcf_load')
@@ -28,7 +28,7 @@ class TestDataSetManager(SafePreProcTester):
         self.init_test('test_cbv_load')
         self.init_dataset_instance()
         test_file = os.path.join(self.data_dir, 'test_cbv_load.cbv')
-        self.__dataset_manager.load_data(test_file, file_type=combivep_settings.FILE_TYPE_CBV)
+        self.__dataset_manager.load_data(test_file, file_type=cbv_const.FILE_TYPE_CBV)
         self.assertEqual(len(self.__dataset_manager.dataset), 11, 'DataSetManager does not load CBV data correctly')
 
     def test_validate_data(self):
@@ -55,19 +55,19 @@ class TestDataSetManager(SafePreProcTester):
         self.__dataset_manager.load_data(test_file)
         self.__dataset_manager.validate_data()
         self.__dataset_manager.calculate_scores()
-        self.assertEqual(self.__dataset_manager.dataset[5][combivep_settings.KEY_SNP_INFO_SECTION][combivep_settings.KEY_POS], '190999917', 'DataSetManager does not calculate scores properly')
-        self.__dataset_manager.set_shuffle_seed(combivep_settings.DEMO_SEED)
+        self.assertEqual(self.__dataset_manager.dataset[5][cbv_const.KEY_SNP_INFO_SECTION][cbv_const.KEY_POS], '190999917', 'DataSetManager does not calculate scores properly')
+        self.__dataset_manager.set_shuffle_seed(cbv_const.DEMO_SEED)
         self.__dataset_manager.shuffle_data()
-        self.assertNotEqual(self.__dataset_manager.dataset[5][combivep_settings.KEY_SNP_INFO_SECTION][combivep_settings.KEY_POS], '190999917', 'DataSetManager may not shuffle data correctly')
+        self.assertNotEqual(self.__dataset_manager.dataset[5][cbv_const.KEY_SNP_INFO_SECTION][cbv_const.KEY_POS], '190999917', 'DataSetManager may not shuffle data correctly')
 
     def test_partition_data(self):
         self.init_test('test_partition_data')
         self.init_dataset_instance()
         test_file = os.path.join(self.data_dir, 'test_partition.cbv')
-        self.__dataset_manager.load_data(test_file, file_type=combivep_settings.FILE_TYPE_CBV)
+        self.__dataset_manager.load_data(test_file, file_type=cbv_const.FILE_TYPE_CBV)
         self.__dataset_manager.validate_data()
         self.__dataset_manager.calculate_scores()
-        self.__dataset_manager.set_shuffle_seed(combivep_settings.DEMO_SEED)
+        self.__dataset_manager.set_shuffle_seed(cbv_const.DEMO_SEED)
         self.__dataset_manager.shuffle_data()
         self.__dataset_manager.partition_data()
         self.assertEqual(len(self.__dataset_manager.get_training_data()), 11, 'DataSetManager does not correctly partition data')
@@ -80,7 +80,7 @@ class TestDataSetManager(SafePreProcTester):
         self.__dataset_manager.load_data(test_file)
         self.__dataset_manager.validate_data()
         self.__dataset_manager.calculate_scores()
-        self.__dataset_manager.set_shuffle_seed(combivep_settings.DEMO_SEED)
+        self.__dataset_manager.set_shuffle_seed(cbv_const.DEMO_SEED)
         self.__dataset_manager.shuffle_data()
         self.__dataset_manager.partition_data()
         training_dataset = self.__dataset_manager.get_training_data()
@@ -91,10 +91,10 @@ class TestDataSetManager(SafePreProcTester):
         self.init_test('test_dataset')
         self.init_dataset_instance()
         test_file = os.path.join(self.data_dir, 'test_cbv_dataset.cbv')
-        self.__dataset_manager.load_data(test_file, file_type=combivep_settings.FILE_TYPE_CBV)
+        self.__dataset_manager.load_data(test_file, file_type=cbv_const.FILE_TYPE_CBV)
         self.__dataset_manager.validate_data
         self.__dataset_manager.calculate_scores()
-        self.__dataset_manager.set_shuffle_seed(combivep_settings.DEMO_SEED)
+        self.__dataset_manager.set_shuffle_seed(cbv_const.DEMO_SEED)
         self.__dataset_manager.shuffle_data()
         self.__dataset_manager.partition_data()
         training_dataset = self.__dataset_manager.get_training_data()
@@ -104,16 +104,16 @@ class TestDataSetManager(SafePreProcTester):
     def test_add_dataset(self):
         self.init_test('test_add_dataset')
         test_file = os.path.join(self.data_dir, 'test_add_dataset1.cbv')
-        self.dataset_manager1 = DataSetManager(config_file=combivep_settings.COMBIVEP_CENTRAL_TEST_CONFIGURATION_FILE)
-        self.dataset_manager1.load_data(test_file, file_type=combivep_settings.FILE_TYPE_CBV)
+        self.dataset_manager1 = DataSetManager(config_file=cbv_const.CBV_CENTRAL_TEST_CONFIG_FILE)
+        self.dataset_manager1.load_data(test_file, file_type=cbv_const.FILE_TYPE_CBV)
         self.dataset_manager1.validate_data()
         self.dataset_manager1.calculate_scores()
         self.dataset_manager1.shuffle_data()
         self.dataset_manager1.partition_data()
         training_dataset1 = self.dataset_manager1.get_training_data()
         test_file = os.path.join(self.data_dir, 'test_add_dataset2.cbv')
-        self.dataset_manager2 = DataSetManager(config_file=combivep_settings.COMBIVEP_CENTRAL_TEST_CONFIGURATION_FILE)
-        self.dataset_manager2.load_data(test_file, file_type=combivep_settings.FILE_TYPE_CBV)
+        self.dataset_manager2 = DataSetManager(config_file=cbv_const.CBV_CENTRAL_TEST_CONFIG_FILE)
+        self.dataset_manager2.load_data(test_file, file_type=cbv_const.FILE_TYPE_CBV)
         self.dataset_manager2.validate_data()
         self.dataset_manager2.calculate_scores()
         self.dataset_manager2.shuffle_data()

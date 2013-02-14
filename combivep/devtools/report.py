@@ -1,8 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import os
-import combivep.settings as combivep_settings
-import combivep.devtools.settings as devtools_settings
+import combivep.settings as cbv_const
+import combivep.devtools.settings as dev_const
 from combivep.devtools.utils import filter_cbv_data
 from combivep.devtools.utils import calculate_roc
 from combivep.devtools.utils import print_preproc
@@ -17,27 +17,27 @@ from sklearn.metrics import auc
 
 
 def filter_all_cbv():
-    filter_cbv_data(os.path.join(combivep_settings.COMBIVEP_CENTRAL_TEST_CBV_DIR, 'training.cbv'))
-    filter_cbv_data(os.path.join(combivep_settings.COMBIVEP_CENTRAL_TEST_CBV_DIR, 'test.cbv'))
+    filter_cbv_data(os.path.join(cbv_const.COMBIVEP_CENTRAL_TEST_CBV_DIR, 'training.cbv'))
+    filter_cbv_data(os.path.join(cbv_const.COMBIVEP_CENTRAL_TEST_CBV_DIR, 'test.cbv'))
 
 def demo_training():
-    fast_training(os.path.join(combivep_settings.COMBIVEP_CENTRAL_TEST_CBV_DIR, 'training.cbv.scores'),
-                  params_out_file=devtools_settings.PUBLICATION_PARAMETER_FILE,
-                  random_seed=combivep_settings.DEMO_SEED,
-                  figure_dir=devtools_settings.PUBLICATION_FIGURES_DIR,
+    fast_training(os.path.join(cbv_const.COMBIVEP_CENTRAL_TEST_CBV_DIR, 'training.cbv.scores'),
+                  params_out_file=dev_const.PUBLICATION_PARAMETER_FILE,
+                  random_seed=cbv_const.DEMO_SEED,
+                  figure_dir=dev_const.PUBLICATION_FIGURES_DIR,
                   )
 
 def demo_predicting():
-    fast_predict(os.path.join(combivep_settings.COMBIVEP_CENTRAL_TEST_CBV_DIR, 'test.cbv.scores'),
-                 params_file=devtools_settings.PUBLICATION_PARAMETER_FILE,
-                 file_type=combivep_settings.FILE_TYPE_CBV,
-                 output_file=devtools_settings.PUBLICATION_RAW_PREDICTION_RESULT,
-                 config_file=combivep_settings.COMBIVEP_CONFIGURATION_FILE,
+    fast_predict(os.path.join(cbv_const.COMBIVEP_CENTRAL_TEST_CBV_DIR, 'test.cbv.scores'),
+                 params_file=dev_const.PUBLICATION_PARAMETER_FILE,
+                 file_type=cbv_const.FILE_TYPE_CBV,
+                 output_file=dev_const.PUBLICATION_RAW_PREDICTION_RESULT,
+                 config_file=cbv_const.COMBIVEP_CONFIGURATION_FILE,
                  )
 
 def generate_figures():
-    header_data = np.loadtxt(devtools_settings.PUBLICATION_CONDEL_PREDICTION_RESULT, dtype='S20')[:, :5]
-    scores_data = np.loadtxt(devtools_settings.PUBLICATION_CONDEL_PREDICTION_RESULT, dtype='S20')[:, 5:13].astype(np.float)
+    header_data = np.loadtxt(dev_const.PUBLICATION_CONDEL_PREDICTION_RESULT, dtype='S20')[:, :5]
+    scores_data = np.loadtxt(dev_const.PUBLICATION_CONDEL_PREDICTION_RESULT, dtype='S20')[:, 5:13].astype(np.float)
     min_value   = np.amin(scores_data)
     max_value   = np.amax(scores_data)
     predictor_names = ('CombiVEP',
@@ -71,7 +71,7 @@ def generate_figures():
     ax.set_ylabel('true positive rate')
     ax.set_xlabel('false positive rate')
     ax.legend(bbox_to_anchor=(0.9999, 0.0001), loc=4)
-    fig.savefig(devtools_settings.PUBLICATION_ROC_FIGURE, bbox_inches='tight', pad_inches=0.05)
+    fig.savefig(dev_const.PUBLICATION_ROC_FIGURE, bbox_inches='tight', pad_inches=0.05)
 
     #produce auc data from roc data
     fig  = plt.figure()
@@ -87,7 +87,7 @@ def generate_figures():
     ax.set_ylim([0.7, 0.9])
     ax.set_xticks(np.array(ind) + 0.15)
     ax.set_xticklabels(predictor_names, rotation=30)
-    fig.savefig(devtools_settings.PUBLICATION_AUC_FIGURE, bbox_inches='tight', pad_inches=0.05)
+    fig.savefig(dev_const.PUBLICATION_AUC_FIGURE, bbox_inches='tight', pad_inches=0.05)
 
     #plot scores distribution
     fig        = plt.figure()
@@ -113,11 +113,11 @@ def generate_figures():
     ax.set_xlabel('score')
     ax.legend(bbox_to_anchor=(0.999, 0.999), loc=1)
     fig.tight_layout()
-    fig.savefig(devtools_settings.PUBLICATION_SCORE_DISTRIBUTION_FIGURE, bbox_inches='tight', pad_inches=0.05)
+    fig.savefig(dev_const.PUBLICATION_SCORE_DISTRIBUTION_FIGURE, bbox_inches='tight', pad_inches=0.05)
 
-    return (devtools_settings.PUBLICATION_ROC_FIGURE,
-            devtools_settings.PUBLICATION_AUC_FIGURE,
-            devtools_settings.PUBLICATION_SCORE_DISTRIBUTION_FIGURE,
+    return (dev_const.PUBLICATION_ROC_FIGURE,
+            dev_const.PUBLICATION_AUC_FIGURE,
+            dev_const.PUBLICATION_SCORE_DISTRIBUTION_FIGURE,
             )
 
 def generate_preproc_report():
@@ -130,8 +130,8 @@ def generate_preproc_report():
     uncertain_pathogenic_records = 52
     print_preproc("Uncertain", str(uncertain_neutral_records), str(uncertain_pathogenic_records))
 
-    clean_training_file = os.path.join(combivep_settings.COMBIVEP_CENTRAL_TEST_CBV_DIR, 'training.cbv.clean')
-    clean_test_file     = os.path.join(combivep_settings.COMBIVEP_CENTRAL_TEST_CBV_DIR, 'test.cbv.clean')
+    clean_training_file = os.path.join(cbv_const.COMBIVEP_CENTRAL_TEST_CBV_DIR, 'training.cbv.clean')
+    clean_test_file     = os.path.join(cbv_const.COMBIVEP_CENTRAL_TEST_CBV_DIR, 'test.cbv.clean')
     data = np.loadtxt(clean_training_file, dtype='S20')
     clean_pathogenic_training_records = data[data[:, 4] == '1'].shape[0]
     clean_neutral_training_records    = data[data[:, 4] == '0'].shape[0]
@@ -143,8 +143,8 @@ def generate_preproc_report():
                   str(original_pathogenic_records - (clean_pathogenic_test_records+clean_pathogenic_training_records+uncertain_pathogenic_records)),
                   )
 
-    scores_training_file = os.path.join(combivep_settings.COMBIVEP_CENTRAL_TEST_CBV_DIR, 'training.cbv.scores')
-    scores_test_file     = os.path.join(combivep_settings.COMBIVEP_CENTRAL_TEST_CBV_DIR, 'test.cbv.scores')
+    scores_training_file = os.path.join(cbv_const.COMBIVEP_CENTRAL_TEST_CBV_DIR, 'training.cbv.scores')
+    scores_test_file     = os.path.join(cbv_const.COMBIVEP_CENTRAL_TEST_CBV_DIR, 'test.cbv.scores')
     data = np.loadtxt(scores_training_file, dtype='S20')
     scores_pathogenic_training_records = data[data[:, 4] == '1'].shape[0]
     scores_neutral_training_records    = data[data[:, 4] == '0'].shape[0]
@@ -169,7 +169,7 @@ def generate_preproc_report():
                   )
 
 def generate_precision_performance_report():
-    prediction_result  = np.loadtxt(devtools_settings.PUBLICATION_CONDEL_PREDICTION_RESULT, dtype='S20')
+    prediction_result  = np.loadtxt(dev_const.PUBLICATION_CONDEL_PREDICTION_RESULT, dtype='S20')
 
     positive_samples = prediction_result[prediction_result[:, 4] == '1'][:, 5:13].astype(np.float)
     negative_samples = prediction_result[prediction_result[:, 4] == '0'][:, 5:13].astype(np.float)
