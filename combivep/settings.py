@@ -18,7 +18,7 @@ CBV_CENTRAL_TEST_CBV_DIR            = os.path.join(CBV_CENTRAL_TEST_DATA_ROOT, '
 CBV_CENTRAL_TEST_VCF_DIR            = os.path.join(CBV_CENTRAL_TEST_DATA_ROOT, 'VCF')
 CBV_CENTRAL_TEST_UCSC_DIR           = os.path.join(CBV_CENTRAL_TEST_DATA_ROOT, 'UCSC')
 CBV_CENTRAL_TEST_LJB_DIR            = os.path.join(CBV_CENTRAL_TEST_DATA_ROOT, 'LJB')
-CBV_CENTRAL_TEST_CONFIG_FILE = os.path.join(CBV_CENTRAL_TEST_DATA_ROOT, 'config.txt')
+CBV_CENTRAL_TEST_CFG_FILE = os.path.join(CBV_CENTRAL_TEST_DATA_ROOT, 'config.txt')
 CBV_CENTRAL_TEST_PARAM_DIR      = os.path.join(CBV_CENTRAL_TEST_DATA_ROOT, 'params')
 CBV_CENTRAL_TEST_PARAM_FILE     = os.path.join(CBV_CENTRAL_TEST_PARAM_DIR, 'params.npz')
 
@@ -36,7 +36,7 @@ USER_LJB_REF_DB_DIR          = os.path.join(USER_DATA_ROOT, 'ref/LJB')
 
 
 # > > > > > > > > > > > > > status file < < < < < < < < < <
-CBV_CONFIG_FILE  = os.path.join(USER_DATA_ROOT, 'config.txt')
+CBV_CFG_FILE  = os.path.join(USER_DATA_ROOT, 'config.txt')
 
 #key
 LATEST_UCSC_DB_VERSION = 'latest_ucsc_database_version'

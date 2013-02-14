@@ -59,8 +59,8 @@ class ScoresReader(CombiVEPBase):
 class FastDataSetManager(DataSetManager):
 
 
-    def __init__(self, config_file=cbv_const.CBV_CONFIG_FILE):
-        DataSetManager.__init__(self, config_file=cbv_const.CBV_CONFIG_FILE)
+    def __init__(self, config_file=cbv_const.CBV_CFG_FILE):
+        DataSetManager.__init__(self, config_file=cbv_const.CBV_CFG_FILE)
 
     def load_data(self, file_name, file_type=dev_const.FILE_TYPE_SCORES):
         if file_type == dev_const.FILE_TYPE_SCORES:
@@ -87,7 +87,7 @@ class FastDataSetManager(DataSetManager):
 
 
 def filter_cbv_data(cbv_file,
-                    config_file=cbv_const.CBV_CONFIG_FILE):
+                    config_file=cbv_const.CBV_CFG_FILE):
     (dir_name, file_name) = os.path.split(cbv_file)
     print
     print "> > >  " + file_name
@@ -169,7 +169,7 @@ def fast_training(training_data_file,
                   n_hidden_nodes=cbv_const.DEFAULT_HIDDEN_NODES,
                   figure_dir=cbv_const.DEFAULT_FIGURE_DIR,
                   iterations=cbv_const.DEFAULT_ITERATIONS,
-                  config_file=cbv_const.CBV_CONFIG_FILE,
+                  config_file=cbv_const.CBV_CFG_FILE,
                   ):
     """
 
@@ -204,7 +204,7 @@ def fast_predict(SNPs_file,
                  params_file=cbv_const.USER_PARAMS_FILE,
                  file_type=cbv_const.FILE_TYPE_VCF,
                  output_file=None,
-                 config_file=cbv_const.CBV_CONFIG_FILE,
+                 config_file=cbv_const.CBV_CFG_FILE,
                  ):
     """
 

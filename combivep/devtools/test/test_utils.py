@@ -23,7 +23,7 @@ class Test_Gadget(SafeMiscTester):
         test_file    = os.path.join(self.data_dir, 'test_filter_cbv_data.cbv')
         working_file = os.path.join(self.working_dir, 'test_filter_cbv_data.cbv')
         self.copy_file(test_file, working_file)
-        filter_cbv_data(working_file, config_file=cbv_const.CBV_CENTRAL_TEST_CONFIG_FILE)
+        filter_cbv_data(working_file, config_file=cbv_const.CBV_CENTRAL_TEST_CFG_FILE)
 
     def tearDown(self):
         self.remove_working_dir()

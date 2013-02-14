@@ -53,7 +53,7 @@ def train_combivep_using_cbv_data(training_data_file,
                                   n_hidden_nodes=cbv_const.DEFAULT_HIDDEN_NODES,
                                   figure_dir=cbv_const.DEFAULT_FIGURE_DIR,
                                   iterations=cbv_const.DEFAULT_ITERATIONS,
-                                  config_file=cbv_const.CBV_CONFIG_FILE,
+                                  config_file=cbv_const.CBV_CFG_FILE,
                                   ):
     """
 
@@ -90,7 +90,7 @@ def predict_deleterious_probability(SNPs_file,
                                     params_file=cbv_const.USER_PARAMS_FILE,
                                     file_type=cbv_const.FILE_TYPE_VCF,
                                     output_file=None,
-                                    config_file=cbv_const.CBV_CONFIG_FILE,
+                                    config_file=cbv_const.CBV_CFG_FILE,
                                     ):
     """
 

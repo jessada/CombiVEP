@@ -20,7 +20,7 @@ class TestReferer(SafePreProcTester):
     def test_validate_snp(self):
         self.init_test('test_validate_snp')
         self.init_referer_instance()
-        self.__referer.config_file = cbv_const.CBV_CENTRAL_TEST_CONFIG_FILE
+        self.__referer.config_file = cbv_const.CBV_CENTRAL_TEST_CFG_FILE
         self.__referer.load_config()
         self.assertTrue(self.__referer.validate_snp('1'     , 887560  , 'A', 'C'), "Incorrect SNP validating")
         self.assertTrue(self.__referer.validate_snp('chr3'  , 25836088, 'C', 'A'), "Incorrect SNP validating")
@@ -32,7 +32,7 @@ class TestReferer(SafePreProcTester):
     def test_get_scores(self):
         self.init_test('test_get_scores')
         self.init_referer_instance()
-        self.__referer.config_file = cbv_const.CBV_CENTRAL_TEST_CONFIG_FILE
+        self.__referer.config_file = cbv_const.CBV_CENTRAL_TEST_CFG_FILE
         self.__referer.load_config()
         rec = self.__referer.get_scores('3', 108541778, 'T', 'C')
         self.assertEqual(rec[cbv_const.KEY_PHYLOP_SCORE], '0.102322', "Incorrect LJB formatting")

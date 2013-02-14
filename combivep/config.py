@@ -7,7 +7,7 @@ class Configure(object):
 
 
     def __init__(self):
-        self.config_file = cbv_const.CBV_CONFIG_FILE
+        self.config_file = cbv_const.CBV_CFG_FILE
         self.config_values  = {}
         self.config_values[cbv_const.LATEST_UCSC_DB_VERSION] = '0'
         self.config_values[cbv_const.LATEST_UCSC_FILE_NAME]        = ''

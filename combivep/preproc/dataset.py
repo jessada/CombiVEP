@@ -81,7 +81,7 @@ class DataSet(list):
 class DataSetManager(CombiVEPBase):
 
 
-    def __init__(self, config_file=cbv_const.CBV_CONFIG_FILE):
+    def __init__(self, config_file=cbv_const.CBV_CFG_FILE):
         CombiVEPBase.__init__(self)
 
         self.referer = Referer()
