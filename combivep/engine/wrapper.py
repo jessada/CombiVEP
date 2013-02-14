@@ -52,7 +52,7 @@ class Trainer(Mlp):
 
             #check ending condition (acceptable error rate and not much improvement in each iteration)
             current_validation_error = self.__validation_error[len(self.__validation_error)-1]
-            if (current_validation_error < cbv_const.MAXIMUM_ALLOWED_ERROR) and ((best_validation_error-current_validation_error) < cbv_const.MINIMUM_IMPROVEMENT):
+            if (current_validation_error < cbv_const.MAX_ALLOWED_ERROR) and ((best_validation_error-current_validation_error) < cbv_const.MIN_IMPROVEMENT):
                 break
 
 #            print "training error >>", self.__training_error
