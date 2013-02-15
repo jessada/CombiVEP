@@ -24,8 +24,11 @@ class UcscReader(CombiVEPBase):
     def fetch_hash_snps(self, chromosome, start_pos, end_pos):
         for rec in self.fetch_array_snps(chromosome, start_pos, end_pos):
             if len(rec) != cbv_const.UCSC_EXPECTED_LENGTH :
-                raise Exception("Invalid formatting is found in file '%s'>> Chrom : %s\tStart pos : %s\tEnd pos : %s" % (self.db_file_name, rec[cbv_const.UCSC_0_IDX_CHROM], rec[cbv_const.UCSC_0_IDX_START_POS], rec[cbv_const.UCSC_0_IDX_END_POS]))
-            snp_info = {cbv_const.KEY_UCSC_CHROM     : rec[cbv_const.UCSC_0_IDX_CHROM], 
+                self.throw("Invalid formatting is found in file '%s'>> Chrom : %s\tStart pos : %s\tEnd pos : %s" % (self.db_file_name,
+                                                                                                                    rec[cbv_const.UCSC_0_IDX_CHROM],
+                                                                                                                    rec[cbv_const.UCSC_0_IDX_START_POS],
+                                                                                                                    rec[cbv_const.UCSC_0_IDX_END_POS]))
+            snp_info = {cbv_const.KEY_UCSC_CHROM     : rec[cbv_const.UCSC_0_IDX_CHROM],
                         cbv_const.KEY_UCSC_START_POS : rec[cbv_const.UCSC_0_IDX_START_POS],
                         cbv_const.KEY_UCSC_END_POS   : rec[cbv_const.UCSC_0_IDX_END_POS],
                         cbv_const.KEY_UCSC_STRAND    : rec[cbv_const.UCSC_0_IDX_STRAND],
@@ -53,19 +56,21 @@ class LjbReader(CombiVEPBase):
     def fetch_hash_snps(self, chromosome, start_pos, end_pos):
         for rec in self.fetch_array_snps(chromosome, start_pos, end_pos):
             if len(rec) != cbv_const.LJB_PARSED_EXPECTED_LENGTH :
-                raise Exception("Invalid formatting is found in file '%s'>> Chrom : %s\tpos : %s" % (self.db_file_name, rec[cbv_const.LJB_PARSED_0_IDX_CHROM], rec[cbv_const.LJB_PARSED_0_IDX_POS]))
+                self.throw("Invalid formatting is found in file '%s'>> Chrom : %s\tpos : %s" % (self.db_file_name,
+                                                                                                rec[cbv_const.LJB_PARSED_0_IDX_CHROM],
+                                                                                                rec[cbv_const.LJB_PARSED_0_IDX_POS]))
             snp_info = {cbv_const.KEY_LJB_CHROM : rec[cbv_const.LJB_PARSED_0_IDX_CHROM],
                         cbv_const.KEY_LJB_POS   : rec[cbv_const.LJB_PARSED_0_IDX_POS],
                         cbv_const.KEY_LJB_REF   : rec[cbv_const.LJB_PARSED_0_IDX_REF],
                         cbv_const.KEY_LJB_ALT   : rec[cbv_const.LJB_PARSED_0_IDX_ALT],
                         }
-            scores   = {cbv_const.KEY_PHYLOP_SCORE  : rec[cbv_const.LJB_PARSED_0_IDX_PHYLOP_SCORE],
-                        cbv_const.KEY_SIFT_SCORE    : rec[cbv_const.LJB_PARSED_0_IDX_SIFT_SCORE],
-                        cbv_const.KEY_PP2_SCORE     : rec[cbv_const.LJB_PARSED_0_IDX_PP2_SCORE],
-                        cbv_const.KEY_LRT_SCORE     : rec[cbv_const.LJB_PARSED_0_IDX_LRT_SCORE],
-                        cbv_const.KEY_MT_SCORE      : rec[cbv_const.LJB_PARSED_0_IDX_MT_SCORE],
-                        cbv_const.KEY_GERP_SCORE    : rec[cbv_const.LJB_PARSED_0_IDX_GERP_SCORE],
-                        }
+            scores = {cbv_const.KEY_PHYLOP_SCORE : rec[cbv_const.LJB_PARSED_0_IDX_PHYLOP_SCORE],
+                      cbv_const.KEY_SIFT_SCORE   : rec[cbv_const.LJB_PARSED_0_IDX_SIFT_SCORE],
+                      cbv_const.KEY_PP2_SCORE    : rec[cbv_const.LJB_PARSED_0_IDX_PP2_SCORE],
+                      cbv_const.KEY_LRT_SCORE    : rec[cbv_const.LJB_PARSED_0_IDX_LRT_SCORE],
+                      cbv_const.KEY_MT_SCORE     : rec[cbv_const.LJB_PARSED_0_IDX_MT_SCORE],
+                      cbv_const.KEY_GERP_SCORE   : rec[cbv_const.LJB_PARSED_0_IDX_GERP_SCORE],
+                      }
             yield {cbv_const.KEY_SNP_INFO_SECTION : snp_info,
                    cbv_const.KEY_SCORES_SECTION   : scores,
                    }

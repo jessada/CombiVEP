@@ -13,10 +13,12 @@ class Referer(Configure):
 
     def load_cfg(self):
         Configure.load_cfg(self)
+        ucsc_db = self.cfg_values[cbv_const.LATEST_UCSC_FILE_NAME]
+        ljb_db  = self.cfg_values[cbv_const.LATEST_LJB_FILE_PREFIX] + '.txt.gz'
         self.__ucsc_reader = UcscReader()
-        self.__ucsc_reader.read(self.cfg_values[cbv_const.LATEST_UCSC_FILE_NAME])
+        self.__ucsc_reader.read(ucsc_db)
         self.__ljb_reader = LjbReader()
-        self.__ljb_reader.read(self.cfg_values[cbv_const.LATEST_LJB_FILE_PREFIX] + '.txt.gz')
+        self.__ljb_reader.read(ljb_db)
 
     def validate_snp(self, chrom, pos, ref, alt):
         """
@@ -24,7 +26,9 @@ class Referer(Configure):
         This function checks if a given snp is valid by referencing
         with UCSC database
 
-        The inputs of this function are in string format except "pos", which is integer.
+        The inputs of this function are in string format
+        except "pos", which is integer.
+
         "chrom" can be either in format "chr1" or "1"
         "pos" is 1-based index
 
@@ -32,7 +36,8 @@ class Referer(Configure):
         and False otherwise.
 
         """
-        for rec in self.__ucsc_reader.fetch_array_snps(chrom, int(pos)-1, int(pos)):
+        reader = self.__get_ucsc_reader()
+        for rec in reader.fetch_array_snps(chrom, int(pos)-1, int(pos)):
             if rec[cbv_const.UCSC_0_IDX_REF] != ref:
                 continue
             if ref == alt:
@@ -48,15 +53,23 @@ class Referer(Configure):
 
         This function returns precomputed prediction scores from LJB database
 
-        The inputs of this function are in string format except "pos", which is integer.
+        The inputs of this function are in string format
+        except "pos", which is integer.
+
         "chrom" can be either in format "chr1" or "1"
         "pos" is 1-based index
 
         return hash scores if the snp is precomputed and None otherwise
 
         """
-        return self.__ljb_reader.get_scores(chrom, pos, ref, alt)
+        reader = self.__get_ljb_reader()
+        return reader.get_scores(chrom, pos, ref, alt)
 
+    def __get_ucsc_reader(self):
+        return self.__ucsc_reader
+
+    def __get_ljb_reader(self):
+        return self.__ljb_reader
 
 
 
