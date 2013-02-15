@@ -31,7 +31,7 @@ class TestApp(SafeGeneralTester):
                                       iterations=50,
                                       figure_dir=self.working_dir,
                                       params_out_file=params_file,
-                                      cfg_file=cbv_const.CBV_CENTRAL_TEST_CFG_FILE)
+                                      cfg_file=cbv_const.CBV_SAMPLE_CFG_FILE)
         self.assertTrue(os.path.exists(params_file), msg='Trainer does not functional properly')
         figure_file  = os.path.join(self.working_dir, '07.eps')
         self.assertTrue(os.path.exists(figure_file), msg='Trainer does not functional properly')
@@ -44,9 +44,9 @@ class TestApp(SafeGeneralTester):
         output_file  = os.path.join(self.working_dir, 'cbv_output.txt')
         #run test
         args = {}
-        args["params_file"] = cbv_const.CBV_CENTRAL_TEST_PARAM_FILE
+        args["params_file"] = cbv_const.CBV_SAMPLE_PARAM_FILE
         args["file_type"]   = cbv_const.FILE_TYPE_CBV
-        args["cfg_file"] = cbv_const.CBV_CENTRAL_TEST_CFG_FILE
+        args["cfg_file"] = cbv_const.CBV_SAMPLE_CFG_FILE
         args["output_file"] = output_file
         predict_deleterious_probability(test_file,
                                         **args
@@ -65,9 +65,9 @@ class TestApp(SafeGeneralTester):
         output_file  = os.path.join(self.working_dir, 'vcf_output.txt')
         #run test
         predict_deleterious_probability(test_file,
-                                        params_file=cbv_const.CBV_CENTRAL_TEST_PARAM_FILE,
+                                        params_file=cbv_const.CBV_SAMPLE_PARAM_FILE,
                                         file_type=cbv_const.FILE_TYPE_VCF,
-                                        cfg_file=cbv_const.CBV_CENTRAL_TEST_CFG_FILE,
+                                        cfg_file=cbv_const.CBV_SAMPLE_CFG_FILE,
                                         output_file=output_file,
                                         )
         self.assertTrue(os.path.exists(output_file), msg='Predictor does not functional properly')

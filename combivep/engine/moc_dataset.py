@@ -17,7 +17,7 @@ class DataSet(object):
         self.keys                = __data[:,0]
 
         #Transpose the matrixes so that it can be easily understood by MLP
-        self.feature_vectors     = __data[:,1:self.n_cols-1].astype(np.float).T
-        self.targets             = __data[:,self.n_cols-1].astype(np.int).T
+        self.feature_vectors = __data[:,1:self.n_cols-1].astype(np.float).T
+        self.targets         = __data[:,self.n_cols-1].astype(np.int).T
 
 

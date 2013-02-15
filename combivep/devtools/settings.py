@@ -3,11 +3,11 @@ import os
 
 
 # > > > > > > > > > > > > > development files & folders < < < < < < < < < <
-PUB_RESOURCES_ROOT             = '/home/jessada/development/scilifelab/assignments/20121119_CombiVEP_publication/resources'
-PUB_PARAMETER_FILE             = os.path.join(PUB_RESOURCES_ROOT, 'params.npz')
-PUB_RAW_PREDICTION_RESULT      = os.path.join(PUB_RESOURCES_ROOT, 'prediction_result')
-PUB_CONDEL_PREDICTION_RESULT   = os.path.join(PUB_RESOURCES_ROOT, 'full_prediction_result')
-PUB_FIGS_DIR                = os.path.join(PUB_RESOURCES_ROOT, 'figures')
+PUB_RES_ROOT             = '/home/jessada/development/scilifelab/assignments/20121119_CombiVEP_publication/resources'
+PUB_PARAM_FILE             = os.path.join(PUB_RES_ROOT, 'params.npz')
+PUB_RAW_PREDICTION_RESULT      = os.path.join(PUB_RES_ROOT, 'prediction_result')
+PUB_CONDEL_PREDICTION_RESULT   = os.path.join(PUB_RES_ROOT, 'full_prediction_result')
+PUB_FIGS_DIR                = os.path.join(PUB_RES_ROOT, 'figures')
 PUB_SCORES_DISTR_FIG = os.path.join(PUB_FIGS_DIR, 'scores_dist.eps')
 PUB_ROC_FIG                 = os.path.join(PUB_FIGS_DIR, 'roc_curve.eps')
 PUB_AUC_FIG                 = os.path.join(PUB_FIGS_DIR, 'auc_curve.eps')

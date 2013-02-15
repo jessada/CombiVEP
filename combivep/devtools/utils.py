@@ -38,18 +38,18 @@ class ScoresReader(CombiVEPBase):
 
     def fetch_hash_snps(self):
         for rec in self.fetch_array_snps():
-            snp_info = {dev_const.KEY_SCORES_CHROM : rec[dev_const.SCORES_0_INDEX_CHROM],
-                        dev_const.KEY_SCORES_POS   : rec[dev_const.SCORES_0_INDEX_POS],
-                        dev_const.KEY_SCORES_REF   : rec[dev_const.SCORES_0_INDEX_REF],
-                        dev_const.KEY_SCORES_ALT   : rec[dev_const.SCORES_0_INDEX_ALT],
+            snp_info = {dev_const.KEY_SCORES_CHROM : rec[dev_const.SCORES_0_IDX_CHROM],
+                        dev_const.KEY_SCORES_POS   : rec[dev_const.SCORES_0_IDX_POS],
+                        dev_const.KEY_SCORES_REF   : rec[dev_const.SCORES_0_IDX_REF],
+                        dev_const.KEY_SCORES_ALT   : rec[dev_const.SCORES_0_IDX_ALT],
                         }
-            prediction = {dev_const.KEY_SCORES_TARGETS : rec[dev_const.SCORES_0_INDEX_TARGETS]}
-            scores     = {cbv_const.KEY_PHYLOP_SCORE : rec[dev_const.SCORES_0_INDEX_PHYLOP_SCORE],
-                          cbv_const.KEY_SIFT_SCORE   : rec[dev_const.SCORES_0_INDEX_SIFT_SCORE],
-                          cbv_const.KEY_PP2_SCORE    : rec[dev_const.SCORES_0_INDEX_PP2_SCORE],
-                          cbv_const.KEY_LRT_SCORE    : rec[dev_const.SCORES_0_INDEX_LRT_SCORE],
-                          cbv_const.KEY_MT_SCORE     : rec[dev_const.SCORES_0_INDEX_MT_SCORE],
-                          cbv_const.KEY_GERP_SCORE   : rec[dev_const.SCORES_0_INDEX_GERP_SCORE],
+            prediction = {dev_const.KEY_SCORES_TARGETS : rec[dev_const.SCORES_0_IDX_TARGETS]}
+            scores     = {cbv_const.KEY_PHYLOP_SCORE : rec[dev_const.SCORES_0_IDX_PHYLOP_SCORE],
+                          cbv_const.KEY_SIFT_SCORE   : rec[dev_const.SCORES_0_IDX_SIFT_SCORE],
+                          cbv_const.KEY_PP2_SCORE    : rec[dev_const.SCORES_0_IDX_PP2_SCORE],
+                          cbv_const.KEY_LRT_SCORE    : rec[dev_const.SCORES_0_IDX_LRT_SCORE],
+                          cbv_const.KEY_MT_SCORE     : rec[dev_const.SCORES_0_IDX_MT_SCORE],
+                          cbv_const.KEY_GERP_SCORE   : rec[dev_const.SCORES_0_IDX_GERP_SCORE],
                           }
             yield {cbv_const.KEY_SNP_INFO_SECTION   : snp_info,
                    cbv_const.KEY_PREDICTION_SECTION : prediction,
@@ -59,8 +59,8 @@ class ScoresReader(CombiVEPBase):
 class FastDataSetManager(DataSetManager):
 
 
-    def __init__(self, config_file=cbv_const.CBV_CFG_FILE):
-        DataSetManager.__init__(self, config_file=cbv_const.CBV_CFG_FILE)
+    def __init__(self, cfg_file=cbv_const.CBV_CFG_FILE):
+        DataSetManager.__init__(self, cfg_file=cbv_const.CBV_CFG_FILE)
 
     def load_data(self, file_name, file_type=dev_const.FILE_TYPE_SCORES):
         if file_type == dev_const.FILE_TYPE_SCORES:
@@ -87,7 +87,7 @@ class FastDataSetManager(DataSetManager):
 
 
 def filter_cbv_data(cbv_file,
-                    config_file=cbv_const.CBV_CFG_FILE):
+                    cfg_file=cbv_const.CBV_CFG_FILE):
     (dir_name, file_name) = os.path.split(cbv_file)
     print
     print "> > >  " + file_name
@@ -169,7 +169,7 @@ def fast_training(training_data_file,
                   n_hidden_nodes=cbv_const.DEFAULT_HIDDEN_NODES,
                   figure_dir=cbv_const.DEFAULT_FIGURE_DIR,
                   iterations=cbv_const.DEFAULT_ITERATIONS,
-                  config_file=cbv_const.CBV_CFG_FILE,
+                  cfg_file=cbv_const.CBV_CFG_FILE,
                   ):
     """
 
@@ -182,7 +182,7 @@ def fast_training(training_data_file,
     """
     #pre-processing dataset
     print >> sys.stderr, 'pre-processing dataset, this may take a while (around 750 SNPs/mins). . . . '
-    dm = FastDataSetManager(config_file=config_file)
+    dm = FastDataSetManager(cfg_file=cfg_file)
     dm.load_data(training_data_file, file_type=dev_const.FILE_TYPE_SCORES)
     dm.set_shuffle_seed(random_seed)
     dm.shuffle_data()
@@ -204,7 +204,7 @@ def fast_predict(SNPs_file,
                  params_file=cbv_const.USER_PARAMS_FILE,
                  file_type=cbv_const.FILE_TYPE_VCF,
                  output_file=None,
-                 config_file=cbv_const.CBV_CFG_FILE,
+                 cfg_file=cbv_const.CBV_CFG_FILE,
                  ):
     """
 
@@ -216,7 +216,7 @@ def fast_predict(SNPs_file,
     """
     #pre-processing test dataset
     print >> sys.stderr, 'pre-processing dataset, this may take a while (around 750 SNPs/mins). . . . '
-    dm = FastDataSetManager(config_file=config_file)
+    dm = FastDataSetManager(cfg_file=cfg_file)
     dm.load_data(SNPs_file, file_type=dev_const.FILE_TYPE_SCORES)
 
     #predict

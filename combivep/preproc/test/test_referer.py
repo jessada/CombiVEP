@@ -21,7 +21,7 @@ class TestReferer(SafePreProcTester):
     def test_validate_snp(self):
         self.init_test('test_validate_snp')
         referer = self.__create_referer_instance()
-        referer.cfg_file = cbv_const.CBV_CENTRAL_TEST_CFG_FILE
+        referer.cfg_file = cbv_const.CBV_SAMPLE_CFG_FILE
         referer.load_cfg()
         self.assertTrue(referer.validate_snp('1', 887560, 'A', 'C'),
                         "Incorrect SNP validating")
@@ -39,7 +39,7 @@ class TestReferer(SafePreProcTester):
     def test_get_scores(self):
         self.init_test('test_get_scores')
         referer = self.__create_referer_instance()
-        referer.cfg_file = cbv_const.CBV_CENTRAL_TEST_CFG_FILE
+        referer.cfg_file = cbv_const.CBV_SAMPLE_CFG_FILE
         referer.load_cfg()
         rec = referer.get_scores('3', 108541778, 'T', 'C')
         self.assertEqual(rec[cbv_const.KEY_PHYLOP_SCORE],
