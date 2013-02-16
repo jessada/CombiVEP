@@ -227,21 +227,38 @@ def fast_predict(SNPs_file,
     #print output
     if output_file is not None:
         sys.stdout = open(output_file, 'w')
-    print >> sys.stdout, "#%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s" % ("CHROM", "POS", "REF", "ALT", "ACTUAL_DELETERIOUS_EFFECT", "PREDICTED_DELETERIOUS_PROBABILITY", "PHYLOP_SCORE", "SIFT_SCORE", "PP2_SCORE", "LRT_SCORT", "MT_SCORE", "GERP_SCORE")
+    tmp_rec = []
+    tmp_rec.append("CHROM")
+    tmp_rec.append("POS")
+    tmp_rec.append("REF")
+    tmp_rec.append("ALT")
+    tmp_rec.append("ACTUAL_DELETERIOUS_EFFECT")
+    tmp_rec.append("PREDICTED_DELETERIOUS_PROBABILITY")
+    tmp_rec.append("PHYLOP_SCORE")
+    tmp_rec.append("SIFT_SCORE")
+    tmp_rec.append("PP2_SCORE")
+    tmp_rec.append("LRT_SCORT")
+    tmp_rec.append("MT_SCORE")
+    tmp_rec.append("GERP_SCORE")
+    print "#" + "\t".join(tmp_rec)
     for i in xrange(len(dm.dataset)):
-        print >> sys.stdout, "%s\t%s\t%s\t%s\t%s\t%6.4f\t%s\t%s\t%s\t%s\t%s\t%s" % (dm.dataset[i][cbv_const.KEY_SNP_INFO_SECTION][cbv_const.KEY_CHROM],
-                                                                                    dm.dataset[i][cbv_const.KEY_SNP_INFO_SECTION][cbv_const.KEY_POS],
-                                                                                    dm.dataset[i][cbv_const.KEY_SNP_INFO_SECTION][cbv_const.KEY_REF],
-                                                                                    dm.dataset[i][cbv_const.KEY_SNP_INFO_SECTION][cbv_const.KEY_ALT],
-                                                                                    dm.dataset[i][cbv_const.KEY_PREDICTION_SECTION][cbv_const.KEY_TARGETS],
-                                                                                    out[i],
-                                                                                    dm.dataset[i][cbv_const.KEY_SCORES_SECTION][cbv_const.KEY_PHYLOP_SCORE],
-                                                                                    dm.dataset[i][cbv_const.KEY_SCORES_SECTION][cbv_const.KEY_SIFT_SCORE],
-                                                                                    dm.dataset[i][cbv_const.KEY_SCORES_SECTION][cbv_const.KEY_PP2_SCORE],
-                                                                                    dm.dataset[i][cbv_const.KEY_SCORES_SECTION][cbv_const.KEY_LRT_SCORE],
-                                                                                    dm.dataset[i][cbv_const.KEY_SCORES_SECTION][cbv_const.KEY_MT_SCORE],
-                                                                                    dm.dataset[i][cbv_const.KEY_SCORES_SECTION][cbv_const.KEY_GERP_SCORE],
-                                                                                    )
+        del tmp_rec[:]
+        snp_info   = dm.dataset[i][cbv_const.KEY_SNP_INFO_SECTION]
+        prediction = dm.dataset[i][cbv_const.KEY_PREDICTION_SECTION]
+        scores     = dm.dataset[i][cbv_const.KEY_SCORES_SECTION]
+        tmp_rec.append(snp_info[cbv_const.KEY_CHROM])
+        tmp_rec.append(snp_info[cbv_const.KEY_POS])
+        tmp_rec.append(snp_info[cbv_const.KEY_REF])
+        tmp_rec.append(snp_info[cbv_const.KEY_ALT])
+        tmp_rec.append(prediction[cbv_const.KEY_TARGETS])
+        tmp_rec.append("%6.4f" % out[i])
+        tmp_rec.append(scores[cbv_const.KEY_PHYLOP_SCORE])
+        tmp_rec.append(scores[cbv_const.KEY_SIFT_SCORE])
+        tmp_rec.append(scores[cbv_const.KEY_PP2_SCORE])
+        tmp_rec.append(scores[cbv_const.KEY_LRT_SCORE])
+        tmp_rec.append(scores[cbv_const.KEY_MT_SCORE])
+        tmp_rec.append(scores[cbv_const.KEY_GERP_SCORE])
+        print "\t".join(tmp_rec)
     sys.stdout = sys.__stdout__
 
 def measure_precision(ratio,

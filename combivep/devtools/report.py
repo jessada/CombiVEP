@@ -17,22 +17,22 @@ from sklearn.metrics import auc
 
 
 def filter_all_cbv():
-    filter_cbv_data(os.path.join(cbv_const.CBV_CENTRAL_TEST_CBV_DIR, 'training.cbv'))
-    filter_cbv_data(os.path.join(cbv_const.CBV_CENTRAL_TEST_CBV_DIR, 'test.cbv'))
+    filter_cbv_data(os.path.join(cbv_const.CBV_SAMPLE_CBV_DIR, 'training.cbv'))
+    filter_cbv_data(os.path.join(cbv_const.CBV_SAMPLE_CBV_DIR, 'test.cbv'))
 
 def demo_training():
-    fast_training(os.path.join(cbv_const.CBV_CENTRAL_TEST_CBV_DIR, 'training.cbv.scores'),
+    fast_training(os.path.join(cbv_const.CBV_SAMPLE_CBV_DIR, 'training.cbv.scores'),
                   params_out_file=dev_const.PUB_PARAM_FILE,
                   random_seed=cbv_const.DEMO_SEED,
                   figure_dir=dev_const.PUB_FIGS_DIR,
                   )
 
 def demo_predicting():
-    fast_predict(os.path.join(cbv_const.CBV_CENTRAL_TEST_CBV_DIR, 'test.cbv.scores'),
+    fast_predict(os.path.join(cbv_const.CBV_SAMPLE_CBV_DIR, 'test.cbv.scores'),
                  params_file=dev_const.PUB_PARAM_FILE,
                  file_type=cbv_const.FILE_TYPE_CBV,
                  output_file=dev_const.PUB_RAW_PREDICTION_RESULT,
-                 config_file=cbv_const.CBV_CONFIGURATION_FILE,
+                 cfg_file=cbv_const.CBV_CFG_FILE,
                  )
 
 def generate_figures():
@@ -130,8 +130,8 @@ def generate_preproc_report():
     uncertain_pathogenic_records = 52
     print_preproc("Uncertain", str(uncertain_neutral_records), str(uncertain_pathogenic_records))
 
-    clean_training_file = os.path.join(cbv_const.CBV_CENTRAL_TEST_CBV_DIR, 'training.cbv.clean')
-    clean_test_file     = os.path.join(cbv_const.CBV_CENTRAL_TEST_CBV_DIR, 'test.cbv.clean')
+    clean_training_file = os.path.join(cbv_const.CBV_SAMPLE_CBV_DIR, 'training.cbv.clean')
+    clean_test_file     = os.path.join(cbv_const.CBV_SAMPLE_CBV_DIR, 'test.cbv.clean')
     data = np.loadtxt(clean_training_file, dtype='S20')
     clean_pathogenic_training_records = data[data[:, 4] == '1'].shape[0]
     clean_neutral_training_records    = data[data[:, 4] == '0'].shape[0]
@@ -143,8 +143,8 @@ def generate_preproc_report():
                   str(original_pathogenic_records - (clean_pathogenic_test_records+clean_pathogenic_training_records+uncertain_pathogenic_records)),
                   )
 
-    scores_training_file = os.path.join(cbv_const.CBV_CENTRAL_TEST_CBV_DIR, 'training.cbv.scores')
-    scores_test_file     = os.path.join(cbv_const.CBV_CENTRAL_TEST_CBV_DIR, 'test.cbv.scores')
+    scores_training_file = os.path.join(cbv_const.CBV_SAMPLE_CBV_DIR, 'training.cbv.scores')
+    scores_test_file     = os.path.join(cbv_const.CBV_SAMPLE_CBV_DIR, 'test.cbv.scores')
     data = np.loadtxt(scores_training_file, dtype='S20')
     scores_pathogenic_training_records = data[data[:, 4] == '1'].shape[0]
     scores_neutral_training_records    = data[data[:, 4] == '0'].shape[0]

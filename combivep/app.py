@@ -22,7 +22,8 @@ def app_combivep_trainer():
     argp = argparse.ArgumentParser(description="An application to train the consensus predictor using Multilayer Perceptron Learning technique.")
     tmp_help=[]
     tmp_help.append("A file with list of SNPs in CBV (CombiVEP) format.")
-    tmp_help.append("CBV format consists of five fields: CHROM, POS, REF, ALT, ACTUAL_DELETERIOUS_EFFECT.")
+    tmp_help.append("CBV format consists of five fields:")
+    tmp_help.append("CHROM, POS, REF, ALT, ACTUAL_DELETERIOUS_EFFECT.")
     tmp_help.append("Each field is separated by a tab.")
     tmp_help.append("SNP Position(POS) is 1-based index.")
     argp.add_argument('training_data_file', help=' '.join(tmp_help))
@@ -33,19 +34,24 @@ def app_combivep_predictor():
     argp = argparse.ArgumentParser(description="An application to predict how likely the given SNPs will have deleterious effect")
     tmp_help=[]
     tmp_help.append("A file with list of SNPs.")
-    tmp_help.append("It can be either in standard VCF format or CBV (CombiVEP) format.")
-    tmp_help.append("CBV format consists of five fields: CHROM, POS, REF, ALT, ACTUAL_DELETERIOUS_EFFECT.")
+    tmp_help.append("It can be either in standard VCF format")
+    tmp_help.append("or CBV (CombiVEP) format.")
+    tmp_help.append("CBV format consists of five fields:")
+    tmp_help.append("CHROM, POS, REF, ALT, ACTUAL_DELETERIOUS_EFFECT.")
     tmp_help.append("Each field is separated by a tab.")
     tmp_help.append("SNP Position(POS) is 1-based index.")
     argp.add_argument('input_file', help=' '.join(tmp_help))
-    argp.add_argument('-F', help='Input format (%(choices)s). Default is in %(default)s format.', 
-                            choices=[cbv_const.FILE_TYPE_VCF, cbv_const.FILE_TYPE_CBV], 
-                            metavar='FORMAT', 
-                            default=cbv_const.FILE_TYPE_VCF,
-                            dest='input_format'
-                            )
+    argp.add_argument('-F',
+                      help='Input format (%(choices)s). Default is in %(default)s format.',
+                      choices=[cbv_const.FILE_TYPE_VCF,
+                               cbv_const.FILE_TYPE_CBV],
+                      metavar='FORMAT',
+                      default=cbv_const.FILE_TYPE_VCF,
+                      dest='input_format'
+                      )
     args = argp.parse_args()
-    predict_deleterious_probability(args.input_file, file_type=args.input_format)
+    predict_deleterious_probability(args.input_file,
+                                    file_type=args.input_format)
 
 def train_combivep_using_cbv_data(training_data_file, 
                                   params_out_file=cbv_const.USER_PARAMS_FILE,
@@ -58,14 +64,20 @@ def train_combivep_using_cbv_data(training_data_file,
     """
 
     CBV (CombiVEP format) is a parsed format intended to be used by CombiVEP.
-    CBV has 5 fields, CHROM, POS, REF, ALT, EFFECT (1=deleterious, 0=neutral). All are tab separated
+    CBV has 5 fields:
+    - CHROM
+    - POS
+    - REF
+    - ALT
+    - EFFECT(1=deleterious, 0=neutral)
+    All are tab separated.
     Required arguments
     - neutral_data_file : list of SNPs with no harmful effect, CBV format
     - pathognice_data_file : list of SNPs with deleterious effect, CBV format
 
     """
     #pre-processing dataset
-    print >> sys.stderr, 'pre-processing dataset, this may take a while (around 750 SNPs/mins). . . . '
+    print >> sys.stderr, 'pre-processing dataset, this may take a while (around 750 SNPs/mins). . .'
     dm = DataSetManager(cfg_file=cfg_file)
     dm.load_data(training_data_file, file_type=cbv_const.FILE_TYPE_CBV)
     dm.validate_data()
@@ -75,12 +87,16 @@ def train_combivep_using_cbv_data(training_data_file,
     dm.partition_data()
 
     #partition data
-    training_dataset      = dm.get_training_data() 
-    validation_dataset    = dm.get_validation_data() 
+    training_data   = dm.get_training_data() 
+    validation_data = dm.get_validation_data() 
 
     #train !!!
-    print >> sys.stderr, 'Training CombiVEP, please wait (around 500 SNPs/mins) . . . . '
-    trainer = Trainer(training_dataset, validation_dataset, random_seed, n_hidden_nodes, figure_dir)
+    print >> sys.stderr, 'Training CombiVEP, please wait (around 500 SNPs/mins) . . .'
+    trainer = Trainer(training_data,
+                      validation_data,
+                      random_seed,
+                      n_hidden_nodes,
+                      figure_dir)
     trainer.train(iterations)
     if not os.path.exists(cbv_const.USER_PARAMS_DIR):
         os.makedirs(cbv_const.USER_PARAMS_DIR)
@@ -95,13 +111,20 @@ def predict_deleterious_probability(SNPs_file,
     """
 
     CBV (CombiVEP format) is a parsed format intended to be used by CombiVEP.
-    CBV has 5 fields, CHROM, POS, REF, ALT, EFFECT (1=deleterious, 0=neutral). All are tab separated
+    CBV has 5 fields:
+    - CHROM
+    - POS
+    - REF
+    - ALT
+    - EFFECT(1=deleterious, 0=neutral)
+    All are tab separated.
     Required arguments
-    - SNPs_file : list of SNPs to be predicted, can be either VCF or CBV (default is VCF)
+    - SNPs_file : list of SNPs to be predicted, can be either VCF or
+                  CBV (default is VCF)
 
     """
     #pre-processing test dataset
-    print >> sys.stderr, 'pre-processing dataset, this may take a while (around 750 SNPs/mins). . . . '
+    print >> sys.stderr, 'pre-processing dataset, this may take a while (around 750 SNPs/mins). . .'
     dm = DataSetManager(cfg_file=cfg_file)
     dm.load_data(SNPs_file, file_type=file_type)
     dm.validate_data()
@@ -115,20 +138,37 @@ def predict_deleterious_probability(SNPs_file,
     #print output
     if output_file is not None:
         sys.stdout = open(output_file, 'w')
-    print >> sys.stdout, "#%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s" % ("CHROM", "POS", "REF", "ALT", "ACTUAL_DELETERIOUS_EFFECT", "PREDICTED_DELETERIOUS_PROBABILITY", "PHYLOP_SCORE", "SIFT_SCORE", "PP2_SCORE", "LRT_SCORT", "MT_SCORE", "GERP_SCORE")
+    tmp_rec = []
+    tmp_rec.append("CHROM")
+    tmp_rec.append("POS")
+    tmp_rec.append("REF")
+    tmp_rec.append("ALT")
+    tmp_rec.append("ACTUAL_DELETERIOUS_EFFECT")
+    tmp_rec.append("PREDICTED_DELETERIOUS_PROBABILITY")
+    tmp_rec.append("PHYLOP_SCORE")
+    tmp_rec.append("SIFT_SCORE")
+    tmp_rec.append("PP2_SCORE")
+    tmp_rec.append("LRT_SCORT")
+    tmp_rec.append("MT_SCORE")
+    tmp_rec.append("GERP_SCORE")
+    print "#" + "\t".join(tmp_rec)
     for i in xrange(len(dm.dataset)):
-        print >> sys.stdout, "%s\t%s\t%s\t%s\t%s\t%6.4f\t%s\t%s\t%s\t%s\t%s\t%s" % (dm.dataset[i][cbv_const.KEY_SNP_INFO_SECTION][cbv_const.KEY_CHROM],
-                                                        dm.dataset[i][cbv_const.KEY_SNP_INFO_SECTION][cbv_const.KEY_POS],
-                                                        dm.dataset[i][cbv_const.KEY_SNP_INFO_SECTION][cbv_const.KEY_REF],
-                                                        dm.dataset[i][cbv_const.KEY_SNP_INFO_SECTION][cbv_const.KEY_ALT],
-                                                        dm.dataset[i][cbv_const.KEY_PREDICTION_SECTION][cbv_const.KEY_TARGETS],
-                                                        out[i],
-                                                        dm.dataset[i][cbv_const.KEY_SCORES_SECTION][cbv_const.KEY_PHYLOP_SCORE],
-                                                        dm.dataset[i][cbv_const.KEY_SCORES_SECTION][cbv_const.KEY_SIFT_SCORE],
-                                                        dm.dataset[i][cbv_const.KEY_SCORES_SECTION][cbv_const.KEY_PP2_SCORE],
-                                                        dm.dataset[i][cbv_const.KEY_SCORES_SECTION][cbv_const.KEY_LRT_SCORE],
-                                                        dm.dataset[i][cbv_const.KEY_SCORES_SECTION][cbv_const.KEY_MT_SCORE],
-                                                        dm.dataset[i][cbv_const.KEY_SCORES_SECTION][cbv_const.KEY_GERP_SCORE],
-                                                        )
+        del tmp_rec[:]
+        snp_info   = dm.dataset[i][cbv_const.KEY_SNP_INFO_SECTION]
+        prediction = dm.dataset[i][cbv_const.KEY_PREDICTION_SECTION]
+        scores     = dm.dataset[i][cbv_const.KEY_SCORES_SECTION]
+        tmp_rec.append(snp_info[cbv_const.KEY_CHROM])
+        tmp_rec.append(snp_info[cbv_const.KEY_POS])
+        tmp_rec.append(snp_info[cbv_const.KEY_REF])
+        tmp_rec.append(snp_info[cbv_const.KEY_ALT])
+        tmp_rec.append("%s" % prediction[cbv_const.KEY_TARGETS])
+        tmp_rec.append("%6.4f" % out[i])
+        tmp_rec.append(scores[cbv_const.KEY_PHYLOP_SCORE])
+        tmp_rec.append(scores[cbv_const.KEY_SIFT_SCORE])
+        tmp_rec.append(scores[cbv_const.KEY_PP2_SCORE])
+        tmp_rec.append(scores[cbv_const.KEY_LRT_SCORE])
+        tmp_rec.append(scores[cbv_const.KEY_MT_SCORE])
+        tmp_rec.append(scores[cbv_const.KEY_GERP_SCORE])
+        print "\t".join(tmp_rec)
     sys.stdout = sys.__stdout__
 

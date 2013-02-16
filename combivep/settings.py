@@ -90,26 +90,6 @@ LJB_FILES_PATTERN   = r"""href="(?P<file_name>dbNSFP_light.*.zip)">"""
 LJB_VERSION_PATTERN = r"""[a-zA-Z_]*(?P<version>[\d.]*)[.][a-zA-Z.]*"""
 
 
-# > > > > > > > > > > > > > UCSC format configuration < < < < < < < < < <
-#general key
-KEY_UCSC_CHROM     = 'ucsc_chrom'
-KEY_UCSC_START_POS = 'ucsc_start_pos'
-KEY_UCSC_END_POS   = 'ucsc_end_pos'
-KEY_UCSC_STRAND    = 'ucsc_strand'
-KEY_UCSC_REF       = 'ucsc_ref'
-KEY_UCSC_OBSERVED  = 'ucsc_observed'
-
-#UCSC index
-#0-based index, used by python
-UCSC_0_IDX_CHROM     = 1
-UCSC_0_IDX_START_POS = 2
-UCSC_0_IDX_END_POS   = 3
-UCSC_0_IDX_STRAND    = 6
-UCSC_0_IDX_REF       = 8
-UCSC_0_IDX_OBSERVED  = 9
-UCSC_EXPECTED_LENGTH = 26
-
-
 # > > > > > > > > > > > > > Dataset data structure < < < < < < < < < <
 #section key
 KEY_SNP_INFO_SECTION   = 'snp_info'
@@ -128,6 +108,26 @@ KEY_TARGETS = 'targets'
 #file type
 FILE_TYPE_CBV = 'CBV' #CombiVEP format
 FILE_TYPE_VCF = 'VCF'
+
+
+# > > > > > > > > > > > > > UCSC format configuration < < < < < < < < < <
+#general key
+KEY_UCSC_CHROM     = 'ucsc_chrom'
+KEY_UCSC_START_POS = 'ucsc_start_pos'
+KEY_UCSC_END_POS   = 'ucsc_end_pos'
+KEY_UCSC_STRAND    = 'ucsc_strand'
+KEY_UCSC_REF       = 'ucsc_ref'
+KEY_UCSC_OBSERVED  = 'ucsc_observed'
+
+#UCSC index
+#0-based index, used by python
+UCSC_0_IDX_CHROM     = 1
+UCSC_0_IDX_START_POS = 2
+UCSC_0_IDX_END_POS   = 3
+UCSC_0_IDX_STRAND    = 6
+UCSC_0_IDX_REF       = 8
+UCSC_0_IDX_OBSERVED  = 9
+UCSC_EXPECTED_LENGTH = 26
 
 
 # > > > > > > > > > > > > > LJB format configuration < < < < < < < < < <
@@ -203,5 +203,20 @@ CBV_0_IDX_REF     = 2
 CBV_0_IDX_ALT     = 3
 CBV_0_IDX_TARGETS = 4
 
+
+# > > > > > > > > > > prediction output format < < < < < < < < < <
+PREDICTION_OUT_COLS_HEADER = []
+PREDICTION_OUT_COLS_HEADER.append('CHROM')
+PREDICTION_OUT_COLS_HEADER.append('POS')
+PREDICTION_OUT_COLS_HEADER.append('REF')
+PREDICTION_OUT_COLS_HEADER.append('ALT')
+PREDICTION_OUT_COLS_HEADER.append('ACTUAL_DELETERIOUS_EFFECT')
+PREDICTION_OUT_COLS_HEADER.append('PREDICTED_DELETERIOUS_PROBABILITY')
+PREDICTION_OUT_COLS_HEADER.append('PHYLOP_SCORE')
+PREDICTION_OUT_COLS_HEADER.append('SIFT_SCORE')
+PREDICTION_OUT_COLS_HEADER.append('PP2_SCORE')
+PREDICTION_OUT_COLS_HEADER.append('LRT_SCORT')
+PREDICTION_OUT_COLS_HEADER.append('MT_SCORE')
+PREDICTION_OUT_COLS_HEADER.append('GERP_SCORE')
 
 
