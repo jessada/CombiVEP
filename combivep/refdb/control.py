@@ -18,7 +18,7 @@ class UcscController(UcscUpdater, Configure):
     def update(self):
         self.load_cfg()
         self.info('Checking new UCSC reference database version . . .')
-        current_version       = self.cfg_values[cbv_const.LATEST_UCSC_DB_VERSION]
+        current_version       = self.cfg_vals[cbv_const.LATEST_UCSC_DB_VER]
         new_file, new_version = self.check_new_file(current_version)
         if not new_version:
             self.info('UCSC reference database is already up-to-date (version %s) . . .' % current_version)
@@ -60,7 +60,7 @@ class LjbController(LjbUpdater, Configure):
     def update(self):
         self.load_cfg()
         self.info('Checking new LJB reference database version . . .')
-        current_version       = self.cfg_values[cbv_const.LATEST_LJB_DB_VERSION]
+        current_version       = self.cfg_vals[cbv_const.LATEST_LJB_DB_VER]
         new_file, new_version = self.check_new_file(current_version)
         if not new_version:
             self.info('LJB reference database is already up-to-date (version %s) . . .' % current_version)

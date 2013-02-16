@@ -13,8 +13,8 @@ class Referer(Configure):
 
     def load_cfg(self):
         Configure.load_cfg(self)
-        ucsc_db = self.cfg_values[cbv_const.LATEST_UCSC_FILE_NAME]
-        ljb_db  = self.cfg_values[cbv_const.LATEST_LJB_FILE_PREFIX] + '.txt.gz'
+        ucsc_db = self.cfg_vals[cbv_const.LATEST_UCSC_FILE_NAME]
+        ljb_db  = self.cfg_vals[cbv_const.LATEST_LJB_FILE_PREFIX] + '.txt.gz'
         self.__ucsc_reader = UcscReader()
         self.__ucsc_reader.read(ucsc_db)
         self.__ljb_reader = LjbReader()

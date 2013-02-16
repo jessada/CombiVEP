@@ -39,9 +39,9 @@ USER_LJB_REF_DB_DIR  = os.path.join(USER_DATA_ROOT, 'ref/LJB')
 CBV_CFG_FILE = os.path.join(USER_DATA_ROOT, 'config.txt')
 
 #key
-LATEST_UCSC_DB_VERSION = 'latest_ucsc_database_version'
+LATEST_UCSC_DB_VER     = 'latest_ucsc_database_version'
 LATEST_UCSC_FILE_NAME  = 'latest_ucsc_file_name'
-LATEST_LJB_DB_VERSION  = 'latest_ljb_database_version'
+LATEST_LJB_DB_VER      = 'latest_ljb_database_version'
 LATEST_LJB_FILE_PREFIX = 'latest_ljb_file_prefix'
 
 
