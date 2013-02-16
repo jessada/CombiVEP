@@ -13,6 +13,57 @@ from combivep.devtools.settings import PRECISION_MEASURES
 
 PrecisionPerformance = namedtuple("precision_performance", PRECISION_MEASURES)
 
+class ScoresRecord(CombiVEPBase):
+    """ to automatically parse data with scores """
+
+
+    def __init__(self, array_snp):
+        self.__array_snp = array_snp
+
+    @property
+    def chrom(self):
+        return self.__array_snp[dev_const.SCORES_0_IDX_CHROM]
+
+    @property
+    def pos(self):
+        return self.__array_snp[dev_const.SCORES_0_IDX_POS]
+
+    @property
+    def ref(self):
+        return self.__array_snp[dev_const.SCORES_0_IDX_REF]
+
+    @property
+    def alt(self):
+        return self.__array_snp[dev_const.SCORES_0_IDX_ALT]
+
+    @property
+    def targets(self):
+        return self.__array_snp[dev_const.SCORES_0_IDX_TARGETS]
+
+    @property
+    def phylop_score(self):
+        return self.__array_snp[dev_const.SCORES_0_IDX_PHYLOP_SCORE]
+
+    @property
+    def sift_score(self):
+        return self.__array_snp[dev_const.SCORES_0_IDX_SIFT_SCORE]
+
+    @property
+    def pp2_score(self):
+        return self.__array_snp[dev_const.SCORES_0_IDX_PP2_SCORE]
+
+    @property
+    def lrt_score(self):
+        return self.__array_snp[dev_const.SCORES_0_IDX_LRT_SCORE]
+
+    @property
+    def mt_score(self):
+        return self.__array_snp[dev_const.SCORES_0_IDX_MT_SCORE]
+
+    @property
+    def gerp_score(self):
+        return self.__array_snp[dev_const.SCORES_0_IDX_GERP_SCORE]
+
 class ScoresReader(CombiVEPBase):
     """
 
@@ -34,22 +85,22 @@ class ScoresReader(CombiVEPBase):
         for line in scores_file:
             if line[0] == '#':
                 continue
-            yield line.rstrip('\n').split('\t')
+            yield ScoresRecord(line.rstrip('\n').split('\t'))
 
     def fetch_hash_snps(self):
         for rec in self.fetch_array_snps():
-            snp_info = {dev_const.KEY_SCORES_CHROM : rec[dev_const.SCORES_0_IDX_CHROM],
-                        dev_const.KEY_SCORES_POS   : rec[dev_const.SCORES_0_IDX_POS],
-                        dev_const.KEY_SCORES_REF   : rec[dev_const.SCORES_0_IDX_REF],
-                        dev_const.KEY_SCORES_ALT   : rec[dev_const.SCORES_0_IDX_ALT],
+            snp_info = {dev_const.KEY_SCORES_CHROM : rec.chrom,
+                        dev_const.KEY_SCORES_POS   : rec.pos,
+                        dev_const.KEY_SCORES_REF   : rec.ref,
+                        dev_const.KEY_SCORES_ALT   : rec.alt,
                         }
-            prediction = {dev_const.KEY_SCORES_TARGETS : rec[dev_const.SCORES_0_IDX_TARGETS]}
-            scores     = {cbv_const.KEY_PHYLOP_SCORE : rec[dev_const.SCORES_0_IDX_PHYLOP_SCORE],
-                          cbv_const.KEY_SIFT_SCORE   : rec[dev_const.SCORES_0_IDX_SIFT_SCORE],
-                          cbv_const.KEY_PP2_SCORE    : rec[dev_const.SCORES_0_IDX_PP2_SCORE],
-                          cbv_const.KEY_LRT_SCORE    : rec[dev_const.SCORES_0_IDX_LRT_SCORE],
-                          cbv_const.KEY_MT_SCORE     : rec[dev_const.SCORES_0_IDX_MT_SCORE],
-                          cbv_const.KEY_GERP_SCORE   : rec[dev_const.SCORES_0_IDX_GERP_SCORE],
+            prediction = {dev_const.KEY_SCORES_TARGETS : rec.targets}
+            scores     = {cbv_const.KEY_PHYLOP_SCORE : rec.phylop_score,
+                          cbv_const.KEY_SIFT_SCORE   : rec.sift_score,
+                          cbv_const.KEY_PP2_SCORE    : rec.pp2_score,
+                          cbv_const.KEY_LRT_SCORE    : rec.lrt_score,
+                          cbv_const.KEY_MT_SCORE     : rec.mt_score,
+                          cbv_const.KEY_GERP_SCORE   : rec.gerp_score,
                           }
             yield {cbv_const.KEY_SNP_INFO_SECTION   : snp_info,
                    cbv_const.KEY_PREDICTION_SECTION : prediction,
@@ -73,11 +124,12 @@ class FastDataSetManager(DataSetManager):
         scores_reader = ScoresReader()
         scores_reader.read(file_name)
         for rec in scores_reader.fetch_hash_snps():
-            snp_data   = {cbv_const.KEY_CHROM : rec[cbv_const.KEY_SNP_INFO_SECTION][dev_const.KEY_SCORES_CHROM],
-                          cbv_const.KEY_POS   : rec[cbv_const.KEY_SNP_INFO_SECTION][dev_const.KEY_SCORES_POS],
-                          cbv_const.KEY_REF   : rec[cbv_const.KEY_SNP_INFO_SECTION][dev_const.KEY_SCORES_REF],
-                          cbv_const.KEY_ALT   : rec[cbv_const.KEY_SNP_INFO_SECTION][dev_const.KEY_SCORES_ALT],
-                          }
+            snp_info = rec[cbv_const.KEY_SNP_INFO_SECTION]
+            snp_data = {cbv_const.KEY_CHROM : snp_info[dev_const.KEY_SCORES_CHROM],
+                        cbv_const.KEY_POS   : snp_info[dev_const.KEY_SCORES_POS],
+                        cbv_const.KEY_REF   : snp_info[dev_const.KEY_SCORES_REF],
+                        cbv_const.KEY_ALT   : snp_info[dev_const.KEY_SCORES_ALT],
+                        }
             prediction = {cbv_const.KEY_TARGETS : rec[cbv_const.KEY_PREDICTION_SECTION][dev_const.KEY_SCORES_TARGETS]}
             self.dataset.append({cbv_const.KEY_SNP_INFO_SECTION : snp_data,
                                  cbv_const.KEY_PREDICTION_SECTION : prediction,

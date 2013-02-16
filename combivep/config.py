@@ -8,11 +8,11 @@ class Configure(object):
 
     def __init__(self):
         self.cfg_file = cbv_const.CBV_CFG_FILE
-        self.cfg_vals = {cbv_const.LATEST_UCSC_DB_VER : '0',
-                         cbv_const.LATEST_UCSC_FILE_NAME : '',
-                         cbv_const.LATEST_LJB_DB_VER : '0.1',
-                         cbv_const.LATEST_LJB_FILE_PREFIX : '',
-                         }
+        self.cfg_vals = {}
+        self.cfg_vals[cbv_const.LATEST_UCSC_DB_VER] = '0'
+        self.cfg_vals[cbv_const.LATEST_UCSC_FILE_NAME] = ''
+        self.cfg_vals[cbv_const.LATEST_LJB_DB_VER] = '0.1'
+        self.cfg_vals[cbv_const.LATEST_LJB_FILE_PREFIX] = ''
 
     def load_cfg(self):
         f = open(self.cfg_file, 'r')
