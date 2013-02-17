@@ -32,7 +32,7 @@ class CombiVEPBase(object):
         print >> sys.stderr, info_msg
 
     def throw(self, err_msg):
-        raise Exception(cmd, err_msg)
+        raise Exception(err_msg)
 
     def exec_sh(self, cmd):
         p = subprocess.Popen(cmd, shell=True)

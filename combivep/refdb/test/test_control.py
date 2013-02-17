@@ -46,9 +46,9 @@ class TestUcscController(SafeRefDBTester):
         ucsc_reader = UcscReader()
         ucsc_reader.read(out_file)
         readable = False
-        for rec in ucsc_reader.fetch_array_snps('chr3', 108572604, 108572605):
+        for rec in ucsc_reader.fetch_snps('chr3', 108572604, 108572605):
             readable = True
-            self.assertEqual(rec[cbv_const.UCSC_0_IDX_START_POS],
+            self.assertEqual(rec.start_pos,
                              '108572604', 
                              "Database tabixing doesn't work correctly")
             break
@@ -122,9 +122,9 @@ class TestLjbController(SafeRefDBTester):
         ljb_reader = LjbReader()
         ljb_reader.read(out_file)
         readable = False
-        for rec in ljb_reader.fetch_array_snps('3', 108549516, 108549517):
+        for rec in ljb_reader.fetch_snps('3', 108549516, 108549517):
             readable = True
-            self.assertEqual(rec[cbv_const.LJB_PARSED_0_IDX_POS],
+            self.assertEqual(rec.pos,
                              '108549517',
                              "Database tabixing doesn't work correctly")
             break

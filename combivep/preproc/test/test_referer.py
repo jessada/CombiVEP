@@ -7,7 +7,6 @@ from combivep.preproc.referer import Referer
 
 class TestReferer(SafePreProcTester):
 
-
     def __init__(self, test_name):
         SafePreProcTester.__init__(self, test_name)
 
@@ -27,7 +26,7 @@ class TestReferer(SafePreProcTester):
                         "Incorrect SNP validating")
         self.assertTrue(referer.validate_snp('chr3', 25836088, 'C', 'A'),
                         "Incorrect SNP validating")
-        self.assertTrue(referer.validate_snp('20' , 17474690, 'T', 'G'),
+        self.assertTrue(referer.validate_snp('20', 17474690, 'T', 'G'),
                         "Incorrect SNP validating")
         self.assertTrue(referer.validate_snp('chrX', 56296488, 'G', 'C'),
                         "Incorrect SNP validating")
@@ -42,30 +41,24 @@ class TestReferer(SafePreProcTester):
         referer.cfg_file = cbv_const.CBV_SAMPLE_CFG_FILE
         referer.load_cfg()
         rec = referer.get_scores('3', 108541778, 'T', 'C')
-        self.assertEqual(rec[cbv_const.KEY_PHYLOP_SCORE],
+        self.assertEqual(rec.phylop_score,
                          '0.102322',
                          "Incorrect LJB formatting")
-        self.assertEqual(rec[cbv_const.KEY_SIFT_SCORE],
+        self.assertEqual(rec.sift_score,
                          '0.91',
                          "Incorrect LJB formatting")
-        self.assertEqual(rec[cbv_const.KEY_PP2_SCORE],
+        self.assertEqual(rec.pp2_score,
                          '0',
                          "Incorrect LJB formatting")
-        self.assertEqual(rec[cbv_const.KEY_LRT_SCORE],
+        self.assertEqual(rec.lrt_score,
                          '0.312516',
                          "Incorrect LJB formatting")
-        self.assertEqual(rec[cbv_const.KEY_MT_SCORE],
+        self.assertEqual(rec.mt_score,
                          '0.000000',
                          "Incorrect LJB formatting")
-        self.assertEqual(rec[cbv_const.KEY_GERP_SCORE],
+        self.assertEqual(rec.gerp_score,
                          '-3.16',
                          "Incorrect LJB formatting")
 
     def tearDown(self):
         self.remove_working_dir()
-
-
-
-
-
-

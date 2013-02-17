@@ -7,7 +7,6 @@ class DataSet(object):
 
     """
 
-
     def __init__(self, file_name):
         object.__init__(self)
 
@@ -19,5 +18,3 @@ class DataSet(object):
         #Transpose the matrixes so that it can be easily understood by MLP
         self.feature_vectors = __data[:,1:self.n_cols-1].astype(np.float).T
         self.targets         = __data[:,self.n_cols-1].astype(np.int).T
-
-
