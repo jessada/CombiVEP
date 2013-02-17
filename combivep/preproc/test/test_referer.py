@@ -42,22 +42,22 @@ class TestReferer(SafePreProcTester):
         referer.cfg_file = cbv_const.CBV_SAMPLE_CFG_FILE
         referer.load_cfg()
         rec = referer.get_scores('3', 108541778, 'T', 'C')
-        self.assertEqual(rec[cbv_const.KEY_PHYLOP_SCORE],
+        self.assertEqual(rec.phylop_score,
                          '0.102322',
                          "Incorrect LJB formatting")
-        self.assertEqual(rec[cbv_const.KEY_SIFT_SCORE],
+        self.assertEqual(rec.sift_score,
                          '0.91',
                          "Incorrect LJB formatting")
-        self.assertEqual(rec[cbv_const.KEY_PP2_SCORE],
+        self.assertEqual(rec.pp2_score,
                          '0',
                          "Incorrect LJB formatting")
-        self.assertEqual(rec[cbv_const.KEY_LRT_SCORE],
+        self.assertEqual(rec.lrt_score,
                          '0.312516',
                          "Incorrect LJB formatting")
-        self.assertEqual(rec[cbv_const.KEY_MT_SCORE],
+        self.assertEqual(rec.mt_score,
                          '0.000000',
                          "Incorrect LJB formatting")
-        self.assertEqual(rec[cbv_const.KEY_GERP_SCORE],
+        self.assertEqual(rec.gerp_score,
                          '-3.16',
                          "Incorrect LJB formatting")
 

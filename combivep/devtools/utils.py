@@ -170,12 +170,12 @@ def filter_cbv_data(cbv_file,
                                                                          item[cbv_const.KEY_SNP_INFO_SECTION][cbv_const.KEY_REF],
                                                                          item[cbv_const.KEY_SNP_INFO_SECTION][cbv_const.KEY_ALT],
                                                                          item[cbv_const.KEY_PREDICTION_SECTION][cbv_const.KEY_TARGETS],
-                                                                         item[cbv_const.KEY_SCORES_SECTION][cbv_const.KEY_PHYLOP_SCORE],
-                                                                         item[cbv_const.KEY_SCORES_SECTION][cbv_const.KEY_SIFT_SCORE],
-                                                                         item[cbv_const.KEY_SCORES_SECTION][cbv_const.KEY_PP2_SCORE],
-                                                                         item[cbv_const.KEY_SCORES_SECTION][cbv_const.KEY_LRT_SCORE],
-                                                                         item[cbv_const.KEY_SCORES_SECTION][cbv_const.KEY_MT_SCORE],
-                                                                         item[cbv_const.KEY_SCORES_SECTION][cbv_const.KEY_GERP_SCORE],
+                                                                         item[cbv_const.KEY_SCORES_SECTION].phylop_score,
+                                                                         item[cbv_const.KEY_SCORES_SECTION].sift_score,
+                                                                         item[cbv_const.KEY_SCORES_SECTION].pp2_score,
+                                                                         item[cbv_const.KEY_SCORES_SECTION].lrt_score,
+                                                                         item[cbv_const.KEY_SCORES_SECTION].mt_score,
+                                                                         item[cbv_const.KEY_SCORES_SECTION].gerp_score,
                                                                          )
                         )
     f_scores.close()

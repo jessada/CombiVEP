@@ -39,12 +39,12 @@ class DataSet(list):
         for item in self:
             scores = item[cbv_const.KEY_SCORES_SECTION]
             tmp_array = []
-            tmp_array.append(float(scores[cbv_const.KEY_PHYLOP_SCORE]))
-            tmp_array.append(float(scores[cbv_const.KEY_SIFT_SCORE]))
-            tmp_array.append(float(scores[cbv_const.KEY_PP2_SCORE]))
-            tmp_array.append(float(scores[cbv_const.KEY_LRT_SCORE]))
-            tmp_array.append(float(scores[cbv_const.KEY_MT_SCORE]))
-            tmp_array.append(float(scores[cbv_const.KEY_GERP_SCORE]))
+            tmp_array.append(float(scores.phylop_score))
+            tmp_array.append(float(scores.sift_score))
+            tmp_array.append(float(scores.pp2_score))
+            tmp_array.append(float(scores.lrt_score))
+            tmp_array.append(float(scores.mt_score))
+            tmp_array.append(float(scores.gerp_score))
             feature_vector_arrays.append(tmp_array)
         return np.matrix(feature_vector_arrays).T
 
@@ -69,7 +69,7 @@ class DataSet(list):
 
     def __get_n_features(self):
         for item in self:
-            return len(item[cbv_const.KEY_SCORES_SECTION].keys())
+            return len(item[cbv_const.KEY_SCORES_SECTION])
             break
 
     @property
@@ -104,12 +104,12 @@ class DataSetManager(CombiVEPBase):
         self.clear_data()
         vcf_reader = VcfReader()
         vcf_reader.read(file_name)
-        for rec in vcf_reader.fetch_hash_snps():
-            snp_info = rec[cbv_const.KEY_SNP_INFO_SECTION]
-            snp_data = {cbv_const.KEY_CHROM : snp_info[cbv_const.KEY_VCF_CHROM],
-                        cbv_const.KEY_POS   : snp_info[cbv_const.KEY_VCF_POS],
-                        cbv_const.KEY_REF   : snp_info[cbv_const.KEY_VCF_REF],
-                        cbv_const.KEY_ALT   : snp_info[cbv_const.KEY_VCF_ALT],
+        for rec in vcf_reader.fetch_snps():
+#            snp_info = rec[cbv_const.KEY_SNP_INFO_SECTION]
+            snp_data = {cbv_const.KEY_CHROM : rec.chrom,
+                        cbv_const.KEY_POS   : rec.pos,
+                        cbv_const.KEY_REF   : rec.ref,
+                        cbv_const.KEY_ALT   : rec.alt,
                         }
             prediction = {cbv_const.KEY_TARGETS : None}
             self.dataset.append({cbv_const.KEY_SNP_INFO_SECTION   : snp_data,
@@ -119,14 +119,15 @@ class DataSetManager(CombiVEPBase):
         self.clear_data()
         cbv_reader = CbvReader()
         cbv_reader.read(file_name)
-        for rec in cbv_reader.fetch_hash_snps():
-            snp_info = rec[cbv_const.KEY_SNP_INFO_SECTION]
-            snp_data = {cbv_const.KEY_CHROM : snp_info[cbv_const.KEY_CBV_CHROM],
-                        cbv_const.KEY_POS   : snp_info[cbv_const.KEY_CBV_POS],
-                        cbv_const.KEY_REF   : snp_info[cbv_const.KEY_CBV_REF],
-                        cbv_const.KEY_ALT   : snp_info[cbv_const.KEY_CBV_ALT],
+        for rec in cbv_reader.fetch_snps():
+#            snp_info = rec[cbv_const.KEY_SNP_INFO_SECTION]
+            snp_data = {cbv_const.KEY_CHROM : rec.chrom,
+                        cbv_const.KEY_POS   : rec.pos,
+                        cbv_const.KEY_REF   : rec.ref,
+                        cbv_const.KEY_ALT   : rec.alt,
                         }
-            targets  = rec[cbv_const.KEY_PREDICTION_SECTION][cbv_const.KEY_CBV_TARGETS]
+#            targets  = rec[cbv_const.KEY_PREDICTION_SECTION][cbv_const.KEY_CBV_TARGETS]
+            targets  = rec.targets
             prediction = {cbv_const.KEY_TARGETS : targets}
             self.dataset.append({cbv_const.KEY_SNP_INFO_SECTION : snp_data,
                                  cbv_const.KEY_PREDICTION_SECTION : prediction})
