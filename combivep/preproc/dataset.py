@@ -8,12 +8,44 @@ from combivep.preproc.reader import CbvReader
 from combivep.preproc.referer import Referer
 
 
-class DataSet(list):
+class SnpDataRecord(CombiVEPBase):
+    """ to store precalculated scores """
 
+    def __init__(self):
+        self.chrom = None
+        self.pos = None
+        self.ref = None
+        self.alt = None
+        self.target = None
+
+    def __str__(self):
+        return self.__repr__()
+
+    def __repr__(self):
+        return str({'chrom': self.chrom,
+                    'pos': self.pos,
+                    'ref': self.ref,
+                    'alt': self.alt,
+                    'target': self.target,
+                    })
+
+
+class DataSet(list):
+    """
+
+    one dataset represents one set of data:
+    - training
+    - validation
+    - test
+    - positive
+    - negative
+    - etc..
+
+    """
 
     def __init__(self, *args):
         list.__init__(self, *args)
-        self.shuffle_seed     = None
+        self.shuffle_seed = None
 
     def clear(self):
         del self[:]
@@ -37,14 +69,14 @@ class DataSet(list):
     def __get_feature_vectors(self):
         feature_vector_arrays = []
         for item in self:
-            scores = item[cbv_const.KEY_SCORES_SECTION]
+            scores = item[cbv_const.KW_SCORES_SECTION]
             tmp_array = []
-            tmp_array.append(float(scores[cbv_const.KEY_PHYLOP_SCORE]))
-            tmp_array.append(float(scores[cbv_const.KEY_SIFT_SCORE]))
-            tmp_array.append(float(scores[cbv_const.KEY_PP2_SCORE]))
-            tmp_array.append(float(scores[cbv_const.KEY_LRT_SCORE]))
-            tmp_array.append(float(scores[cbv_const.KEY_MT_SCORE]))
-            tmp_array.append(float(scores[cbv_const.KEY_GERP_SCORE]))
+            tmp_array.append(float(scores.phylop_score))
+            tmp_array.append(float(scores.sift_score))
+            tmp_array.append(float(scores.pp2_score))
+            tmp_array.append(float(scores.lrt_score))
+            tmp_array.append(float(scores.mt_score))
+            tmp_array.append(float(scores.gerp_score))
             feature_vector_arrays.append(tmp_array)
         return np.matrix(feature_vector_arrays).T
 
@@ -55,12 +87,11 @@ class DataSet(list):
     def __get_targets(self):
         if len(self) == 0:
             return None
-        if self[0][cbv_const.KEY_PREDICTION_SECTION][cbv_const.KEY_TARGETS] is None:
+        if self[0][cbv_const.KW_SNP_DATA_SECTION].target is None:
             return None
         target_array = []
         for item in self:
-            prediction = item[cbv_const.KEY_PREDICTION_SECTION]
-            target_array.append(prediction[cbv_const.KEY_TARGETS])
+            target_array.append(item[cbv_const.KW_SNP_DATA_SECTION].target)
         return np.array(target_array).astype(np.int)
 
     @property
@@ -69,7 +100,7 @@ class DataSet(list):
 
     def __get_n_features(self):
         for item in self:
-            return len(item[cbv_const.KEY_SCORES_SECTION].keys())
+            return len(item[cbv_const.KW_SCORES_SECTION])
             break
 
     @property
@@ -104,32 +135,26 @@ class DataSetManager(CombiVEPBase):
         self.clear_data()
         vcf_reader = VcfReader()
         vcf_reader.read(file_name)
-        for rec in vcf_reader.fetch_hash_snps():
-            snp_info = rec[cbv_const.KEY_SNP_INFO_SECTION]
-            snp_data = {cbv_const.KEY_CHROM : snp_info[cbv_const.KEY_VCF_CHROM],
-                        cbv_const.KEY_POS   : snp_info[cbv_const.KEY_VCF_POS],
-                        cbv_const.KEY_REF   : snp_info[cbv_const.KEY_VCF_REF],
-                        cbv_const.KEY_ALT   : snp_info[cbv_const.KEY_VCF_ALT],
-                        }
-            prediction = {cbv_const.KEY_TARGETS : None}
-            self.dataset.append({cbv_const.KEY_SNP_INFO_SECTION   : snp_data,
-                                 cbv_const.KEY_PREDICTION_SECTION : prediction})
+        for rec in vcf_reader.fetch_snps():
+            snp_data = SnpDataRecord()
+            snp_data.chrom = rec.chrom
+            snp_data.pos = rec.pos
+            snp_data.ref = rec.ref
+            snp_data.alt = rec.alt
+            self.dataset.append({cbv_const.KW_SNP_DATA_SECTION : snp_data})
 
     def __load_cbv_data(self, file_name):
         self.clear_data()
         cbv_reader = CbvReader()
         cbv_reader.read(file_name)
-        for rec in cbv_reader.fetch_hash_snps():
-            snp_info = rec[cbv_const.KEY_SNP_INFO_SECTION]
-            snp_data = {cbv_const.KEY_CHROM : snp_info[cbv_const.KEY_CBV_CHROM],
-                        cbv_const.KEY_POS   : snp_info[cbv_const.KEY_CBV_POS],
-                        cbv_const.KEY_REF   : snp_info[cbv_const.KEY_CBV_REF],
-                        cbv_const.KEY_ALT   : snp_info[cbv_const.KEY_CBV_ALT],
-                        }
-            targets  = rec[cbv_const.KEY_PREDICTION_SECTION][cbv_const.KEY_CBV_TARGETS]
-            prediction = {cbv_const.KEY_TARGETS : targets}
-            self.dataset.append({cbv_const.KEY_SNP_INFO_SECTION : snp_data,
-                                 cbv_const.KEY_PREDICTION_SECTION : prediction})
+        for rec in cbv_reader.fetch_snps():
+            snp_data = SnpDataRecord()
+            snp_data.chrom = rec.chrom
+            snp_data.pos = rec.pos
+            snp_data.ref = rec.ref
+            snp_data.alt = rec.alt
+            snp_data.target = rec.target
+            self.dataset.append({cbv_const.KW_SNP_DATA_SECTION : snp_data})
 
     def validate_data(self):
         #to prevent misintepretion due to different version
@@ -137,11 +162,11 @@ class DataSetManager(CombiVEPBase):
         #if they are not exist in certain UCSC database
         tmp_dataset = DataSet()
         for item in self.dataset:
-            snp_info = item[cbv_const.KEY_SNP_INFO_SECTION]
-            if self.referer.validate_snp(snp_info[cbv_const.KEY_CHROM],
-                                         snp_info[cbv_const.KEY_POS],
-                                         snp_info[cbv_const.KEY_REF],
-                                         snp_info[cbv_const.KEY_ALT],
+            snp_data = item[cbv_const.KW_SNP_DATA_SECTION]
+            if self.referer.validate_snp(snp_data.chrom,
+                                         snp_data.pos,
+                                         snp_data.ref,
+                                         snp_data.alt,
                                          ):
                 tmp_dataset.append(item)
         del self.dataset[:]
@@ -151,19 +176,19 @@ class DataSetManager(CombiVEPBase):
         #get scores from LJB database
         tmp_dataset = DataSet()
         for item in self.dataset:
-            snp_info = item[cbv_const.KEY_SNP_INFO_SECTION]
-            scores = self.referer.get_scores(snp_info[cbv_const.KEY_CHROM],
-                                             snp_info[cbv_const.KEY_POS],
-                                             snp_info[cbv_const.KEY_REF],
-                                             snp_info[cbv_const.KEY_ALT],
+            snp_data = item[cbv_const.KW_SNP_DATA_SECTION]
+            scores = self.referer.get_scores(snp_data.chrom,
+                                             snp_data.pos,
+                                             snp_data.ref,
+                                             snp_data.alt,
                                              )
-            item[cbv_const.KEY_SCORES_SECTION] = scores
+            item[cbv_const.KW_SCORES_SECTION] = scores
         #remove items from self.dataset if they don't have scores
-        self.dataset[:] = [item for item in self.dataset if item[cbv_const.KEY_SCORES_SECTION] is not None]
+        self.dataset[:] = [item for item in self.dataset if item[cbv_const.KW_SCORES_SECTION] is not None]
 
     def partition_data(self,
-                       prop_training   = cbv_const.PROPORTION_TRAINING_DATA,
-                       prop_validation = cbv_const.PROPORTION_VALIDATION_DATA,
+                       prop_training=cbv_const.PROPORTION_TRAINING_DATA,
+                       prop_validation=cbv_const.PROPORTION_VALIDATION_DATA,
                        ):
         self.__prop_training   = prop_training
         self.__prop_validation = prop_validation
@@ -195,6 +220,3 @@ class DataSetManager(CombiVEPBase):
 
     def shuffle_data(self):
         self.dataset.shuffle()
-
-
-

@@ -7,7 +7,6 @@ from combivep.preproc.reader import LjbReader
 class Referer(Configure):
     """To connect to reference database"""
 
-
     def __init__(self):
         Configure.__init__(self)
 
@@ -37,12 +36,12 @@ class Referer(Configure):
 
         """
         reader = self.__get_ucsc_reader()
-        for rec in reader.fetch_array_snps(chrom, int(pos)-1, int(pos)):
-            if rec[cbv_const.UCSC_0_IDX_REF] != ref:
+        for rec in reader.fetch_snps(chrom, int(pos)-1, int(pos)):
+            if rec.ref != ref:
                 continue
             if ref == alt:
                 continue
-            ucsc_alts = rec[cbv_const.UCSC_0_IDX_OBSERVED].split('/')
+            ucsc_alts = rec.observed.split('/')
             for ucsc_alt in ucsc_alts:
                 if ucsc_alt == alt:
                     return True
@@ -70,12 +69,3 @@ class Referer(Configure):
 
     def __get_ljb_reader(self):
         return self.__ljb_reader
-
-
-
-
-
-
-
-
-

@@ -19,11 +19,11 @@ PUB_AUC_FIG                 = os.path.join(PUB_FIGS_DIR, 'auc_curve.eps')
 FILE_TYPE_SCORES = 'scores' #CombiVEP format
 
 #SNP information key
-KEY_SCORES_CHROM   = 'SCORES_chrom'
-KEY_SCORES_POS     = 'SCORES_pos'
-KEY_SCORES_REF     = 'SCORES_ref'
-KEY_SCORES_ALT     = 'SCORES_alt'
-KEY_SCORES_TARGETS = 'SCORES_targets'
+KEY_SCORES_CHROM  = 'SCORES_chrom'
+KEY_SCORES_POS    = 'SCORES_pos'
+KEY_SCORES_REF    = 'SCORES_ref'
+KEY_SCORES_ALT    = 'SCORES_alt'
+KEY_SCORES_TARGET = 'SCORES_target'
 
 #SCORES index
 #0-based index, used by python
@@ -31,7 +31,7 @@ SCORES_0_IDX_CHROM        = 0
 SCORES_0_IDX_POS          = 1
 SCORES_0_IDX_REF          = 2
 SCORES_0_IDX_ALT          = 3
-SCORES_0_IDX_TARGETS      = 4
+SCORES_0_IDX_TARGET       = 4
 SCORES_0_IDX_PHYLOP_SCORE = 5
 SCORES_0_IDX_SIFT_SCORE   = 6
 SCORES_0_IDX_PP2_SCORE    = 7

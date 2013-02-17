@@ -1,6 +1,44 @@
 import pysam
 import combivep.settings as cbv_const
 from combivep.template import CombiVEPBase
+from collections import namedtuple
+
+
+class UcscRecord(CombiVEPBase):
+    """ to automatically parse ucsc data """
+
+    def __init__(self, array_snp):
+        self.__array_snp = array_snp
+
+    def __str__(self):
+        return self.__repr__()
+
+    def __repr__(self):
+        return str(self.__array_snp)
+
+    @property
+    def chrom(self):
+        return self.__array_snp[cbv_const.UCSC_0_IDX_CHROM]
+
+    @property
+    def start_pos(self):
+        return self.__array_snp[cbv_const.UCSC_0_IDX_START_POS]
+
+    @property
+    def end_pos(self):
+        return self.__array_snp[cbv_const.UCSC_0_IDX_END_POS]
+
+    @property
+    def strand(self):
+        return self.__array_snp[cbv_const.UCSC_0_IDX_STRAND]
+
+    @property
+    def ref(self):
+        return self.__array_snp[cbv_const.UCSC_0_IDX_REF]
+
+    @property
+    def observed(self):
+        return self.__array_snp[cbv_const.UCSC_0_IDX_OBSERVED]
 
 
 class UcscReader(CombiVEPBase):
@@ -12,35 +50,124 @@ class UcscReader(CombiVEPBase):
     def read(self, tabix_file):
         self.db_file_name = tabix_file
 
-    def fetch_array_snps(self, chromosome, start_pos, end_pos):
+    def fetch_snps(self, chromosome, start_pos, end_pos):
         tabix_file = pysam.Tabixfile(self.db_file_name)
         if chromosome.startswith('chr'):
             chrom = chromosome
         else:
             chrom = 'chr' + chromosome
         for line in tabix_file.fetch(chrom, start_pos, end_pos):
-            yield line.rstrip('\n').split('\t')
+            raw_rec = line.rstrip('\n').split('\t')
+            if len(raw_rec) != cbv_const.UCSC_EXPECTED_LENGTH:
+                self.throw(self.format_error.format(data=line.rstrip('\n')))
+            yield UcscRecord(raw_rec)
 
-    def fetch_hash_snps(self, chromosome, start_pos, end_pos):
-        for rec in self.fetch_array_snps(chromosome, start_pos, end_pos):
-            if len(rec) != cbv_const.UCSC_EXPECTED_LENGTH :
-                self.throw("Invalid formatting is found in file '%s'>> Chrom : %s\tStart pos : %s\tEnd pos : %s" % (self.db_file_name,
-                                                                                                                    rec[cbv_const.UCSC_0_IDX_CHROM],
-                                                                                                                    rec[cbv_const.UCSC_0_IDX_START_POS],
-                                                                                                                    rec[cbv_const.UCSC_0_IDX_END_POS]))
-            snp_info = {cbv_const.KEY_UCSC_CHROM     : rec[cbv_const.UCSC_0_IDX_CHROM],
-                        cbv_const.KEY_UCSC_START_POS : rec[cbv_const.UCSC_0_IDX_START_POS],
-                        cbv_const.KEY_UCSC_END_POS   : rec[cbv_const.UCSC_0_IDX_END_POS],
-                        cbv_const.KEY_UCSC_STRAND    : rec[cbv_const.UCSC_0_IDX_STRAND],
-                        cbv_const.KEY_UCSC_REF       : rec[cbv_const.UCSC_0_IDX_REF],
-                        cbv_const.KEY_UCSC_OBSERVED  : rec[cbv_const.UCSC_0_IDX_OBSERVED],
-                        }
-            yield {cbv_const.KEY_SNP_INFO_SECTION : snp_info}
+    @property
+    def format_error(self):
+        return "Invalid formatting is found at:\n{data}"
+
+
+class LjbRecord(CombiVEPBase):
+    """ to automatically parse ljb data """
+
+    def __init__(self, array_snp):
+        self.__array_snp = array_snp
+
+    def __str__(self):
+        return self.__repr__()
+
+    def __repr__(self):
+        return str(self.__array_snp)
+
+    @property
+    def chrom(self):
+        return self.__array_snp[cbv_const.LJB_PARSED_0_IDX_CHROM]
+
+    @property
+    def pos(self):
+        return self.__array_snp[cbv_const.LJB_PARSED_0_IDX_POS]
+
+    @property
+    def ref(self):
+        return self.__array_snp[cbv_const.LJB_PARSED_0_IDX_REF]
+
+    @property
+    def alt(self):
+        return self.__array_snp[cbv_const.LJB_PARSED_0_IDX_ALT]
+
+    @property
+    def phylop_score(self):
+        return self.__array_snp[cbv_const.LJB_PARSED_0_IDX_PHYLOP_SCORE]
+
+    @property
+    def sift_score(self):
+        return self.__array_snp[cbv_const.LJB_PARSED_0_IDX_SIFT_SCORE]
+
+    @property
+    def pp2_score(self):
+        return self.__array_snp[cbv_const.LJB_PARSED_0_IDX_PP2_SCORE]
+
+    @property
+    def lrt_score(self):
+        return self.__array_snp[cbv_const.LJB_PARSED_0_IDX_LRT_SCORE]
+
+    @property
+    def mt_score(self):
+        return self.__array_snp[cbv_const.LJB_PARSED_0_IDX_MT_SCORE]
+
+    @property
+    def gerp_score(self):
+        return self.__array_snp[cbv_const.LJB_PARSED_0_IDX_GERP_SCORE]
+
+
+class ScoresRecord(CombiVEPBase):
+    """ to store precalculated scores """
+
+    def __init__(self, rec):
+        self.__rec = rec
+
+    def __str__(self):
+        return self.__repr__()
+
+    def __repr__(self):
+        return str({'phylop_score': self.phylop_score,
+                    'sift_score': self.sift_score,
+                    'pp2_score': self.pp2_score,
+                    'lrt_score': self.lrt_score,
+                    'mt_score': self.mt_score,
+                    'gerp_score': self.gerp_score,
+                    })
+
+    def __len__(self):
+        return 6
+
+    @property
+    def phylop_score(self):
+        return self.__rec.phylop_score
+
+    @property
+    def sift_score(self):
+        return self.__rec.sift_score
+
+    @property
+    def pp2_score(self):
+        return self.__rec.pp2_score
+
+    @property
+    def lrt_score(self):
+        return self.__rec.lrt_score
+
+    @property
+    def mt_score(self):
+        return self.__rec.mt_score
+
+    @property
+    def gerp_score(self):
+        return self.__rec.gerp_score
 
 
 class LjbReader(CombiVEPBase):
     """to read parsed LJB file"""
-
 
     def __init__(self):
         CombiVEPBase.__init__(self)
@@ -49,50 +176,60 @@ class LjbReader(CombiVEPBase):
         self.db_file_name = ljb_file
         self.__tabix_file = pysam.Tabixfile(ljb_file)
 
-    def fetch_array_snps(self, chromosome, start_pos, end_pos):
-        for line in self.__tabix_file.fetch(chromosome, int(start_pos)-1, int(end_pos)):
-            yield line.rstrip('\n').split('\t')
-
-    def fetch_hash_snps(self, chromosome, start_pos, end_pos):
-        for rec in self.fetch_array_snps(chromosome, start_pos, end_pos):
-            if len(rec) != cbv_const.LJB_PARSED_EXPECTED_LENGTH :
-                self.throw("Invalid formatting is found in file '%s'>> Chrom : %s\tpos : %s" % (self.db_file_name,
-                                                                                                rec[cbv_const.LJB_PARSED_0_IDX_CHROM],
-                                                                                                rec[cbv_const.LJB_PARSED_0_IDX_POS]))
-            snp_info = {cbv_const.KEY_LJB_CHROM : rec[cbv_const.LJB_PARSED_0_IDX_CHROM],
-                        cbv_const.KEY_LJB_POS   : rec[cbv_const.LJB_PARSED_0_IDX_POS],
-                        cbv_const.KEY_LJB_REF   : rec[cbv_const.LJB_PARSED_0_IDX_REF],
-                        cbv_const.KEY_LJB_ALT   : rec[cbv_const.LJB_PARSED_0_IDX_ALT],
-                        }
-            scores = {cbv_const.KEY_PHYLOP_SCORE : rec[cbv_const.LJB_PARSED_0_IDX_PHYLOP_SCORE],
-                      cbv_const.KEY_SIFT_SCORE   : rec[cbv_const.LJB_PARSED_0_IDX_SIFT_SCORE],
-                      cbv_const.KEY_PP2_SCORE    : rec[cbv_const.LJB_PARSED_0_IDX_PP2_SCORE],
-                      cbv_const.KEY_LRT_SCORE    : rec[cbv_const.LJB_PARSED_0_IDX_LRT_SCORE],
-                      cbv_const.KEY_MT_SCORE     : rec[cbv_const.LJB_PARSED_0_IDX_MT_SCORE],
-                      cbv_const.KEY_GERP_SCORE   : rec[cbv_const.LJB_PARSED_0_IDX_GERP_SCORE],
-                      }
-            yield {cbv_const.KEY_SNP_INFO_SECTION : snp_info,
-                   cbv_const.KEY_SCORES_SECTION   : scores,
-                   }
+    def fetch_snps(self, chromosome, start_pos, end_pos):
+        for line in self.__tabix_file.fetch(chromosome,
+                                            int(start_pos)-1,
+                                            int(end_pos)):
+            raw_rec = line.rstrip('\n').split('\t')
+            if len(raw_rec) != cbv_const.LJB_PARSED_EXPECTED_LENGTH:
+                self.throw(self.format_error.format(data=line.rstrip('\n')))
+            yield LjbRecord(raw_rec)
 
     def get_scores(self, chromosome, pos, ref, alt):
-        for rec in self.fetch_array_snps(chromosome, pos, pos):
-            if rec[cbv_const.LJB_PARSED_0_IDX_REF] != ref:
+        for rec in self.fetch_snps(chromosome, pos, pos):
+            if rec.ref != ref:
                 continue
-            if rec[cbv_const.LJB_PARSED_0_IDX_ALT] != alt:
+            if rec.alt != alt:
                 continue
-            return {cbv_const.KEY_PHYLOP_SCORE  : rec[cbv_const.LJB_PARSED_0_IDX_PHYLOP_SCORE],
-                    cbv_const.KEY_SIFT_SCORE    : rec[cbv_const.LJB_PARSED_0_IDX_SIFT_SCORE],
-                    cbv_const.KEY_PP2_SCORE     : rec[cbv_const.LJB_PARSED_0_IDX_PP2_SCORE],
-                    cbv_const.KEY_LRT_SCORE     : rec[cbv_const.LJB_PARSED_0_IDX_LRT_SCORE],
-                    cbv_const.KEY_MT_SCORE      : rec[cbv_const.LJB_PARSED_0_IDX_MT_SCORE],
-                    cbv_const.KEY_GERP_SCORE    : rec[cbv_const.LJB_PARSED_0_IDX_GERP_SCORE],
-                    }
+            return ScoresRecord(rec)
         return None
+
+    @property
+    def format_error(self):
+        return "Invalid formatting is found at:\n{data}"
+
+
+class VcfRecord(CombiVEPBase):
+    """ to automatically parse vcf data"""
+
+    def __init__(self, array_snp):
+        self.__array_snp = array_snp
+
+    def __str__(self):
+        return self.__repr__()
+
+    def __repr__(self):
+        return str(self.__array_snp)
+
+    @property
+    def chrom(self):
+        return self.__array_snp[cbv_const.VCF_0_IDX_CHROM]
+
+    @property
+    def pos(self):
+        return self.__array_snp[cbv_const.VCF_0_IDX_POS]
+
+    @property
+    def ref(self):
+        return self.__array_snp[cbv_const.VCF_0_IDX_REF]
+
+    @property
+    def alt(self):
+        return self.__array_snp[cbv_const.VCF_0_IDX_ALT]
+
 
 class VcfReader(CombiVEPBase):
     """to read parsed VCF file"""
-
 
     def __init__(self):
         CombiVEPBase.__init__(self)
@@ -100,21 +237,45 @@ class VcfReader(CombiVEPBase):
     def read(self, vcf_file):
         self.vcf_file_name = vcf_file
 
-    def fetch_array_snps(self):
+    def fetch_snps(self):
         vcf_file = open(self.vcf_file_name)
         for line in vcf_file:
             if line[0] == '#':
                 continue
-            yield line.rstrip('\n').split('\t')
+            yield VcfRecord(line.rstrip('\n').split('\t'))
 
-    def fetch_hash_snps(self):
-        for rec in self.fetch_array_snps():
-            snp_info = {cbv_const.KEY_VCF_CHROM : rec[cbv_const.VCF_0_IDX_CHROM],
-                        cbv_const.KEY_VCF_POS   : rec[cbv_const.VCF_0_IDX_POS],
-                        cbv_const.KEY_VCF_REF   : rec[cbv_const.VCF_0_IDX_REF],
-                        cbv_const.KEY_VCF_ALT   : rec[cbv_const.VCF_0_IDX_ALT],
-                        }
-            yield {cbv_const.KEY_SNP_INFO_SECTION : snp_info}
+
+class CbvRecord(CombiVEPBase):
+    """ to automatically parse vcf data"""
+
+    def __init__(self, array_snp):
+        self.__array_snp = array_snp
+
+    def __str__(self):
+        return self.__repr__()
+
+    def __repr__(self):
+        return str(self.__array_snp)
+
+    @property
+    def chrom(self):
+        return self.__array_snp[cbv_const.CBV_0_IDX_CHROM]
+
+    @property
+    def pos(self):
+        return self.__array_snp[cbv_const.CBV_0_IDX_POS]
+
+    @property
+    def ref(self):
+        return self.__array_snp[cbv_const.CBV_0_IDX_REF]
+
+    @property
+    def alt(self):
+        return self.__array_snp[cbv_const.CBV_0_IDX_ALT]
+
+    @property
+    def target(self):
+        return self.__array_snp[cbv_const.CBV_0_IDX_TARGET]
 
 
 class CbvReader(CombiVEPBase):
@@ -126,37 +287,15 @@ class CbvReader(CombiVEPBase):
 
     """
 
-
     def __init__(self):
         CombiVEPBase.__init__(self)
 
     def read(self, cbv_file):
         self.cbv_file_name = cbv_file
 
-    def fetch_array_snps(self):
+    def fetch_snps(self):
         cbv_file = open(self.cbv_file_name)
         for line in cbv_file:
             if line[0] == '#':
                 continue
-            yield line.rstrip('\n').split('\t')
-
-    def fetch_hash_snps(self):
-        for rec in self.fetch_array_snps():
-            snp_info = {cbv_const.KEY_CBV_CHROM : rec[cbv_const.CBV_0_IDX_CHROM],
-                        cbv_const.KEY_CBV_POS   : rec[cbv_const.CBV_0_IDX_POS],
-                        cbv_const.KEY_CBV_REF   : rec[cbv_const.CBV_0_IDX_REF],
-                        cbv_const.KEY_CBV_ALT   : rec[cbv_const.CBV_0_IDX_ALT],
-                        }
-            prediction = {cbv_const.KEY_CBV_TARGETS : rec[cbv_const.CBV_0_IDX_TARGETS]}
-            yield {cbv_const.KEY_SNP_INFO_SECTION   : snp_info,
-                   cbv_const.KEY_PREDICTION_SECTION : prediction,
-                   }
-
-
-
-
-
-
-
-
-
+            yield CbvRecord(line.rstrip('\n').split('\t'))

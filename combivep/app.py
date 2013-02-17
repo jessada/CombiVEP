@@ -154,21 +154,25 @@ def predict_deleterious_probability(SNPs_file,
     print "#" + "\t".join(tmp_rec)
     for i in xrange(len(dm.dataset)):
         del tmp_rec[:]
-        snp_info   = dm.dataset[i][cbv_const.KEY_SNP_INFO_SECTION]
-        prediction = dm.dataset[i][cbv_const.KEY_PREDICTION_SECTION]
-        scores     = dm.dataset[i][cbv_const.KEY_SCORES_SECTION]
-        tmp_rec.append(snp_info[cbv_const.KEY_CHROM])
-        tmp_rec.append(snp_info[cbv_const.KEY_POS])
-        tmp_rec.append(snp_info[cbv_const.KEY_REF])
-        tmp_rec.append(snp_info[cbv_const.KEY_ALT])
-        tmp_rec.append("%s" % prediction[cbv_const.KEY_TARGETS])
+        snp_data   = dm.dataset[i][cbv_const.KW_SNP_DATA_SECTION]
+        scores     = dm.dataset[i][cbv_const.KW_SCORES_SECTION]
+        tmp_rec.append(snp_data.chrom)
+        tmp_rec.append(snp_data.pos)
+        tmp_rec.append(snp_data.ref)
+        tmp_rec.append(snp_data.alt)
+        tmp_rec.append("%s" % snp_data.target)
         tmp_rec.append("%6.4f" % out[i])
-        tmp_rec.append(scores[cbv_const.KEY_PHYLOP_SCORE])
-        tmp_rec.append(scores[cbv_const.KEY_SIFT_SCORE])
-        tmp_rec.append(scores[cbv_const.KEY_PP2_SCORE])
-        tmp_rec.append(scores[cbv_const.KEY_LRT_SCORE])
-        tmp_rec.append(scores[cbv_const.KEY_MT_SCORE])
-        tmp_rec.append(scores[cbv_const.KEY_GERP_SCORE])
+        tmp_rec.append(scores.phylop_score)
+        tmp_rec.append(scores.sift_score)
+        tmp_rec.append(scores.pp2_score)
+        tmp_rec.append(scores.lrt_score)
+        tmp_rec.append(scores.mt_score)
+        tmp_rec.append(scores.gerp_score)
+#        tmp_rec.append(scores[cbv_const.KW_PHYLOP_SCORE])
+#        tmp_rec.append(scores[cbv_const.KW_SIFT_SCORE])
+#        tmp_rec.append(scores[cbv_const.KW_PP2_SCORE])
+#        tmp_rec.append(scores[cbv_const.KW_LRT_SCORE])
+#        tmp_rec.append(scores[cbv_const.KW_MT_SCORE])
+#        tmp_rec.append(scores[cbv_const.KW_GERP_SCORE])
         print "\t".join(tmp_rec)
     sys.stdout = sys.__stdout__
-
