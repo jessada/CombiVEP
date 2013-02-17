@@ -136,7 +136,7 @@ class LjbController(LjbUpdater, Configure):
         cmd.append(' | awk -F\'\\t\' \'{printf "%s\\t%s\\t%s\\t%s\\t%s\\t%s\\t%s\\t%s\\t%s\\t%s\\n", $')
         cmd.append(str(cbv_const.LJB_RAW_1_IDX_CHROM))
         cmd.append(', $')
-        cmd.append(str(cbv_const.LJB_RAW_1_IDX_POS))
+        cmd.append(str(cbv_const.LJB_RAW_1_IDX_HG19_POS))
         cmd.append(', $')
         cmd.append(str(cbv_const.LJB_RAW_1_IDX_REF))
         cmd.append(', $')

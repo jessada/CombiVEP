@@ -37,8 +37,8 @@ class ScoresRecord(CombiVEPBase):
         return self.__array_snp[dev_const.SCORES_0_IDX_ALT]
 
     @property
-    def targets(self):
-        return self.__array_snp[dev_const.SCORES_0_IDX_TARGETS]
+    def target(self):
+        return self.__array_snp[dev_const.SCORES_0_IDX_TARGET]
 
     @property
     def phylop_score(self):
@@ -89,22 +89,22 @@ class ScoresReader(CombiVEPBase):
 
     def fetch_hash_snps(self):
         for rec in self.fetch_array_snps():
-            snp_info = {dev_const.KEY_SCORES_CHROM : rec.chrom,
-                        dev_const.KEY_SCORES_POS   : rec.pos,
-                        dev_const.KEY_SCORES_REF   : rec.ref,
-                        dev_const.KEY_SCORES_ALT   : rec.alt,
+            snp_data = {dev_const.KW_SCORES_CHROM : rec.chrom,
+                        dev_const.KW_SCORES_POS   : rec.pos,
+                        dev_const.KW_SCORES_REF   : rec.ref,
+                        dev_const.KW_SCORES_ALT   : rec.alt,
                         }
-            prediction = {dev_const.KEY_SCORES_TARGETS : rec.targets}
-            scores     = {cbv_const.KEY_PHYLOP_SCORE : rec.phylop_score,
-                          cbv_const.KEY_SIFT_SCORE   : rec.sift_score,
-                          cbv_const.KEY_PP2_SCORE    : rec.pp2_score,
-                          cbv_const.KEY_LRT_SCORE    : rec.lrt_score,
-                          cbv_const.KEY_MT_SCORE     : rec.mt_score,
-                          cbv_const.KEY_GERP_SCORE   : rec.gerp_score,
+            prediction = {dev_const.KW_SCORES_TARGET : rec.target}
+            scores     = {cbv_const.KW_PHYLOP_SCORE : rec.phylop_score,
+                          cbv_const.KW_SIFT_SCORE   : rec.sift_score,
+                          cbv_const.KW_PP2_SCORE    : rec.pp2_score,
+                          cbv_const.KW_LRT_SCORE    : rec.lrt_score,
+                          cbv_const.KW_MT_SCORE     : rec.mt_score,
+                          cbv_const.KW_GERP_SCORE   : rec.gerp_score,
                           }
-            yield {cbv_const.KEY_SNP_INFO_SECTION   : snp_info,
-                   cbv_const.KEY_PREDICTION_SECTION : prediction,
-                   cbv_const.KEY_SCORES_SECTION     : scores,
+            yield {cbv_const.KW_SNP_DATA_SECTION   : snp_data,
+                   cbv_const.KW_PREDICTION_SECTION : prediction,
+                   cbv_const.KW_SCORES_SECTION     : scores,
                    }
 
 class FastDataSetManager(DataSetManager):
@@ -124,16 +124,16 @@ class FastDataSetManager(DataSetManager):
         scores_reader = ScoresReader()
         scores_reader.read(file_name)
         for rec in scores_reader.fetch_hash_snps():
-            snp_info = rec[cbv_const.KEY_SNP_INFO_SECTION]
-            snp_data = {cbv_const.KEY_CHROM : snp_info[dev_const.KEY_SCORES_CHROM],
-                        cbv_const.KEY_POS   : snp_info[dev_const.KEY_SCORES_POS],
-                        cbv_const.KEY_REF   : snp_info[dev_const.KEY_SCORES_REF],
-                        cbv_const.KEY_ALT   : snp_info[dev_const.KEY_SCORES_ALT],
+            snp_data = rec[cbv_const.KW_SNP_DATA_SECTION]
+            snp_data = {cbv_const.KW_CHROM : snp_data[dev_const.KW_SCORES_CHROM],
+                        cbv_const.KW_POS   : snp_data[dev_const.KW_SCORES_POS],
+                        cbv_const.KW_REF   : snp_data[dev_const.KW_SCORES_REF],
+                        cbv_const.KW_ALT   : snp_data[dev_const.KW_SCORES_ALT],
                         }
-            prediction = {cbv_const.KEY_TARGETS : rec[cbv_const.KEY_PREDICTION_SECTION][dev_const.KEY_SCORES_TARGETS]}
-            self.dataset.append({cbv_const.KEY_SNP_INFO_SECTION : snp_data,
-                                 cbv_const.KEY_PREDICTION_SECTION : prediction,
-                                 cbv_const.KEY_SCORES_SECTION : rec[cbv_const.KEY_SCORES_SECTION],
+            prediction = {cbv_const.KW_TARGET : rec[cbv_const.KW_PREDICTION_SECTION][dev_const.KW_SCORES_TARGET]}
+            self.dataset.append({cbv_const.KW_SNP_DATA_SECTION : snp_data,
+                                 cbv_const.KW_PREDICTION_SECTION : prediction,
+                                 cbv_const.KW_SCORES_SECTION : rec[cbv_const.KW_SCORES_SECTION],
                                  })
 
 
@@ -150,37 +150,37 @@ def filter_cbv_data(cbv_file,
     dm.validate_data()
     f_clean = open(cbv_file + '.clean', 'w')
     for item in dm.dataset:
-        f_clean.write("%s\t%s\t%s\t%s\t%s\n" % (item[cbv_const.KEY_SNP_INFO_SECTION][cbv_const.KEY_CHROM],
-                                                 item[cbv_const.KEY_SNP_INFO_SECTION][cbv_const.KEY_POS],
-                                                 item[cbv_const.KEY_SNP_INFO_SECTION][cbv_const.KEY_REF],
-                                                 item[cbv_const.KEY_SNP_INFO_SECTION][cbv_const.KEY_ALT],
-                                                 item[cbv_const.KEY_PREDICTION_SECTION][cbv_const.KEY_TARGETS],
-                                                 )
+        f_clean.write("%s\t%s\t%s\t%s\t%s\n" % (item[cbv_const.KW_SNP_DATA_SECTION].chrom,
+                                                item[cbv_const.KW_SNP_DATA_SECTION].pos,
+                                                item[cbv_const.KW_SNP_DATA_SECTION].ref,
+                                                item[cbv_const.KW_SNP_DATA_SECTION].alt,
+                                                item[cbv_const.KW_SNP_DATA_SECTION].target,
+                                                )
                         )
     f_clean.close()
-    print "%-25s: %5d" % ("Clean pathogenic", len([item for item in dm.dataset if item[cbv_const.KEY_PREDICTION_SECTION][cbv_const.KEY_TARGETS] == '1']))
-    print "%-25s: %5d" % ("Clean neutral", len([item for item in dm.dataset if item[cbv_const.KEY_PREDICTION_SECTION][cbv_const.KEY_TARGETS] == '0']))
+    print "%-25s: %5d" % ("Clean pathogenic", len([item for item in dm.dataset if item[cbv_const.KW_SNP_DATA_SECTION].target == '1']))
+    print "%-25s: %5d" % ("Clean neutral", len([item for item in dm.dataset if item[cbv_const.KW_SNP_DATA_SECTION].target == '0']))
     print "%-25s: %5d\n" % ("Total", len(dm.dataset))
 
     dm.calculate_scores()
     f_scores = open(cbv_file + '.scores', 'w')
     for item in dm.dataset:
-        f_scores.write("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n" % (item[cbv_const.KEY_SNP_INFO_SECTION][cbv_const.KEY_CHROM],
-                                                                         item[cbv_const.KEY_SNP_INFO_SECTION][cbv_const.KEY_POS],
-                                                                         item[cbv_const.KEY_SNP_INFO_SECTION][cbv_const.KEY_REF],
-                                                                         item[cbv_const.KEY_SNP_INFO_SECTION][cbv_const.KEY_ALT],
-                                                                         item[cbv_const.KEY_PREDICTION_SECTION][cbv_const.KEY_TARGETS],
-                                                                         item[cbv_const.KEY_SCORES_SECTION].phylop_score,
-                                                                         item[cbv_const.KEY_SCORES_SECTION].sift_score,
-                                                                         item[cbv_const.KEY_SCORES_SECTION].pp2_score,
-                                                                         item[cbv_const.KEY_SCORES_SECTION].lrt_score,
-                                                                         item[cbv_const.KEY_SCORES_SECTION].mt_score,
-                                                                         item[cbv_const.KEY_SCORES_SECTION].gerp_score,
+        f_scores.write("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n" % (item[cbv_const.KW_SNP_DATA_SECTION].chrom,
+                                                                         item[cbv_const.KW_SNP_DATA_SECTION].pos,
+                                                                         item[cbv_const.KW_SNP_DATA_SECTION].ref,
+                                                                         item[cbv_const.KW_SNP_DATA_SECTION].alt,
+                                                                         item[cbv_const.KW_SNP_DATA_SECTION].target,
+                                                                         item[cbv_const.KW_SCORES_SECTION].phylop_score,
+                                                                         item[cbv_const.KW_SCORES_SECTION].sift_score,
+                                                                         item[cbv_const.KW_SCORES_SECTION].pp2_score,
+                                                                         item[cbv_const.KW_SCORES_SECTION].lrt_score,
+                                                                         item[cbv_const.KW_SCORES_SECTION].mt_score,
+                                                                         item[cbv_const.KW_SCORES_SECTION].gerp_score,
                                                                          )
                         )
     f_scores.close()
-    print "%-25s: %5d" % ("Scored pathogenic", len([item for item in dm.dataset if item[cbv_const.KEY_PREDICTION_SECTION][cbv_const.KEY_TARGETS] == '1']))
-    print "%-25s: %5d" % ("Scored neutral", len([item for item in dm.dataset if item[cbv_const.KEY_PREDICTION_SECTION][cbv_const.KEY_TARGETS] == '0']))
+    print "%-25s: %5d" % ("Scored pathogenic", len([item for item in dm.dataset if item[cbv_const.KW_SNP_DATA_SECTION].target == '1']))
+    print "%-25s: %5d" % ("Scored neutral", len([item for item in dm.dataset if item[cbv_const.KW_SNP_DATA_SECTION].target == '0']))
     print "%-25s: %5d\n" % ("Total", len(dm.dataset))
 
     dm.set_shuffle_seed(cbv_const.DEMO_SEED)
@@ -191,12 +191,12 @@ def filter_cbv_data(cbv_file,
     training_dataset      = dm.get_training_data() 
     validation_dataset    = dm.get_validation_data() 
 
-    print "%-25s: %5d" % ("Training pathogenic", len([item for item in training_dataset if item[cbv_const.KEY_PREDICTION_SECTION][cbv_const.KEY_TARGETS] == '1']))
-    print "%-25s: %5d" % ("Training neutral", len([item for item in training_dataset if item[cbv_const.KEY_PREDICTION_SECTION][cbv_const.KEY_TARGETS] == '0']))
+    print "%-25s: %5d" % ("Training pathogenic", len([item for item in training_dataset if item[cbv_const.KW_SNP_DATA_SECTION].target == '1']))
+    print "%-25s: %5d" % ("Training neutral", len([item for item in training_dataset if item[cbv_const.KW_SNP_DATA_SECTION].target == '0']))
     print "%-25s: %5d\n" % ("Total", len(training_dataset))
 
-    print "%-25s: %5d" % ("Validation pathogenic", len([item for item in validation_dataset if item[cbv_const.KEY_PREDICTION_SECTION][cbv_const.KEY_TARGETS] == '1']))
-    print "%-25s: %5d" % ("Validation neutral", len([item for item in validation_dataset if item[cbv_const.KEY_PREDICTION_SECTION][cbv_const.KEY_TARGETS] == '0']))
+    print "%-25s: %5d" % ("Validation pathogenic", len([item for item in validation_dataset if item[cbv_const.KW_SNP_DATA_SECTION].target == '1']))
+    print "%-25s: %5d" % ("Validation neutral", len([item for item in validation_dataset if item[cbv_const.KW_SNP_DATA_SECTION].target == '0']))
     print "%-25s: %5d\n" % ("Total", len(validation_dataset))
 
 def calculate_roc(pathogenic_dataset, neutral_dataset, roc_range):
@@ -295,21 +295,21 @@ def fast_predict(SNPs_file,
     print "#" + "\t".join(tmp_rec)
     for i in xrange(len(dm.dataset)):
         del tmp_rec[:]
-        snp_info   = dm.dataset[i][cbv_const.KEY_SNP_INFO_SECTION]
-        prediction = dm.dataset[i][cbv_const.KEY_PREDICTION_SECTION]
-        scores     = dm.dataset[i][cbv_const.KEY_SCORES_SECTION]
-        tmp_rec.append(snp_info[cbv_const.KEY_CHROM])
-        tmp_rec.append(snp_info[cbv_const.KEY_POS])
-        tmp_rec.append(snp_info[cbv_const.KEY_REF])
-        tmp_rec.append(snp_info[cbv_const.KEY_ALT])
-        tmp_rec.append(prediction[cbv_const.KEY_TARGETS])
+        snp_data   = dm.dataset[i][cbv_const.KW_SNP_DATA_SECTION]
+        prediction = dm.dataset[i][cbv_const.KW_PREDICTION_SECTION]
+        scores     = dm.dataset[i][cbv_const.KW_SCORES_SECTION]
+        tmp_rec.append(snp_data.chrom)
+        tmp_rec.append(snp_data.pos)
+        tmp_rec.append(snp_data.ref)
+        tmp_rec.append(snp_data.alt)
+        tmp_rec.append(snp_data.target)
         tmp_rec.append("%6.4f" % out[i])
-        tmp_rec.append(scores[cbv_const.KEY_PHYLOP_SCORE])
-        tmp_rec.append(scores[cbv_const.KEY_SIFT_SCORE])
-        tmp_rec.append(scores[cbv_const.KEY_PP2_SCORE])
-        tmp_rec.append(scores[cbv_const.KEY_LRT_SCORE])
-        tmp_rec.append(scores[cbv_const.KEY_MT_SCORE])
-        tmp_rec.append(scores[cbv_const.KEY_GERP_SCORE])
+        tmp_rec.append(scores[cbv_const.KW_PHYLOP_SCORE])
+        tmp_rec.append(scores[cbv_const.KW_SIFT_SCORE])
+        tmp_rec.append(scores[cbv_const.KW_PP2_SCORE])
+        tmp_rec.append(scores[cbv_const.KW_LRT_SCORE])
+        tmp_rec.append(scores[cbv_const.KW_MT_SCORE])
+        tmp_rec.append(scores[cbv_const.KW_GERP_SCORE])
         print "\t".join(tmp_rec)
     sys.stdout = sys.__stdout__
 

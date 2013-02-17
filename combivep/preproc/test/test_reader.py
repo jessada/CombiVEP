@@ -273,7 +273,7 @@ class TestCbvReader(SafePreProcTester):
             self.assertEqual(rec.alt,
                              'C',
                              "Incorrect CBV formatting")
-            self.assertEqual(rec.targets,
+            self.assertEqual(rec.target,
                              '1',
                              "Incorrect CBV formatting")
             break

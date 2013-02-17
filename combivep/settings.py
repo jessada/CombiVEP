@@ -9,7 +9,7 @@ This module is all about constant value that are used in this application
 DEBUG_MODE = 0
 
 # > > > > > > > > > > > > > development files & folders < < < < < < < < < <
-PROJECT_ROOT                 = os.path.dirname(os.path.dirname(__file__))
+PROJECT_ROOT = os.path.dirname(os.path.dirname(__file__))
 
 #'central' data for testing and for demo
 CBV_SAMPLE_DATA_ROOT   = os.path.join(PROJECT_ROOT, 'combivep/data')
@@ -92,18 +92,15 @@ LJB_VERSION_PATTERN = r"""[a-zA-Z_]*(?P<version>[\d.]*)[.][a-zA-Z.]*"""
 
 # > > > > > > > > > > > > > Dataset data structure < < < < < < < < < <
 #section key
-KEY_SNP_INFO_SECTION   = 'snp_info'
-KEY_SCORES_SECTION     = 'scores'
-KEY_PREDICTION_SECTION = 'prediction'
+KW_SNP_DATA_SECTION = 'snp_data'
+KW_SCORES_SECTION   = 'scores'
 
-#global SNP information keys
-KEY_CHROM = 'chrom'
-KEY_POS   = 'pos'
-KEY_REF   = 'ref'
-KEY_ALT   = 'alt'
-
-#predection key
-KEY_TARGETS = 'targets'
+#global SNP data keywords
+KW_CHROM = 'chrom'
+KW_POS   = 'pos'
+KW_REF   = 'ref'
+KW_ALT   = 'alt'
+KW_TARGET = 'target'
 
 #file type
 FILE_TYPE_CBV = 'CBV'
@@ -112,12 +109,12 @@ FILE_TYPE_VCF = 'VCF'
 
 # > > > > > > > > > > > > > UCSC format configuration < < < < < < < < < <
 #general key
-KEY_UCSC_CHROM     = 'ucsc_chrom'
-KEY_UCSC_START_POS = 'ucsc_start_pos'
-KEY_UCSC_END_POS   = 'ucsc_end_pos'
-KEY_UCSC_STRAND    = 'ucsc_strand'
-KEY_UCSC_REF       = 'ucsc_ref'
-KEY_UCSC_OBSERVED  = 'ucsc_observed'
+KW_UCSC_CHROM     = 'ucsc_chrom'
+KW_UCSC_START_POS = 'ucsc_start_pos'
+KW_UCSC_END_POS   = 'ucsc_end_pos'
+KW_UCSC_STRAND    = 'ucsc_strand'
+KW_UCSC_REF       = 'ucsc_ref'
+KW_UCSC_OBSERVED  = 'ucsc_observed'
 
 #UCSC index
 #0-based index, used by python
@@ -132,23 +129,23 @@ UCSC_EXPECTED_LENGTH = 26
 
 # > > > > > > > > > > > > > LJB format configuration < < < < < < < < < <
 #SNP information key
-KEY_LJB_CHROM = 'ljb_chrom'
-KEY_LJB_POS   = 'ljb_hg19_pos'
-KEY_LJB_REF   = 'ljb_ref'
-KEY_LJB_ALT   = 'ljb_alt'
+KW_LJB_CHROM = 'ljb_chrom'
+KW_LJB_POS   = 'ljb_hg19_pos'
+KW_LJB_REF   = 'ljb_ref'
+KW_LJB_ALT   = 'ljb_alt'
 
 #score key
-KEY_PHYLOP_SCORE = 'phylop_score'
-KEY_SIFT_SCORE   = 'sift_score'
-KEY_PP2_SCORE    = 'pp2_score'
-KEY_LRT_SCORE    = 'lrt_score'
-KEY_MT_SCORE     = 'mt_score'
-KEY_GERP_SCORE   = 'gerp_score'
+KW_PHYLOP_SCORE = 'phylop_score'
+KW_SIFT_SCORE   = 'sift_score'
+KW_PP2_SCORE    = 'pp2_score'
+KW_LRT_SCORE    = 'lrt_score'
+KW_MT_SCORE     = 'mt_score'
+KW_GERP_SCORE   = 'gerp_score'
 
 #LJB index
 #1-based index, used by awk for parsing
 LJB_RAW_1_IDX_CHROM        = 1
-LJB_RAW_1_IDX_POS          = 7
+LJB_RAW_1_IDX_HG19_POS     = 7
 LJB_RAW_1_IDX_REF          = 3
 LJB_RAW_1_IDX_ALT          = 4
 LJB_RAW_1_IDX_PHYLOP_SCORE = 8
@@ -174,10 +171,10 @@ LJB_PARSED_EXPECTED_LENGTH    = 10
 
 # > > > > > > > > > > > > > VCF format configuration < < < < < < < < < <
 #SNP information key
-KEY_VCF_CHROM = 'vcf_chrom'
-KEY_VCF_POS   = 'vcf_pos'
-KEY_VCF_REF   = 'vcf_ref'
-KEY_VCF_ALT   = 'vcf_alt'
+KW_VCF_CHROM = 'vcf_chrom'
+KW_VCF_POS   = 'vcf_pos'
+KW_VCF_REF   = 'vcf_ref'
+KW_VCF_ALT   = 'vcf_alt'
 
 #VCF index
 #0-based index, used by python
@@ -189,19 +186,19 @@ VCF_0_IDX_ALT   = 4
 
 # > > > > > > > > > > CBV format (CombiVEP format) configuration < < < < < < <
 #SNP information key
-KEY_CBV_CHROM   = 'CBV_chrom'
-KEY_CBV_POS     = 'CBV_pos'
-KEY_CBV_REF     = 'CBV_ref'
-KEY_CBV_ALT     = 'CBV_alt'
-KEY_CBV_TARGETS = 'CBV_targets'
+KW_CBV_CHROM  = 'CBV_chrom'
+KW_CBV_POS    = 'CBV_pos'
+KW_CBV_REF    = 'CBV_ref'
+KW_CBV_ALT    = 'CBV_alt'
+KW_CBV_TARGET = 'CBV_target'
 
 #CBV index
 #0-based index, used by python
-CBV_0_IDX_CHROM   = 0
-CBV_0_IDX_POS     = 1
-CBV_0_IDX_REF     = 2
-CBV_0_IDX_ALT     = 3
-CBV_0_IDX_TARGETS = 4
+CBV_0_IDX_CHROM  = 0
+CBV_0_IDX_POS    = 1
+CBV_0_IDX_REF    = 2
+CBV_0_IDX_ALT    = 3
+CBV_0_IDX_TARGET = 4
 
 
 # > > > > > > > > > > prediction output format < < < < < < < < < <

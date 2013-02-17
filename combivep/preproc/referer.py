@@ -7,7 +7,6 @@ from combivep.preproc.reader import LjbReader
 class Referer(Configure):
     """To connect to reference database"""
 
-
     def __init__(self):
         Configure.__init__(self)
 
@@ -70,12 +69,3 @@ class Referer(Configure):
 
     def __get_ljb_reader(self):
         return self.__ljb_reader
-
-
-
-
-
-
-
-
-

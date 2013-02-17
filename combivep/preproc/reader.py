@@ -274,8 +274,8 @@ class CbvRecord(CombiVEPBase):
         return self.__array_snp[cbv_const.CBV_0_IDX_ALT]
 
     @property
-    def targets(self):
-        return self.__array_snp[cbv_const.CBV_0_IDX_TARGETS]
+    def target(self):
+        return self.__array_snp[cbv_const.CBV_0_IDX_TARGET]
 
 
 class CbvReader(CombiVEPBase):

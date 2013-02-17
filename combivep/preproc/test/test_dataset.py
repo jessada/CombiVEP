@@ -7,7 +7,6 @@ from combivep.preproc.dataset import DataSetManager
 
 class TestDataSetManager(SafePreProcTester):
 
-
     def __init__(self, test_name):
         SafePreProcTester.__init__(self, test_name)
 
@@ -69,14 +68,14 @@ class TestDataSetManager(SafePreProcTester):
         dm.load_data(test_file)
         dm.validate_data()
         dm.calculate_scores()
-        snp_info_5 = dm.dataset[5][cbv_const.KEY_SNP_INFO_SECTION]
-        self.assertEqual(snp_info_5[cbv_const.KEY_POS],
+        snp_data_5 = dm.dataset[5][cbv_const.KW_SNP_DATA_SECTION]
+        self.assertEqual(snp_data_5.pos,
                          '190999917',
                          'DataSetManager does not calculate scores properly')
         dm.set_shuffle_seed(cbv_const.DEMO_SEED)
         dm.shuffle_data()
-        snp_info_5 = dm.dataset[5][cbv_const.KEY_SNP_INFO_SECTION]
-        self.assertNotEqual(snp_info_5[cbv_const.KEY_POS],
+        snp_data_5 = dm.dataset[5][cbv_const.KW_SNP_DATA_SECTION]
+        self.assertNotEqual(snp_data_5.pos,
                             '190999917',
                             'DataSetManager may not shuffle data correctly')
 
@@ -163,9 +162,3 @@ class TestDataSetManager(SafePreProcTester):
 
     def tearDown(self):
         self.remove_working_dir()
-
-
-
-
-
-

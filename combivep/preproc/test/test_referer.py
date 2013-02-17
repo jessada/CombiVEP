@@ -7,7 +7,6 @@ from combivep.preproc.referer import Referer
 
 class TestReferer(SafePreProcTester):
 
-
     def __init__(self, test_name):
         SafePreProcTester.__init__(self, test_name)
 
@@ -27,7 +26,7 @@ class TestReferer(SafePreProcTester):
                         "Incorrect SNP validating")
         self.assertTrue(referer.validate_snp('chr3', 25836088, 'C', 'A'),
                         "Incorrect SNP validating")
-        self.assertTrue(referer.validate_snp('20' , 17474690, 'T', 'G'),
+        self.assertTrue(referer.validate_snp('20', 17474690, 'T', 'G'),
                         "Incorrect SNP validating")
         self.assertTrue(referer.validate_snp('chrX', 56296488, 'G', 'C'),
                         "Incorrect SNP validating")
@@ -63,9 +62,3 @@ class TestReferer(SafePreProcTester):
 
     def tearDown(self):
         self.remove_working_dir()
-
-
-
-
-
-
