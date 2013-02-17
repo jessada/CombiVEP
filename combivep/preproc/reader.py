@@ -7,7 +7,6 @@ from collections import namedtuple
 class UcscRecord(CombiVEPBase):
     """ to automatically parse ucsc data """
 
-
     def __init__(self, array_snp):
         self.__array_snp = array_snp
 
@@ -41,6 +40,7 @@ class UcscRecord(CombiVEPBase):
     def observed(self):
         return self.__array_snp[cbv_const.UCSC_0_IDX_OBSERVED]
 
+
 class UcscReader(CombiVEPBase):
     """to read UCSC parsed file in tabix format"""
 
@@ -66,9 +66,9 @@ class UcscReader(CombiVEPBase):
     def format_error(self):
         return "Invalid formatting is found at:\n{data}"
 
+
 class LjbRecord(CombiVEPBase):
     """ to automatically parse ljb data """
-
 
     def __init__(self, array_snp):
         self.__array_snp = array_snp
@@ -119,9 +119,9 @@ class LjbRecord(CombiVEPBase):
     def gerp_score(self):
         return self.__array_snp[cbv_const.LJB_PARSED_0_IDX_GERP_SCORE]
 
+
 class ScoresRecord(CombiVEPBase):
     """ to store precalculated scores """
-
 
     def __init__(self, rec):
         self.__rec = rec
@@ -165,9 +165,9 @@ class ScoresRecord(CombiVEPBase):
     def gerp_score(self):
         return self.__rec.gerp_score
 
+
 class LjbReader(CombiVEPBase):
     """to read parsed LJB file"""
-
 
     def __init__(self):
         CombiVEPBase.__init__(self)
@@ -198,9 +198,9 @@ class LjbReader(CombiVEPBase):
     def format_error(self):
         return "Invalid formatting is found at:\n{data}"
 
+
 class VcfRecord(CombiVEPBase):
     """ to automatically parse vcf data"""
-
 
     def __init__(self, array_snp):
         self.__array_snp = array_snp
@@ -227,9 +227,9 @@ class VcfRecord(CombiVEPBase):
     def alt(self):
         return self.__array_snp[cbv_const.VCF_0_IDX_ALT]
 
+
 class VcfReader(CombiVEPBase):
     """to read parsed VCF file"""
-
 
     def __init__(self):
         CombiVEPBase.__init__(self)
@@ -244,9 +244,9 @@ class VcfReader(CombiVEPBase):
                 continue
             yield VcfRecord(line.rstrip('\n').split('\t'))
 
+
 class CbvRecord(CombiVEPBase):
     """ to automatically parse vcf data"""
-
 
     def __init__(self, array_snp):
         self.__array_snp = array_snp
@@ -277,6 +277,7 @@ class CbvRecord(CombiVEPBase):
     def targets(self):
         return self.__array_snp[cbv_const.CBV_0_IDX_TARGETS]
 
+
 class CbvReader(CombiVEPBase):
     """
 
@@ -285,7 +286,6 @@ class CbvReader(CombiVEPBase):
     All fields are tab separated.
 
     """
-
 
     def __init__(self):
         CombiVEPBase.__init__(self)
@@ -299,4 +299,3 @@ class CbvReader(CombiVEPBase):
             if line[0] == '#':
                 continue
             yield CbvRecord(line.rstrip('\n').split('\t'))
-

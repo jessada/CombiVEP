@@ -7,7 +7,6 @@ from combivep.preproc.test.template import SafePreProcTester
 
 class TestUcscReader(SafePreProcTester):
 
-
     def __init__(self, test_name):
         SafePreProcTester.__init__(self, test_name)
 
@@ -110,7 +109,6 @@ class TestUcscReader(SafePreProcTester):
 
 class TestLjbReader(SafePreProcTester):
 
-
     def __init__(self, test_name):
         SafePreProcTester.__init__(self, test_name)
 
@@ -203,7 +201,6 @@ class TestLjbReader(SafePreProcTester):
 
 class TestVcfReader(SafePreProcTester):
 
-
     def __init__(self, test_name):
         SafePreProcTester.__init__(self, test_name)
 
@@ -244,7 +241,6 @@ class TestVcfReader(SafePreProcTester):
 
 
 class TestCbvReader(SafePreProcTester):
-
 
     def __init__(self, test_name):
         SafePreProcTester.__init__(self, test_name)
@@ -296,7 +292,3 @@ class TestCbvReader(SafePreProcTester):
 
     def tearDown(self):
         self.remove_working_dir()
-
-
-
-
