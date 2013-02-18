@@ -4,6 +4,8 @@ import numpy as np
 import combivep.devtools.settings as dev_const
 import combivep.settings as cbv_const
 from combivep.preproc.dataset import DataSetManager
+from combivep.preproc.dataset import SnpDataRecord
+from combivep.preproc.reader import ScoresRecord
 from combivep.config import Configure
 from combivep.template import CombiVEPBase
 from combivep.engine.wrapper import Trainer
@@ -11,11 +13,12 @@ from combivep.engine.wrapper import Predictor
 from collections import namedtuple
 from combivep.devtools.settings import PRECISION_MEASURES
 
+
 PrecisionPerformance = namedtuple("precision_performance", PRECISION_MEASURES)
 
-class ScoresRecord(CombiVEPBase):
-    """ to automatically parse data with scores """
 
+class DevScoresRecord(CombiVEPBase):
+    """ to automatically parse data with scores """
 
     def __init__(self, array_snp):
         self.__array_snp = array_snp
@@ -64,6 +67,7 @@ class ScoresRecord(CombiVEPBase):
     def gerp_score(self):
         return self.__array_snp[dev_const.SCORES_0_IDX_GERP_SCORE]
 
+
 class ScoresReader(CombiVEPBase):
     """
 
@@ -73,42 +77,21 @@ class ScoresReader(CombiVEPBase):
 
     """
 
-
     def __init__(self):
         CombiVEPBase.__init__(self)
 
     def read(self, scores_file):
         self.scores_file_name = scores_file
 
-    def fetch_array_snps(self):
+    def fetch_snps(self):
         scores_file = open(self.scores_file_name)
         for line in scores_file:
             if line[0] == '#':
                 continue
-            yield ScoresRecord(line.rstrip('\n').split('\t'))
+            yield DevScoresRecord(line.rstrip('\n').split('\t'))
 
-    def fetch_hash_snps(self):
-        for rec in self.fetch_array_snps():
-            snp_data = {dev_const.KW_SCORES_CHROM : rec.chrom,
-                        dev_const.KW_SCORES_POS   : rec.pos,
-                        dev_const.KW_SCORES_REF   : rec.ref,
-                        dev_const.KW_SCORES_ALT   : rec.alt,
-                        }
-            prediction = {dev_const.KW_SCORES_TARGET : rec.target}
-            scores     = {cbv_const.KW_PHYLOP_SCORE : rec.phylop_score,
-                          cbv_const.KW_SIFT_SCORE   : rec.sift_score,
-                          cbv_const.KW_PP2_SCORE    : rec.pp2_score,
-                          cbv_const.KW_LRT_SCORE    : rec.lrt_score,
-                          cbv_const.KW_MT_SCORE     : rec.mt_score,
-                          cbv_const.KW_GERP_SCORE   : rec.gerp_score,
-                          }
-            yield {cbv_const.KW_SNP_DATA_SECTION   : snp_data,
-                   cbv_const.KW_PREDICTION_SECTION : prediction,
-                   cbv_const.KW_SCORES_SECTION     : scores,
-                   }
 
 class FastDataSetManager(DataSetManager):
-
 
     def __init__(self, cfg_file=cbv_const.CBV_CFG_FILE):
         DataSetManager.__init__(self, cfg_file=cbv_const.CBV_CFG_FILE)
@@ -123,117 +106,144 @@ class FastDataSetManager(DataSetManager):
         self.clear_data()
         scores_reader = ScoresReader()
         scores_reader.read(file_name)
-        for rec in scores_reader.fetch_hash_snps():
-            snp_data = rec[cbv_const.KW_SNP_DATA_SECTION]
-            snp_data = {cbv_const.KW_CHROM : snp_data[dev_const.KW_SCORES_CHROM],
-                        cbv_const.KW_POS   : snp_data[dev_const.KW_SCORES_POS],
-                        cbv_const.KW_REF   : snp_data[dev_const.KW_SCORES_REF],
-                        cbv_const.KW_ALT   : snp_data[dev_const.KW_SCORES_ALT],
-                        }
-            prediction = {cbv_const.KW_TARGET : rec[cbv_const.KW_PREDICTION_SECTION][dev_const.KW_SCORES_TARGET]}
-            self.dataset.append({cbv_const.KW_SNP_DATA_SECTION : snp_data,
-                                 cbv_const.KW_PREDICTION_SECTION : prediction,
-                                 cbv_const.KW_SCORES_SECTION : rec[cbv_const.KW_SCORES_SECTION],
+        for rec in scores_reader.fetch_snps():
+            snp_data = SnpDataRecord(rec)
+            scores   = ScoresRecord(rec)
+            self.dataset.append({cbv_const.KW_SNP_DATA : snp_data,
+                                 cbv_const.KW_SCORES : scores,
                                  })
-
 
 
 def filter_cbv_data(cbv_file,
                     cfg_file=cbv_const.CBV_CFG_FILE):
     (dir_name, file_name) = os.path.split(cbv_file)
+    report_fmt = "{caption:<25}:{value:>6d}"
+    clean_out_fmt = "{chrom}\t{pos}\t{ref}\t{alt}\t{target}\n"
+    scores_out_fmt = "{chrom}\t{pos}\t{ref}\t{alt}\t{target}\t"
+    scores_out_fmt += "{phylop_score}\t{sift_score}\t{pp2_score}\t"
+    scores_out_fmt += "{lrt_score}\t{mt_score}\t{gerp_score}\n"
+
     print
     print "> > >  " + file_name
     dm = DataSetManager()
     dm.load_data(cbv_file, file_type=cbv_const.FILE_TYPE_CBV)
-    print "%-25s: %5d\n" % ("Original", len(dm.dataset))
+    print report_fmt.format(caption="original",
+                            value=len(dm.dataset))
 
     dm.validate_data()
     f_clean = open(cbv_file + '.clean', 'w')
     for item in dm.dataset:
-        f_clean.write("%s\t%s\t%s\t%s\t%s\n" % (item[cbv_const.KW_SNP_DATA_SECTION].chrom,
-                                                item[cbv_const.KW_SNP_DATA_SECTION].pos,
-                                                item[cbv_const.KW_SNP_DATA_SECTION].ref,
-                                                item[cbv_const.KW_SNP_DATA_SECTION].alt,
-                                                item[cbv_const.KW_SNP_DATA_SECTION].target,
-                                                )
-                        )
+        snp_data = item[cbv_const.KW_SNP_DATA]
+        f_clean.write(clean_out_fmt.format(chrom=snp_data.chrom,
+                                           pos=snp_data.pos,
+                                           ref=snp_data.ref,
+                                           alt=snp_data.alt,
+                                           target=snp_data.target,
+                                           ))
     f_clean.close()
-    print "%-25s: %5d" % ("Clean pathogenic", len([item for item in dm.dataset if item[cbv_const.KW_SNP_DATA_SECTION].target == '1']))
-    print "%-25s: %5d" % ("Clean neutral", len([item for item in dm.dataset if item[cbv_const.KW_SNP_DATA_SECTION].target == '0']))
-    print "%-25s: %5d\n" % ("Total", len(dm.dataset))
+    print report_fmt.format(caption="Clean pathogenic",
+                      value=len([item for item in dm.dataset if item[cbv_const.KW_SNP_DATA].target == '1']))
+    print report_fmt.format(caption="Clean neutral",
+                      value=len([item for item in dm.dataset if item[cbv_const.KW_SNP_DATA].target == '0']))
+    print report_fmt.format(caption="Total",
+                      value=len(dm.dataset))
 
     dm.calculate_scores()
     f_scores = open(cbv_file + '.scores', 'w')
     for item in dm.dataset:
-        f_scores.write("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n" % (item[cbv_const.KW_SNP_DATA_SECTION].chrom,
-                                                                         item[cbv_const.KW_SNP_DATA_SECTION].pos,
-                                                                         item[cbv_const.KW_SNP_DATA_SECTION].ref,
-                                                                         item[cbv_const.KW_SNP_DATA_SECTION].alt,
-                                                                         item[cbv_const.KW_SNP_DATA_SECTION].target,
-                                                                         item[cbv_const.KW_SCORES_SECTION].phylop_score,
-                                                                         item[cbv_const.KW_SCORES_SECTION].sift_score,
-                                                                         item[cbv_const.KW_SCORES_SECTION].pp2_score,
-                                                                         item[cbv_const.KW_SCORES_SECTION].lrt_score,
-                                                                         item[cbv_const.KW_SCORES_SECTION].mt_score,
-                                                                         item[cbv_const.KW_SCORES_SECTION].gerp_score,
-                                                                         )
-                        )
+        snp_data = item[cbv_const.KW_SNP_DATA]
+        scores   = item[cbv_const.KW_SCORES]
+        f_scores.write(scores_out_fmt.format(chrom=snp_data.chrom,
+                                             pos=snp_data.pos,
+                                             ref=snp_data.ref,
+                                             alt=snp_data.alt,
+                                             target=snp_data.target,
+                                             phylop_score=scores.phylop_score,
+                                             sift_score=scores.sift_score,
+                                             pp2_score=scores.pp2_score,
+                                             lrt_score=scores.lrt_score,
+                                             mt_score=scores.mt_score,
+                                             gerp_score=scores.gerp_score
+                                             ))
     f_scores.close()
-    print "%-25s: %5d" % ("Scored pathogenic", len([item for item in dm.dataset if item[cbv_const.KW_SNP_DATA_SECTION].target == '1']))
-    print "%-25s: %5d" % ("Scored neutral", len([item for item in dm.dataset if item[cbv_const.KW_SNP_DATA_SECTION].target == '0']))
-    print "%-25s: %5d\n" % ("Total", len(dm.dataset))
+    print report_fmt.format(caption="Scored pathogenic",
+                            value=len([item for item in dm.dataset if item[cbv_const.KW_SNP_DATA].target == '1']))
+    print report_fmt.format(caption="Scored neutral",
+                            value=len([item for item in dm.dataset if item[cbv_const.KW_SNP_DATA].target == '0']))
+    print report_fmt.format(caption="Total",
+                            value=len(dm.dataset))
 
     dm.set_shuffle_seed(cbv_const.DEMO_SEED)
     dm.shuffle_data()
     dm.partition_data()
 
     #partition data
-    training_dataset      = dm.get_training_data() 
-    validation_dataset    = dm.get_validation_data() 
+    training_dataset   = dm.get_training_data() 
+    validation_dataset = dm.get_validation_data() 
 
-    print "%-25s: %5d" % ("Training pathogenic", len([item for item in training_dataset if item[cbv_const.KW_SNP_DATA_SECTION].target == '1']))
-    print "%-25s: %5d" % ("Training neutral", len([item for item in training_dataset if item[cbv_const.KW_SNP_DATA_SECTION].target == '0']))
-    print "%-25s: %5d\n" % ("Total", len(training_dataset))
+    print report_fmt.format(caption="Training pathogenic",
+                            value=len([item for item in training_dataset if item[cbv_const.KW_SNP_DATA].target == '1']))
+    print report_fmt.format(caption="Training neutral",
+                            value=len([item for item in training_dataset if item[cbv_const.KW_SNP_DATA].target == '0']))
+    print report_fmt.format(caption="Total",
+                            value=len(training_dataset))
 
-    print "%-25s: %5d" % ("Validation pathogenic", len([item for item in validation_dataset if item[cbv_const.KW_SNP_DATA_SECTION].target == '1']))
-    print "%-25s: %5d" % ("Validation neutral", len([item for item in validation_dataset if item[cbv_const.KW_SNP_DATA_SECTION].target == '0']))
-    print "%-25s: %5d\n" % ("Total", len(validation_dataset))
+    print report_fmt.format(caption="Validation pathogenic",
+                            value=len([item for item in validation_dataset if item[cbv_const.KW_SNP_DATA].target == '1']))
+    print report_fmt.format(caption="Validation neutral",
+                            value=len([item for item in validation_dataset if item[cbv_const.KW_SNP_DATA].target == '0']))
+    print report_fmt.format(caption="Total",
+                            value=len(validation_dataset))
 
-def calculate_roc(pathogenic_dataset, neutral_dataset, roc_range):
-    false_positive_rates = np.zeros([len(roc_range), pathogenic_dataset.shape[1]])
-    true_positive_rates  = np.zeros([len(roc_range), neutral_dataset.shape[1]])
-    pathogenic_data_size = pathogenic_dataset.shape[0]
-    neutral_data_size    = neutral_dataset.shape[0]
+
+def calculate_roc(patho_dataset, neutr_dataset, roc_range):
+    fp_rates = np.zeros([len(roc_range),
+                                     patho_dataset.shape[1]])
+    tp_rates = np.zeros([len(roc_range),
+                                     neutr_dataset.shape[1]])
+    patho_data_size = patho_dataset.shape[0]
+    neutr_data_size    = neutr_dataset.shape[0]
     for i in xrange(len(roc_range)):
-        false_positive_rates[i, :] = np.matrix(np.sum(neutral_dataset > roc_range[i], axis=0).astype(np.float))/ neutral_data_size
-        true_positive_rates[i, :]  = np.matrix(np.sum(pathogenic_dataset > roc_range[i], axis=0).astype(np.float))/ pathogenic_data_size
-    return (false_positive_rates, true_positive_rates)
+        fp_rates[i, :] = np.matrix(np.sum(neutr_dataset > roc_range[i],
+                                          axis=0
+                                          ).astype(np.float))/ neutr_data_size
+        tp_rates[i, :] = np.matrix(np.sum(patho_dataset > roc_range[i],
+                                          axis=0
+                                          ).astype(np.float))/ patho_data_size
+    return (fp_rates, tp_rates)
+
 
 def print_preproc(col1, col2, col3):
-    print "%-40s%18s%18s" % (col1, col2, col3)
+    report_fmt = "{measurement:<40}{neutr_val:>18}{patho_val:>18}"
+    print report_mt.format(measurement=col1,
+                           neutr_val=col2,
+                           patho_val=col3)
 
-def print_precision(col1, col2, col3):
-    print "%-25s%9s%10s" % (col1, col2, col3)
+
+def info(msg):
+    print >> sys.stderr, msg
+
 
 def fast_training(training_data_file, 
                   params_out_file=cbv_const.USER_PARAMS_FILE,
-                  random_seed=cbv_const.DEFAULT_SEED,
-                  n_hidden_nodes=cbv_const.DEFAULT_HIDDEN_NODES,
-                  figure_dir=cbv_const.DEFAULT_FIGURE_DIR,
-                  iterations=cbv_const.DEFAULT_ITERATIONS,
+                  random_seed=cbv_const.DFLT_SEED,
+                  n_hidden_nodes=cbv_const.DFLT_HIDDEN_NODES,
+                  figure_dir=cbv_const.DFLT_FIGURE_DIR,
+                  iterations=cbv_const.DFLT_ITERATIONS,
                   cfg_file=cbv_const.CBV_CFG_FILE,
                   ):
     """
 
     CBV (CombiVEP format) is a parsed format intended to be used by CombiVEP.
-    CBV has 5 fields, CHROM, POS, REF, ALT, EFFECT (1=deleterious, 0=neutral). All are tab separated
+    CBV has 5 fields, CHROM, POS, REF, ALT, EFFECT (1=deleterious, 0=neutr).
+    All are tab separated
     Required arguments
-    - neutral_data_file : list of SNPs with no harmful effect, CBV format
+    - neutr_data_file : list of SNPs with no harmful effect, CBV format
     - pathognice_data_file : list of SNPs with deleterious effect, CBV format
 
     """
     #pre-processing dataset
-    print >> sys.stderr, 'pre-processing dataset, this may take a while (around 750 SNPs/mins). . . . '
+    info('pre-processing dataset, this may take a while (around 750 SNPs/mins). . .')
     dm = FastDataSetManager(cfg_file=cfg_file)
     dm.load_data(training_data_file, file_type=dev_const.FILE_TYPE_SCORES)
     dm.set_shuffle_seed(random_seed)
@@ -241,16 +251,21 @@ def fast_training(training_data_file,
     dm.partition_data()
 
     #partition data
-    training_dataset      = dm.get_training_data() 
-    validation_dataset    = dm.get_validation_data() 
+    training_dataset   = dm.get_training_data()
+    validation_dataset = dm.get_validation_data()
 
     #train !!!
-    print >> sys.stderr, 'Training CombiVEP, please wait (around 500 SNPs/mins) . . . . '
-    trainer = Trainer(training_dataset, validation_dataset, random_seed, n_hidden_nodes, figure_dir)
+    info('Training CombiVEP, please wait (around 500 SNPs/mins) . . .')
+    trainer = Trainer(training_dataset,
+                      validation_dataset,
+                      random_seed,
+                      n_hidden_nodes,
+                      figure_dir)
     trainer.train(iterations)
     if not os.path.exists(cbv_const.USER_PARAMS_DIR):
         os.makedirs(cbv_const.USER_PARAMS_DIR)
     trainer.export_best_parameters(params_out_file)
+
 
 def fast_predict(SNPs_file,
                  params_file=cbv_const.USER_PARAMS_FILE,
@@ -261,13 +276,15 @@ def fast_predict(SNPs_file,
     """
 
     CBV (CombiVEP format) is a parsed format intended to be used by CombiVEP.
-    CBV has 5 fields, CHROM, POS, REF, ALT, EFFECT (1=deleterious, 0=neutral). All are tab separated
+    CBV has 5 fields, CHROM, POS, REF, ALT, EFFECT (1=deleterious, 0=neutr).
+    All are tab separated
     Required arguments
-    - SNPs_file : list of SNPs to be predicted, can be either VCF or CBV (default is VCF)
+    - SNPs_file : list of SNPs to be predicted, can be either VCF or CBV
+                  (default is VCF)
 
     """
     #pre-processing test dataset
-    print >> sys.stderr, 'pre-processing dataset, this may take a while (around 750 SNPs/mins). . . . '
+    info('pre-processing dataset, this may take a while (around 750 SNPs/mins). . .')
     dm = FastDataSetManager(cfg_file=cfg_file)
     dm.load_data(SNPs_file, file_type=dev_const.FILE_TYPE_SCORES)
 
@@ -295,36 +312,45 @@ def fast_predict(SNPs_file,
     print "#" + "\t".join(tmp_rec)
     for i in xrange(len(dm.dataset)):
         del tmp_rec[:]
-        snp_data   = dm.dataset[i][cbv_const.KW_SNP_DATA_SECTION]
-        prediction = dm.dataset[i][cbv_const.KW_PREDICTION_SECTION]
-        scores     = dm.dataset[i][cbv_const.KW_SCORES_SECTION]
+        snp_data = dm.dataset[i][cbv_const.KW_SNP_DATA]
+        scores   = dm.dataset[i][cbv_const.KW_SCORES]
         tmp_rec.append(snp_data.chrom)
         tmp_rec.append(snp_data.pos)
         tmp_rec.append(snp_data.ref)
         tmp_rec.append(snp_data.alt)
         tmp_rec.append(snp_data.target)
         tmp_rec.append("%6.4f" % out[i])
-        tmp_rec.append(scores[cbv_const.KW_PHYLOP_SCORE])
-        tmp_rec.append(scores[cbv_const.KW_SIFT_SCORE])
-        tmp_rec.append(scores[cbv_const.KW_PP2_SCORE])
-        tmp_rec.append(scores[cbv_const.KW_LRT_SCORE])
-        tmp_rec.append(scores[cbv_const.KW_MT_SCORE])
-        tmp_rec.append(scores[cbv_const.KW_GERP_SCORE])
+        tmp_rec.append(scores.phylop_score)
+        tmp_rec.append(scores.sift_score)
+        tmp_rec.append(scores.pp2_score)
+        tmp_rec.append(scores.lrt_score)
+        tmp_rec.append(scores.mt_score)
+        tmp_rec.append(scores.gerp_score)
         print "\t".join(tmp_rec)
     sys.stdout = sys.__stdout__
 
+
 def measure_precision(ratio,
-                      positive_samples_scores,
-                      negative_samples_scores,
+                      pos_samples_scores,
+                      neg_samples_scores,
                       ):
-    true_positive  = len(positive_samples_scores[positive_samples_scores > ratio])
-    false_negative = len(positive_samples_scores[positive_samples_scores <= ratio])
-    true_negative  = len(negative_samples_scores[negative_samples_scores < ratio])
-    false_positive = len(negative_samples_scores[negative_samples_scores >= ratio])
+    true_pos  = len(pos_samples_scores[pos_samples_scores > ratio])
+    false_neg = len(pos_samples_scores[pos_samples_scores <= ratio])
+    true_neg  = len(neg_samples_scores[neg_samples_scores < ratio])
+    false_pos = len(neg_samples_scores[neg_samples_scores >= ratio])
 
-    accuracy         = float(true_positive+true_negative)/(true_positive+true_negative+false_positive+false_negative)
-    sensitivity      = float(true_positive)/(true_positive+false_negative)
-    specificity      = float(true_negative)/(true_negative+false_positive)
-    balance_accuracy = (sensitivity+specificity)/2
+    total_samples = true_pos + true_neg + false_pos + false_neg
 
-    return PrecisionPerformance(true_positive, false_negative, true_negative, false_positive, accuracy, sensitivity, specificity, balance_accuracy)
+    accuracy         = float(true_pos+true_neg) / total_samples
+    sensitivity      = float(true_pos) / (true_pos+false_neg)
+    specificity      = float(true_neg) / (true_neg+false_pos)
+    balance_accuracy = (sensitivity+specificity) / 2
+
+    return PrecisionPerformance(true_pos,
+                                false_neg,
+                                true_neg,
+                                false_pos,
+                                accuracy,
+                                sensitivity,
+                                specificity,
+                                balance_accuracy)

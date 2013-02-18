@@ -227,6 +227,10 @@ class VcfRecord(CombiVEPBase):
     def alt(self):
         return self.__array_snp[cbv_const.VCF_0_IDX_ALT]
 
+    @property
+    def target(self):
+        return None
+
 
 class VcfReader(CombiVEPBase):
     """to read parsed VCF file"""

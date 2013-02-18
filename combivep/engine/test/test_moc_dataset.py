@@ -4,8 +4,8 @@ import combivep.settings as cbv_const
 from combivep.engine.moc_dataset import DataSet
 from combivep.template import Tester
 
-class TestDataSet(Tester):
 
+class TestDataSet(Tester):
 
     def setUp(self):
         pass
@@ -17,7 +17,7 @@ class TestDataSet(Tester):
 
         """
         dataset = DataSet(os.path.join(cbv_const.CBV_SAMPLE_DATASET_DIR,
-                                                        'test_dataset'))
+                                       'test_dataset'))
         self.assertEqual(dataset.n_data,
                          1718,
                          msg='Dataset does not functional properly')
@@ -27,5 +27,3 @@ class TestDataSet(Tester):
         self.assertEqual(dataset.n_features,
                          6,
                          msg='Dataset does not functional properly')
-
-

@@ -5,7 +5,6 @@ import combivep.settings as cbv_const
 class Configure(object):
     """ CombiVEP base class """
 
-
     def __init__(self):
         self.cfg_file = cbv_const.CBV_CFG_FILE
         self.cfg_vals = {}
@@ -55,9 +54,3 @@ class Configure(object):
         self.cfg_vals[cbv_const.LATEST_UCSC_DB_VER]    = version
         self.cfg_vals[cbv_const.LATEST_UCSC_FILE_NAME] = file_name
         self.__save()
-
-
-
-
-
-

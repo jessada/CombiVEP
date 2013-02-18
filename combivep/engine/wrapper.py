@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import combivep.settings as cbv_const
 from combivep.engine.mlp import Mlp
 
+
 class Trainer(Mlp):
     """
 
@@ -12,23 +13,23 @@ class Trainer(Mlp):
 
     """
 
-
     def __init__(self,
                  training_dataset,
                  validation_dataset,
-                 seed=cbv_const.DEFAULT_SEED, 
-                 n_hidden_nodes=cbv_const.DEFAULT_HIDDEN_NODES, 
-                 figure_dir=cbv_const.DEFAULT_FIGURE_DIR):
-        Mlp.__init__(self, training_dataset.n_features,
-                                        seed=seed,
-                                        n_hidden_nodes=n_hidden_nodes)
+                 seed=cbv_const.DFLT_SEED,
+                 n_hidden_nodes=cbv_const.DFLT_HIDDEN_NODES,
+                 figure_dir=cbv_const.DFLT_FIGURE_DIR):
+        Mlp.__init__(self,
+                     training_dataset.n_features,
+                     seed=seed,
+                     n_hidden_nodes=n_hidden_nodes)
 
         self.__training_dataset   = training_dataset
         self.__validation_dataset = validation_dataset
         self.__n_hidden_nodes     = n_hidden_nodes
         self.__figure_dir         = figure_dir
 
-    def train(self, iterations=cbv_const.DEFAULT_ITERATIONS):
+    def train(self, iterations=cbv_const.DFLT_ITERATIONS):
         training_error   = []
         validation_error = []
         running_round    = 0
@@ -54,14 +55,14 @@ class Trainer(Mlp):
 
             #check ending condition
             #(acceptable error rate and not much improvement in each iteration)
-            current_validation_error = validation_error[len(validation_error)-1]
+            current_validation_error = validation_error[-1]
             if (current_validation_error < cbv_const.MAX_ALLOWED_ERROR):
                 improvement = best_validation_error - current_validation_error
                 if (improvement < cbv_const.MIN_IMPROVEMENT):
                     break
 
             #otherwise save parameters and record last error
-            best_validation_error = validation_error[len(validation_error)-1]
+            best_validation_error = validation_error[-1]
             self.best_weights1 = weights1
             self.best_weights2 = weights2
 
@@ -86,18 +87,17 @@ class Trainer(Mlp):
         file_name = "%02d.eps" % (self.__n_hidden_nodes)
         fig.savefig(os.path.join(self.__figure_dir, file_name))
 
+
 class Predictor(Mlp):
     """
 
-    This class is to predict a probability how a variant likely to be deleterious.
+    This class is to predict a probability
+    how a variant likely to be deleterious.
 
     """
-
 
     def __init__(self):
         pass
 
     def predict(self, dataset):
         return self.forward_propagation(dataset)
-
-

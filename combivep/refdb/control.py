@@ -10,7 +10,6 @@ from combivep.config import Configure
 class UcscController(UcscUpdater, Configure):
     """UCSC database controller"""
 
-
     def __init__(self):
         UcscUpdater.__init__(self)
         Configure.__init__(self)
@@ -41,16 +40,15 @@ class UcscController(UcscUpdater, Configure):
         """ tabix into gz and tbi file """
         self.info('indexing ucsc database . . .')
         return pysam.tabix_index(file_name,
-                                 force     = True,
-                                 seq_col   = cbv_const.UCSC_0_IDX_CHROM,
-                                 start_col = cbv_const.UCSC_0_IDX_START_POS,
-                                 end_col   = cbv_const.UCSC_0_IDX_END_POS,
-                                 zerobased = True)
+                                 force=True,
+                                 seq_col=cbv_const.UCSC_0_IDX_CHROM,
+                                 start_col=cbv_const.UCSC_0_IDX_START_POS,
+                                 end_col=cbv_const.UCSC_0_IDX_END_POS,
+                                 zerobased=True)
 
 
 class LjbController(LjbUpdater, Configure):
     """LJB database controller"""
-
 
     def __init__(self):
         LjbUpdater.__init__(self)
@@ -80,8 +78,10 @@ class LjbController(LjbUpdater, Configure):
     def __clean_and_concat_then_tabix_ljb_data(self, file_prefix):
         self.info('cleaning database . . .')
         for chromosome_file in self.__get_chromosome_files(file_prefix):
-            self.__clean_raw_db(chromosome_file, chromosome_file + '.clean')
-            self.__concat_file(chromosome_file + '.clean', file_prefix + '.txt')
+            self.__clean_raw_db(chromosome_file, 
+                                chromosome_file + '.clean')
+            self.__concat_file(chromosome_file + '.clean',
+                               file_prefix + '.txt')
         self.info('indexing ljb database . . .')
         self.__tabix_db(file_prefix + '.txt')
 
@@ -96,7 +96,9 @@ class LjbController(LjbUpdater, Configure):
             yield file_prefix + '.chr' + chromosome
 
     def concat_chromosome_files(self, file_prefix, file_suffix, out_file):
-        return self.__concat_chromosome_files(file_prefix, file_suffix, out_file)
+        return self.__concat_chromosome_files(file_prefix,
+                                              file_suffix,
+                                              out_file)
 
     def __concat_chromosome_files(self, file_prefix, file_suffix, out_file):
         self.delete_file(out_file)
@@ -171,15 +173,8 @@ class LjbController(LjbUpdater, Configure):
     def __tabix(self, file_name):
         """ tabix into gz and tbi file """
         return pysam.tabix_index(file_name,
-                                 force     = True,
-                                 seq_col   = cbv_const.LJB_PARSED_0_IDX_CHROM,
-                                 start_col = cbv_const.LJB_PARSED_0_IDX_POS,
-                                 end_col   = cbv_const.LJB_PARSED_0_IDX_POS,
-                                 zerobased = False)
-
-
-
-
-
-
-
+                                 force=True,
+                                 seq_col=cbv_const.LJB_PARSED_0_IDX_CHROM,
+                                 start_col=cbv_const.LJB_PARSED_0_IDX_POS,
+                                 end_col=cbv_const.LJB_PARSED_0_IDX_POS,
+                                 zerobased=False)
