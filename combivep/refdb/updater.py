@@ -31,7 +31,7 @@ def unzip(zip_file, out_dir):
     out_files = []
     for unzip_file in unzip_files.namelist():
         (dir_name, file_name) = os.path.split(unzip_file)
-        unzip_out_dir         = os.path.join(out_dir, dir_name)
+        unzip_out_dir = os.path.join(out_dir, dir_name)
         if not os.path.exists(unzip_out_dir):
             os.makedirs(unzip_out_dir)
         out_file    = os.path.join(unzip_out_dir, file_name)
@@ -111,8 +111,8 @@ class Updater(Downloader):
             return None, None
         else:
             self.new_version = max_version
-            self.new_file    = os.path.join(self.folder_url,
-                                            files_list[max_version])
+            self.new_file = os.path.join(self.folder_url,
+                                         files_list[max_version])
             return self.new_file, self.new_version
 
     def parse(self, list_file):

@@ -105,7 +105,7 @@ def generate_figures():
 
     #plot scores distribution
     fig = plt.figure()
-    ax= fig.add_subplot(211)
+    ax  = fig.add_subplot(211)
     hist_range = (-0.005, 1.005)
     patho_hist, bins = hist(scores_data[header_data[:, 4] == '1'][:, 0],
                             bins=100,
@@ -161,8 +161,8 @@ def generate_preproc_report():
 
     clean_training_file = os.path.join(cbv_const.CBV_SAMPLE_CBV_DIR,
                                        'training.cbv.clean')
-    clean_test_file     = os.path.join(cbv_const.CBV_SAMPLE_CBV_DIR,
-                                       'test.cbv.clean')
+    clean_test_file = os.path.join(cbv_const.CBV_SAMPLE_CBV_DIR,
+                                   'test.cbv.clean')
     data = np.loadtxt(clean_training_file, dtype='S20')
     n_clean_patho_training = data[data[:, 4] == '1'].shape[0]
     n_clean_neutr_training = data[data[:, 4] == '0'].shape[0]
@@ -176,8 +176,8 @@ def generate_preproc_report():
 
     scores_training_file = os.path.join(cbv_const.CBV_SAMPLE_CBV_DIR,
                                         'training.cbv.scores')
-    scores_test_file     = os.path.join(cbv_const.CBV_SAMPLE_CBV_DIR,
-                                        'test.cbv.scores')
+    scores_test_file = os.path.join(cbv_const.CBV_SAMPLE_CBV_DIR,
+                                    'test.cbv.scores')
     data = np.loadtxt(scores_training_file, dtype='S20')
     n_scores_patho_training = data[data[:, 4] == '1'].shape[0]
     n_scores_neutr_training = data[data[:, 4] == '0'].shape[0]

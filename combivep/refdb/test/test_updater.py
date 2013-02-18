@@ -155,7 +155,6 @@ class TestUcscUpdater(test_template.SafeRefDBTester):
 
 class TestLJBUpdater(test_template.SafeRefDBTester):
 
-
     def __init__(self, test_name):
         test_template.SafeRefDBTester.__init__(self, test_name)
 

@@ -109,8 +109,8 @@ class FastDataSetManager(DataSetManager):
         for rec in scores_reader.fetch_snps():
             snp_data = SnpDataRecord(rec)
             scores   = ScoresRecord(rec)
-            self.dataset.append({cbv_const.KW_SNP_DATA : snp_data,
-                                 cbv_const.KW_SCORES : scores,
+            self.dataset.append({cbv_const.KW_SNP_DATA: snp_data,
+                                 cbv_const.KW_SCORES: scores,
                                  })
 
 
@@ -142,11 +142,11 @@ def filter_cbv_data(cbv_file,
                                            ))
     f_clean.close()
     print report_fmt.format(caption="Clean pathogenic",
-                      value=len([item for item in dm.dataset if item[cbv_const.KW_SNP_DATA].target == '1']))
+                            value=len([item for item in dm.dataset if item[cbv_const.KW_SNP_DATA].target == '1']))
     print report_fmt.format(caption="Clean neutral",
-                      value=len([item for item in dm.dataset if item[cbv_const.KW_SNP_DATA].target == '0']))
+                            value=len([item for item in dm.dataset if item[cbv_const.KW_SNP_DATA].target == '0']))
     print report_fmt.format(caption="Total",
-                      value=len(dm.dataset))
+                            value=len(dm.dataset))
 
     dm.calculate_scores()
     f_scores = open(cbv_file + '.scores', 'w')
@@ -178,8 +178,8 @@ def filter_cbv_data(cbv_file,
     dm.partition_data()
 
     #partition data
-    training_dataset   = dm.get_training_data() 
-    validation_dataset = dm.get_validation_data() 
+    training_dataset   = dm.get_training_data()
+    validation_dataset = dm.get_validation_data()
 
     print report_fmt.format(caption="Training pathogenic",
                             value=len([item for item in training_dataset if item[cbv_const.KW_SNP_DATA].target == '1']))
@@ -202,7 +202,7 @@ def calculate_roc(patho_dataset, neutr_dataset, roc_range):
     tp_rates = np.zeros([len(roc_range),
                                      neutr_dataset.shape[1]])
     patho_data_size = patho_dataset.shape[0]
-    neutr_data_size    = neutr_dataset.shape[0]
+    neutr_data_size = neutr_dataset.shape[0]
     for i in xrange(len(roc_range)):
         fp_rates[i, :] = np.matrix(np.sum(neutr_dataset > roc_range[i],
                                           axis=0
@@ -224,7 +224,7 @@ def info(msg):
     print >> sys.stderr, msg
 
 
-def fast_training(training_data_file, 
+def fast_training(training_data_file,
                   params_out_file=cbv_const.USER_PARAMS_FILE,
                   random_seed=cbv_const.DFLT_SEED,
                   n_hidden_nodes=cbv_const.DFLT_HIDDEN_NODES,
@@ -341,9 +341,9 @@ def measure_precision(ratio,
 
     total_samples = true_pos + true_neg + false_pos + false_neg
 
-    accuracy         = float(true_pos+true_neg) / total_samples
-    sensitivity      = float(true_pos) / (true_pos+false_neg)
-    specificity      = float(true_neg) / (true_neg+false_pos)
+    accuracy = float(true_pos+true_neg) / total_samples
+    sensitivity = float(true_pos) / (true_pos+false_neg)
+    specificity = float(true_neg) / (true_neg+false_pos)
     balance_accuracy = (sensitivity+specificity) / 2
 
     return PrecisionPerformance(true_pos,
