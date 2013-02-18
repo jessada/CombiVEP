@@ -3,9 +3,8 @@ import os
 import re
 import sys
 import zipfile
-import combivep.settings as combivep_settings
+import combivep.settings as cbv_const
 from combivep.template import CombiVEPBase
-#import combivep.template as main_template
 
 
 def ungz(gz_file):
@@ -21,6 +20,13 @@ def ungz(gz_file):
 
 
 def unzip(zip_file, out_dir):
+    """
+
+    unzip file to the output directory
+    then return the name of unzipped file together with their path
+
+    """
+
     unzip_files = zipfile.ZipFile(zip_file)
     out_files = []
     for unzip_file in unzip_files.namelist():
@@ -31,24 +37,15 @@ def unzip(zip_file, out_dir):
         out_file    = os.path.join(unzip_out_dir, file_name)
         zipped_file = os.path.join(dir_name, file_name)
         if not out_file.endswith('/'):
-            fd = open(out_file,"w")
+            fd = open(out_file, "w")
             fd.write(unzip_files.read(zipped_file))
             fd.close()
             out_files.append(out_file)
     return out_files
 
-#def ljb_parse(input_file, output_file):
-#    cmd = 'awk -F\'\\t\' \'{printf "%s\\t%s\\t%s\\t%s\\t%s\\t%s\\t%s\\t%s\\t%s\\t%s\\t%s\\n", $1, $2, $2, $3, $4, $8, $9, $10, $11, $13, $17}\' '
-#    cmd += input_file
-#    cmd += ' | grep -Pv "\\tNA\\t" | grep -v "^#" > '
-#    cmd += output_file
-#    p = subprocess.Popen(cmd, shell=True)
-#    return os.waitpid(p.pid, 0)[1]
-
 
 class Downloader(CombiVEPBase):
     """to download file"""
-
 
     def __init__(self):
         CombiVEPBase.__init__(self)
@@ -73,64 +70,80 @@ class Downloader(CombiVEPBase):
         os.chdir(current_working_dir)
         return error_code
 
-class Updater(Downloader):
 
+class Updater(Downloader):
 
     def __init__(self):
         Downloader.__init__(self)
-        self.working_dir = combivep_settings.COMBIVEP_WORKING_DIR
+        self.working_dir = cbv_const.CBV_WORKING_DIR
 
-        #specific configuration
+        #define the property of updater
         #URL of the folder that contain target files
-        self.folder_url       = None
-        #pattern to find each target file
-        self.files_pattern    = None
-        #pattern to find the version in the file name
-        self.version_pattern  = None
+        self.folder_url = None
+        #pattern to find the target files
+        self.files_pattern = None
+        #pattern to find the version in each file name
+        self.version_pattern = None
         #directory to store (new) reference DB
         self.local_ref_db_dir = None
 
-        self.tmp_file         = 'tmp_list'
+        self.tmp_file = 'tmp_list'
 
     def check_new_file(self, last_version):
+        """
+
+        Check if there is a new version at the target site
+        if yes, return the new file together with its version
+        other, return 'None'
+        Please note that this function only check but not d/l anything
+
+        """
         if not self.__ready():
             return None
         self.create_dir(self.working_dir)
-        tmp_list_file  = os.path.join(self.working_dir, self.tmp_file)
+        tmp_list_file = os.path.join(self.working_dir, self.tmp_file)
         self.download(self.folder_url,
                       self.working_dir,
                       output_file_name=tmp_list_file)
         files_list  = self.__parse(tmp_list_file)
         max_version = max(sorted(files_list.keys()))
-#        self.remove_dir(self.working_dir)
         if max_version <= last_version:
             return None, None
         else:
-            self.new_file    = os.path.join(self.folder_url, files_list[max_version])
             self.new_version = max_version
+            self.new_file = os.path.join(self.folder_url,
+                                         files_list[max_version])
             return self.new_file, self.new_version
 
     def parse(self, list_file):
         return self.__parse(list_file)
 
     def __parse(self, list_file):
-        out          = {}
-        files_parser = re.compile(self.files_pattern)
-        matches      = files_parser.finditer(open(list_file).read())
+        """
+
+        extract only the file of interest together with their versions
+
+        """
+        out = {}
+        fp  = re.compile(self.files_pattern)
+        matches = fp.finditer(open(list_file).read())
         for match in matches:
-            version_parser  = re.compile(self.version_pattern)
-            version         = version_parser.match(match.group('file_name')).group('version')
-            out[version]    = match.group('file_name')
+            vp        = re.compile(self.version_pattern)
+            file_name = match.group('file_name')
+            version   = vp.match(file_name).group('version')
+            out[version] = file_name
         return out
 
     def download_new_file(self):
+        """download the 'new_file' and store it in 'local_db_dir'"""
         if not os.path.exists(self.local_ref_db_dir):
             os.makedirs(self.local_ref_db_dir)
-        print >> sys.stderr, 'Downloading %s . . . . ' % (self.new_file)
+        self.info('Downloading %s . . .' % (self.new_file))
         error = self.download(self.new_file, self.local_ref_db_dir)
         if error:
             return None
-        self.downloaded_file = os.path.join(self.local_ref_db_dir, os.path.basename(self.new_file))
+        self.downloaded_file = os.path.join(self.local_ref_db_dir,
+                                            os.path.basename(self.new_file))
         return self.downloaded_file
 
     def __ready(self):
@@ -140,15 +153,14 @@ class Updater(Downloader):
 class UcscUpdater(Updater):
     """ to check if local UCSC DB is up-to-date """
 
-
     def __init__(self):
         Updater.__init__(self)
 
         #specific configuration
-        self.folder_url       = combivep_settings.UCSC_FOLDER_URL
-        self.files_pattern    = combivep_settings.UCSC_FILES_PATTERN
-        self.version_pattern  = combivep_settings.UCSC_VERSION_PATTERN
-        self.local_ref_db_dir = combivep_settings.USER_UCSC_REF_DB_DIR
+        self.folder_url       = cbv_const.UCSC_FOLDER_URL
+        self.files_pattern    = cbv_const.UCSC_FILES_PATTERN
+        self.version_pattern  = cbv_const.UCSC_VERSION_PATTERN
+        self.local_ref_db_dir = cbv_const.USER_UCSC_REF_DB_DIR
 
     def download_new_file(self):
         if not Updater.download_new_file(self):
@@ -159,30 +171,25 @@ class UcscUpdater(Updater):
             self.raw_db_file = self.downloaded_file
         return self.raw_db_file
 
+
 class LjbUpdater(Updater):
     """ to check if local LJB DB is up-to-date """
-
 
     def __init__(self):
         Updater.__init__(self)
 
         #specific configuration
-        self.folder_url       = combivep_settings.LJB_FOLDER_URL
-        self.files_pattern    = combivep_settings.LJB_FILES_PATTERN
-        self.version_pattern  = combivep_settings.LJB_VERSION_PATTERN
-        self.local_ref_db_dir = combivep_settings.USER_LJB_REF_DB_DIR
+        self.folder_url       = cbv_const.LJB_FOLDER_URL
+        self.files_pattern    = cbv_const.LJB_FILES_PATTERN
+        self.version_pattern  = cbv_const.LJB_VERSION_PATTERN
+        self.local_ref_db_dir = cbv_const.USER_LJB_REF_DB_DIR
 
     def download_new_file(self):
         if not Updater.download_new_file(self):
             return False
         if self.new_file.endswith('.zip'):
-            self.raw_db_files = unzip(self.downloaded_file, self.local_ref_db_dir)
+            self.raw_db_files = unzip(self.downloaded_file,
+                                      self.local_ref_db_dir)
         else:
             self.raw_db_files = self.downloaded_file
         return self.raw_db_files
-
-
-
-
-
-

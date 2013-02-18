@@ -1,55 +1,54 @@
 import sys
 import os
 import pysam
-import combivep.settings as combivep_settings
+import combivep.settings as cbv_const
 from combivep.refdb.updater import UcscUpdater
 from combivep.refdb.updater import LjbUpdater
-from combivep.cfg import Configure
+from combivep.config import Configure
 
 
 class UcscController(UcscUpdater, Configure):
     """UCSC database controller"""
-
 
     def __init__(self):
         UcscUpdater.__init__(self)
         Configure.__init__(self)
 
     def update(self):
-        self.load_config()
-        print >> sys.stderr, 'Checking new UCSC reference database version . . . . '
-        new_file, new_version = self.check_new_file(self.config_values[combivep_settings.LATEST_UCSC_DATABASE_VERSION])
+        self.load_cfg()
+        self.info('Checking new UCSC reference database version . . .')
+        current_version       = self.cfg_vals[cbv_const.LATEST_UCSC_DB_VER]
+        new_file, new_version = self.check_new_file(current_version)
         if not new_version:
-            print >> sys.stderr, 'UCSC reference database is already up-to-date (version %s) . . . . . ' % (self.config_values[combivep_settings.LATEST_UCSC_DATABASE_VERSION])
+            self.info('UCSC reference database is already up-to-date (version %s) . . .' % current_version)
             return False
         self.download_new_file()
-        new_database = self.__tabix_database()
-        self.write_ucsc_config(new_version, new_database)
-        print >> sys.stderr, 'Finish updating UCSC reference database . . . . '
+        new_db = self.__tabix_db()
+        self.write_ucsc_cfg(new_version, new_db)
+        self.info('Finish updating UCSC reference database . . .')
         return True
 
-    def tabix_database(self, file_name):
+    def tabix_db(self, file_name):
         """ interface for testing purpose """
         self.raw_db_file = file_name
-        return self.__tabix_database()
+        return self.__tabix_db()
 
-    def __tabix_database(self):
+    def __tabix_db(self):
         return self.__tabix(self.raw_db_file)
 
     def __tabix(self, file_name):
         """ tabix into gz and tbi file """
-        print >> sys.stderr, 'indexing ucsc database . . . . . '
+        self.info('indexing ucsc database . . .')
         return pysam.tabix_index(file_name,
-                                 force     = True,
-                                 seq_col   = combivep_settings.UCSC_0_INDEX_CHROM,
-                                 start_col = combivep_settings.UCSC_0_INDEX_START_POS,
-                                 end_col   = combivep_settings.UCSC_0_INDEX_END_POS,
-                                 zerobased = True)
+                                 force=True,
+                                 seq_col=cbv_const.UCSC_0_IDX_CHROM,
+                                 start_col=cbv_const.UCSC_0_IDX_START_POS,
+                                 end_col=cbv_const.UCSC_0_IDX_END_POS,
+                                 zerobased=True)
 
 
 class LjbController(LjbUpdater, Configure):
     """LJB database controller"""
-
 
     def __init__(self):
         LjbUpdater.__init__(self)
@@ -57,38 +56,49 @@ class LjbController(LjbUpdater, Configure):
         self.chromosome_list = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', 'X', 'Y']
 
     def update(self):
-        self.load_config()
-        print >> sys.stderr, 'Checking new LJB reference database version . . . . '
-        new_file, new_version = self.check_new_file(self.config_values[combivep_settings.LATEST_LJB_DATABASE_VERSION])
+        self.load_cfg()
+        self.info('Checking new LJB reference database version . . .')
+        current_version       = self.cfg_vals[cbv_const.LATEST_LJB_DB_VER]
+        new_file, new_version = self.check_new_file(current_version)
         if not new_version:
-            print >> sys.stderr, 'LJB reference database is already up-to-date (version %s) . . . . . ' % (self.config_values[combivep_settings.LATEST_LJB_DATABASE_VERSION])
+            self.info('LJB reference database is already up-to-date (version %s) . . .' % current_version)
             return False
         self.download_new_file()
         file_prefix, dummy_ext = os.path.splitext(self.downloaded_file)
         self.delete_file(file_prefix + '.txt')
-        #clean and concat then tabix
-        print >> sys.stderr, 'cleaning database . . . . . '
+        self.__clean_and_concat_then_tabix_ljb_data(file_prefix)
+        self.__update_cbv_config(new_version, file_prefix)
+        self.__remove_downloaded_and_temporary_file(file_prefix)
+        self.info('Finish updating LJB reference database . . .')
+        return True
+
+    def __update_cbv_config(self, new_version, file_prefix):
+        self.write_ljb_cfg(new_version, file_prefix)
+
+    def __clean_and_concat_then_tabix_ljb_data(self, file_prefix):
+        self.info('cleaning database . . .')
         for chromosome_file in self.__get_chromosome_files(file_prefix):
-            self.__clean_raw_database(chromosome_file, chromosome_file + '.clean')
-            self.__concat_file(chromosome_file + '.clean', file_prefix + '.txt')
-        print >> sys.stderr, 'indexing ljb database . . . . . '
-        self.__tabix_database(file_prefix + '.txt')
-        #save file information to the configuration file
-        self.write_ljb_config(new_version, file_prefix)
-        #remove downloaded and temporary files
+            self.__clean_raw_db(chromosome_file, 
+                                chromosome_file + '.clean')
+            self.__concat_file(chromosome_file + '.clean',
+                               file_prefix + '.txt')
+        self.info('indexing ljb database . . .')
+        self.__tabix_db(file_prefix + '.txt')
+
+    def __remove_downloaded_and_temporary_file(self, file_prefix):
         self.delete_file(self.downloaded_file)
         for chromosome_file in self.__get_chromosome_files(file_prefix):
             self.delete_file(chromosome_file)
             self.delete_file(chromosome_file + '.clean')
-        print >> sys.stderr, 'Finish updating LJB reference database . . . . '
-        return True
 
     def __get_chromosome_files(self, file_prefix):
         for chromosome in self.chromosome_list:
             yield file_prefix + '.chr' + chromosome
 
     def concat_chromosome_files(self, file_prefix, file_suffix, out_file):
-        return self.__concat_chromosome_files(file_prefix, file_suffix, out_file)
+        return self.__concat_chromosome_files(file_prefix,
+                                              file_suffix,
+                                              out_file)
 
     def __concat_chromosome_files(self, file_prefix, file_suffix, out_file):
         self.delete_file(out_file)
@@ -103,48 +113,48 @@ class LjbController(LjbUpdater, Configure):
         cmd.append(target)
         return self.exec_sh(''.join(cmd))
 
-    def clean_raw_database(self, input_file, output_file):
+    def clean_raw_db(self, input_file, output_file):
         """ interface for testing purpose """
-        return self.__clean_raw_database(input_file, output_file)
+        return self.__clean_raw_db(input_file, output_file)
 
-    def __clean_raw_database(self, input_file, output_file):
+    def __clean_raw_db(self, input_file, output_file):
         cmd = []
         #remove records that any of the scores are 'NA'
         cmd.append('awk -F\'\\t\' \'($')
-        cmd.append(str(combivep_settings.LJB_RAW_1_INDEX_PHYLOP_SCORE))
+        cmd.append(str(cbv_const.LJB_RAW_1_IDX_PHYLOP_SCORE))
         cmd.append(' !~ /[A-Z]/) && ($')
-        cmd.append(str(combivep_settings.LJB_RAW_1_INDEX_SIFT_SCORE))
+        cmd.append(str(cbv_const.LJB_RAW_1_IDX_SIFT_SCORE))
         cmd.append(' !~ /[A-Z]/) && ($')
-        cmd.append(str(combivep_settings.LJB_RAW_1_INDEX_PP2_SCORE))
+        cmd.append(str(cbv_const.LJB_RAW_1_IDX_PP2_SCORE))
         cmd.append(' !~ /[A-Z]/) && ($')
-        cmd.append(str(combivep_settings.LJB_RAW_1_INDEX_LRT_SCORE))
+        cmd.append(str(cbv_const.LJB_RAW_1_IDX_LRT_SCORE))
         cmd.append(' !~ /[A-Z]/) && ($')
-        cmd.append(str(combivep_settings.LJB_RAW_1_INDEX_MT_SCORE))
+        cmd.append(str(cbv_const.LJB_RAW_1_IDX_MT_SCORE))
         cmd.append(' !~ /[A-Z]/) && ($')
-        cmd.append(str(combivep_settings.LJB_RAW_1_INDEX_GERP_SCORE))
+        cmd.append(str(cbv_const.LJB_RAW_1_IDX_GERP_SCORE))
         cmd.append(' !~ /[A-Z]/)\' ')
         cmd.append(input_file)
         #reformat the columns
         cmd.append(' | awk -F\'\\t\' \'{printf "%s\\t%s\\t%s\\t%s\\t%s\\t%s\\t%s\\t%s\\t%s\\t%s\\n", $')
-        cmd.append(str(combivep_settings.LJB_RAW_1_INDEX_CHROM))
+        cmd.append(str(cbv_const.LJB_RAW_1_IDX_CHROM))
         cmd.append(', $')
-        cmd.append(str(combivep_settings.LJB_RAW_1_INDEX_POS))
+        cmd.append(str(cbv_const.LJB_RAW_1_IDX_HG19_POS))
         cmd.append(', $')
-        cmd.append(str(combivep_settings.LJB_RAW_1_INDEX_REF))
+        cmd.append(str(cbv_const.LJB_RAW_1_IDX_REF))
         cmd.append(', $')
-        cmd.append(str(combivep_settings.LJB_RAW_1_INDEX_ALT))
+        cmd.append(str(cbv_const.LJB_RAW_1_IDX_ALT))
         cmd.append(', $')
-        cmd.append(str(combivep_settings.LJB_RAW_1_INDEX_PHYLOP_SCORE))
+        cmd.append(str(cbv_const.LJB_RAW_1_IDX_PHYLOP_SCORE))
         cmd.append(', $')
-        cmd.append(str(combivep_settings.LJB_RAW_1_INDEX_SIFT_SCORE))
+        cmd.append(str(cbv_const.LJB_RAW_1_IDX_SIFT_SCORE))
         cmd.append(', $')
-        cmd.append(str(combivep_settings.LJB_RAW_1_INDEX_PP2_SCORE))
+        cmd.append(str(cbv_const.LJB_RAW_1_IDX_PP2_SCORE))
         cmd.append(', $')
-        cmd.append(str(combivep_settings.LJB_RAW_1_INDEX_LRT_SCORE))
+        cmd.append(str(cbv_const.LJB_RAW_1_IDX_LRT_SCORE))
         cmd.append(', $')
-        cmd.append(str(combivep_settings.LJB_RAW_1_INDEX_MT_SCORE))
+        cmd.append(str(cbv_const.LJB_RAW_1_IDX_MT_SCORE))
         cmd.append(', $')
-        cmd.append(str(combivep_settings.LJB_RAW_1_INDEX_GERP_SCORE))
+        cmd.append(str(cbv_const.LJB_RAW_1_IDX_GERP_SCORE))
         cmd.append('}\' ')
         #redirect output to a file
         cmd.append(' | sort -k2 -n ')
@@ -153,25 +163,18 @@ class LjbController(LjbUpdater, Configure):
         cmd.append(output_file)
         return self.exec_sh(''.join(cmd))
 
-    def tabix_database(self, file_name):
+    def tabix_db(self, file_name):
         """ interface for testing purpose """
-        self.__tabix_database(file_name)
+        self.__tabix_db(file_name)
 
-    def __tabix_database(self, file_name):
+    def __tabix_db(self, file_name):
         return self.__tabix(file_name)
 
     def __tabix(self, file_name):
         """ tabix into gz and tbi file """
         return pysam.tabix_index(file_name,
-                                 force     = True,
-                                 seq_col   = combivep_settings.LJB_PARSED_0_INDEX_CHROM,
-                                 start_col = combivep_settings.LJB_PARSED_0_INDEX_POS,
-                                 end_col   = combivep_settings.LJB_PARSED_0_INDEX_POS,
-                                 zerobased = False)
-
-
-
-
-
-
-
+                                 force=True,
+                                 seq_col=cbv_const.LJB_PARSED_0_IDX_CHROM,
+                                 start_col=cbv_const.LJB_PARSED_0_IDX_POS,
+                                 end_col=cbv_const.LJB_PARSED_0_IDX_POS,
+                                 zerobased=False)

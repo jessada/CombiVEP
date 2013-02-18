@@ -1,17 +1,4 @@
 #!/bin/bash -l
-#SBATCH -A b2011026
-#SBATCH -p node
-#SBATCH -n 32
-#SBATCH -t 7-00:00:00
-#SBATCH -J coca_train_combiner
-
-#************************* DISCLAIMER **************************
-# This script is not a part of CombiVEP application
-# It is made for the ease of author to reproduce the result
-# Please feel free to use.
-# Please don't expect to see it run smoothly without knowing what
-# this script actually do.
-
 
 script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 

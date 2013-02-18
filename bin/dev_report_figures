@@ -1,0 +1,9 @@
+import subprocess
+from combivep.devtools.report import generate_figures
+
+figures = generate_figures()
+for figure in figures:
+    p = subprocess.Popen('evince ' + figure, shell=True)
+
+
+

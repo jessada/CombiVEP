@@ -1,13 +1,13 @@
 import unittest
+import sys
 import os
 import shutil
 import subprocess
-import combivep.settings as combivep_settings
+import combivep.settings as cbv_const
 
 
 class CombiVEPBase(object):
     """ CombiVEP base class """
-
 
     def __init__(self):
         pass
@@ -27,16 +27,21 @@ class CombiVEPBase(object):
     def copy_file(self, source, destination):
         shutil.copy2(source, destination)
 
+    def info(self, info_msg):
+        print >> sys.stderr, info_msg
+
+    def throw(self, err_msg):
+        raise Exception(err_msg)
+
     def exec_sh(self, cmd):
         p = subprocess.Popen(cmd, shell=True)
         error = p.wait()
         if error:
-            raise Exception("Error found during execute command '%s' with error code %d" % (cmd, error))
+            self.throw("Error found during execute command '%s' with error code %d" % (cmd, error))
 
 
 class Tester(unittest.TestCase, CombiVEPBase):
     """ general CombiVEP template for testing """
-
 
     individual_debug = False
 
@@ -53,17 +58,22 @@ class Tester(unittest.TestCase, CombiVEPBase):
         CombiVEPBase.create_dir(self, dir_name)
 
     def empty_working_dir(self):
-        if (not combivep_settings.DEBUG_MODE) and (not self.individual_debug):
+        if (not cbv_const.DEBUG_MODE) and (not self.individual_debug):
             self.remove_dir(self.working_dir)
         self.create_dir(self.working_dir)
 
     def remove_working_dir(self):
-        if (not combivep_settings.DEBUG_MODE) and (not self.individual_debug):
+        if (not cbv_const.DEBUG_MODE) and (not self.individual_debug):
             self.remove_dir(self.working_dir)
 
     def set_dir(self):
-        self.working_dir = os.path.join(os.path.join(os.path.join(os.path.dirname(__file__), 'tmp'), self.test_class), self.test_function)
-        self.data_dir    = os.path.join(os.path.join(os.path.dirname(__file__), 'data'), self.test_class)
+        self.working_dir = os.path.join(os.path.join(os.path.join(os.path.dirname(__file__),
+                                                                  'tmp'),
+                                                     self.test_class),
+                                        self.test_function)
+        self.data_dir= os.path.join(os.path.join(os.path.dirname(__file__), 
+                                                 'data'),
+                                    self.test_class)
 
     def init_test(self, test_function):
         self.test_function = test_function
@@ -99,7 +109,5 @@ class RiskyTester(Tester):
         Tester.__init__(self, test_name)
 
     def remove_user_dir(self):
-        if (not combivep_settings.DEBUG_MODE) and (not self.individual_debug):
-            self.remove_dir(combivep_settings.USER_DATA_ROOT)
-
-
+        if (not cbv_const.DEBUG_MODE) and (not self.individual_debug):
+            self.remove_dir(cbv_const.USER_DATA_ROOT)

@@ -3,20 +3,30 @@ import sys
 import glob
 import pkgutil
 
+
 setup(
     name='CombiVEP_dev',
     version='0.1.1',
     author='Jessada Thutkawkorapin',
     author_email='jessada.thutkawkorapin@gmail.com',
-    packages=['combivep', 'combivep.engine', 'combivep.engine.test', 'combivep.refdb', 'combivep.refdb.test', 'combivep.preproc', 'combivep.preproc.test', 'combivep.devtools'],
+    packages=['combivep',
+              'combivep.engine',
+              'combivep.engine.test',
+              'combivep.refdb',
+              'combivep.refdb.test',
+              'combivep.preproc',
+              'combivep.preproc.test',
+              'combivep.devtools',
+              ],
     scripts=['bin/CombiVEP_reference_updater',
              'bin/CombiVEP_predictor',
              'bin/CombiVEP_trainer',
              'bin/dev_report_preproc',
+             'bin/dev_report_filtering',
+             'bin/dev_report_figures',
+             'bin/dev_report_precision',
              'bin/dev_demo_training',
              'bin/dev_demo_predicting',
-             'bin/dev_report_filtering',
-             'bin/dev_report_preproc',
              'bin/dev_condel_01_submit_to_condel',
              'bin/dev_condel_02_get_condel_result',
              ],
@@ -38,5 +48,3 @@ setup(
     long_description=open('README.txt').read(),
     install_requires=["pysam >= 0.7"],
 )
-
-
