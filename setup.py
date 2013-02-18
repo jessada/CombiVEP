@@ -3,6 +3,7 @@ import sys
 import glob
 import pkgutil
 
+
 setup(
     name='CombiVEP',
     version='0.1.2',
@@ -20,7 +21,9 @@ setup(
     package=['CombiVEP'],
     package_data={'': ['data/CBV/*.cbv']
                   },
-    data_files=[('combivep/data/CBV', ['combivep/data/CBV/training.cbv', 'combivep/data/CBV/test.cbv']),
+    data_files=[('combivep/data/CBV', ['combivep/data/CBV/training.cbv',
+                                       'combivep/data/CBV/test.cbv',
+                                       ]),
                 ],
     url='http://pypi.python.org/pypi/CombiVEP/',
     license='LICENSE.txt',
@@ -28,5 +31,3 @@ setup(
     long_description=open('README.txt').read(),
     install_requires=["pysam >= 0.7"],
 )
-
-

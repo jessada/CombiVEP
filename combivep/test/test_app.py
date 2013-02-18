@@ -8,7 +8,6 @@ from combivep.app import predict_deleterious_probability
 
 class TestApp(SafeGeneralTester):
 
-
     def __init__(self, test_name):
         SafeGeneralTester.__init__(self, test_name)
 
@@ -21,10 +20,10 @@ class TestApp(SafeGeneralTester):
     def test_train_combivep_using_cbv_data(self):
         #init
         self.init_test('train_combivep_using_cbv_data')
-        test_file    = os.path.join(self.data_dir,
-                                    'test_train_combivep.cbv')
-        params_file  = os.path.join(self.working_dir,
-                                    'params.npz')
+        test_file = os.path.join(self.data_dir,
+                                 'test_train_combivep.cbv')
+        params_file = os.path.join(self.working_dir,
+                                   'params.npz')
         #run test
         train_combivep_using_cbv_data(test_file,
                                       random_seed=1,
@@ -35,16 +34,16 @@ class TestApp(SafeGeneralTester):
                                       cfg_file=cbv_const.CBV_SAMPLE_CFG_FILE)
         self.assertTrue(os.path.exists(params_file),
                         msg='Trainer does not functional properly')
-        figure_file  = os.path.join(self.working_dir,
-                                    '07.eps')
+        figure_file = os.path.join(self.working_dir,
+                                   '07.eps')
         self.assertTrue(os.path.exists(figure_file),
                         msg='Trainer does not functional properly')
 
     def test_predict_deleterious_probability_cbv(self):
         #init
         self.init_test('predict_deleterious_probability_cbv')
-        test_file   = os.path.join(self.data_dir,
-                                   'test_test_combivep.cbv')
+        test_file = os.path.join(self.data_dir,
+                                 'test_test_combivep.cbv')
         output_file = os.path.join(self.working_dir,
                                    'cbv_output.txt')
         #run test
@@ -67,8 +66,8 @@ class TestApp(SafeGeneralTester):
     def test_predict_deleterious_probability_vcf(self):
         #init
         self.init_test('predict_deleterious_probability_vcf')
-        test_file   = os.path.join(self.data_dir,
-                                   'test_test_combivep.vcf')
+        test_file = os.path.join(self.data_dir,
+                                 'test_test_combivep.vcf')
         output_file = os.path.join(self.working_dir,
                                    'vcf_output.txt')
         #run test
@@ -90,5 +89,3 @@ class TestApp(SafeGeneralTester):
 
     def tearDown(self):
         self.remove_working_dir()
-
-

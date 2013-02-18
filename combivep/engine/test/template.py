@@ -8,7 +8,6 @@ from combivep.template import RiskyTester
 class SafeEngineTester(SafeTester):
     """ General template for safe "Engine" modules testing """
 
-
     def __init__(self, test_name):
         SafeTester.__init__(self, test_name)
 
@@ -17,21 +16,19 @@ class SafeEngineTester(SafeTester):
                                                                   'tmp'),
                                                      self.test_class),
                                         self.test_function)
-        self.data_dir    = os.path.join(os.path.join(os.path.dirname(__file__),
-                                                     'data'),
-                                        self.test_class)
+        self.data_dir = os.path.join(os.path.join(os.path.dirname(__file__),
+                                                  'data'),
+                                     self.test_class)
 
 
 class RiskyEngineTester(RiskyTester):
     """ General template for risky "Engine" modules testing """
-
 
     def __init__(self, test_name):
         RiskyTester.__init__(self, test_name)
 
     def set_dir(self):
         self.working_dir = combivep_settings.COMBIVEP_WORKING_DIR
-        self.data_dir    = os.path.join(os.path.join(os.path.dirname(__file__),
-                                                     'big_data'),
-                                        self.test_class)
-
+        self.data_dir = os.path.join(os.path.join(os.path.dirname(__file__),
+                                                  'big_data'),
+                                     self.test_class)

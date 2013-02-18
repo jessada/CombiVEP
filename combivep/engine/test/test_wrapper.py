@@ -7,8 +7,8 @@ from combivep.engine.test.template import SafeEngineTester
 from combivep.engine.wrapper import Trainer
 from combivep.engine.wrapper import Predictor
 
-class TestTrainer(SafeEngineTester):
 
+class TestTrainer(SafeEngineTester):
 
     def __init__(self, test_name):
         SafeEngineTester.__init__(self, test_name)
@@ -52,8 +52,8 @@ class TestTrainer(SafeEngineTester):
     def tearDown(self):
         self.remove_working_dir()
 
-class TestPredictor(SafeEngineTester):
 
+class TestPredictor(SafeEngineTester):
 
     def __init__(self, test_name):
         SafeEngineTester.__init__(self, test_name)
@@ -84,5 +84,3 @@ class TestPredictor(SafeEngineTester):
         self.assertEqual(round(out[0][0], 4),
                          0.2729,
                          msg='Predictor does not functional properly')
-
-

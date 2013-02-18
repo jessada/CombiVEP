@@ -1,13 +1,12 @@
 import unittest
 import os
 import filecmp
-from combivep.test.template import SafeGeneralTester
 import combivep.settings as cbv_const
+from combivep.test.template import SafeGeneralTester
 from combivep.config import Configure
 
 
 class TestConfigure(SafeGeneralTester):
-
 
     def __init__(self, test_name):
         SafeGeneralTester.__init__(self, test_name)
@@ -23,8 +22,8 @@ class TestConfigure(SafeGeneralTester):
         #init
         self.init_test('test_initial')
         cfg = self.__create_configure_instance()
-        out_file     = os.path.join(self.working_dir,
-                                    'out_config.txt')
+        out_file = os.path.join(self.working_dir,
+                                'out_config.txt')
         cfg.cfg_file = out_file
         expected_out_file = os.path.join(self.data_dir,
                                          'expected_initial_config_out.txt')
@@ -37,8 +36,8 @@ class TestConfigure(SafeGeneralTester):
         #init
         self.init_test('test_load')
         cfg = self.__create_configure_instance()
-        test_file    = os.path.join(self.data_dir,
-                                    'test_load.txt')
+        test_file = os.path.join(self.data_dir,
+                                 'test_load.txt')
         cfg.cfg_file = test_file
         #run test
         out = cfg.load_cfg()
@@ -76,10 +75,10 @@ class TestConfigure(SafeGeneralTester):
         #init
         self.init_test('test_update_ucsc_config')
         cfg = self.__create_configure_instance()
-        test_file    = os.path.join(self.data_dir,
-                                    'test_load.txt')
-        out_file     = os.path.join(self.working_dir,
-                                    'out_config.txt')
+        test_file = os.path.join(self.data_dir,
+                                 'test_load.txt')
+        out_file = os.path.join(self.working_dir,
+                                'out_config.txt')
         cfg.cfg_file = out_file
         expected_out_file = os.path.join(self.data_dir,
                                          'expected_ucsc_config_out.txt')
@@ -91,5 +90,3 @@ class TestConfigure(SafeGeneralTester):
 
     def tearDown(self):
         self.remove_working_dir()
-
-

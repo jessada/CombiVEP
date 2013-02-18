@@ -18,9 +18,12 @@ def app_combivep_reference_updater():
     ucsc_controller = UcscController()
     ucsc_controller.update()
 
+
 def app_combivep_trainer():
-    argp = argparse.ArgumentParser(description="An application to train the consensus predictor using Multilayer Perceptron Learning technique.")
-    tmp_help=[]
+    descriptiion = "An application to train the consensus predictor using "
+    decscription += "Multilayer Perceptron Learning technique."
+    argp = argparse.ArgumentParser(description=description)
+    tmp_help = []
     tmp_help.append("A file with list of SNPs in CBV (CombiVEP) format.")
     tmp_help.append("CBV format consists of five fields:")
     tmp_help.append("CHROM, POS, REF, ALT, ACTUAL_DELETERIOUS_EFFECT.")
@@ -30,9 +33,12 @@ def app_combivep_trainer():
     args = argp.parse_args()
     train_combivep_using_cbv_data(args.training_data_file)
 
+
 def app_combivep_predictor():
-    argp = argparse.ArgumentParser(description="An application to predict how likely the given SNPs will have deleterious effect")
-    tmp_help=[]
+    description = "An application to predict how likely "
+    description += "the given SNPs will have deleterious effect"
+    argp = argparse.ArgumentParser(description=description)
+    tmp_help = []
     tmp_help.append("A file with list of SNPs.")
     tmp_help.append("It can be either in standard VCF format")
     tmp_help.append("or CBV (CombiVEP) format.")
@@ -53,12 +59,13 @@ def app_combivep_predictor():
     predict_deleterious_probability(args.input_file,
                                     file_type=args.input_format)
 
-def train_combivep_using_cbv_data(training_data_file, 
+
+def train_combivep_using_cbv_data(training_data_file,
                                   params_out_file=cbv_const.USER_PARAMS_FILE,
-                                  random_seed=cbv_const.DEFAULT_SEED,
-                                  n_hidden_nodes=cbv_const.DEFAULT_HIDDEN_NODES,
-                                  figure_dir=cbv_const.DEFAULT_FIGURE_DIR,
-                                  iterations=cbv_const.DEFAULT_ITERATIONS,
+                                  random_seed=cbv_const.DFLT_SEED,
+                                  n_hidden_nodes=cbv_const.DFLT_HIDDEN_NODES,
+                                  figure_dir=cbv_const.DFLT_FIGURE_DIR,
+                                  iterations=cbv_const.DFLT_ITERATIONS,
                                   cfg_file=cbv_const.CBV_CFG_FILE,
                                   ):
     """
@@ -87,8 +94,8 @@ def train_combivep_using_cbv_data(training_data_file,
     dm.partition_data()
 
     #partition data
-    training_data   = dm.get_training_data() 
-    validation_data = dm.get_validation_data() 
+    training_data   = dm.get_training_data()
+    validation_data = dm.get_validation_data()
 
     #train !!!
     print >> sys.stderr, 'Training CombiVEP, please wait (around 500 SNPs/mins) . . .'
@@ -101,6 +108,7 @@ def train_combivep_using_cbv_data(training_data_file,
     if not os.path.exists(cbv_const.USER_PARAMS_DIR):
         os.makedirs(cbv_const.USER_PARAMS_DIR)
     trainer.export_best_parameters(params_out_file)
+
 
 def predict_deleterious_probability(SNPs_file,
                                     params_file=cbv_const.USER_PARAMS_FILE,
@@ -154,8 +162,8 @@ def predict_deleterious_probability(SNPs_file,
     print "#" + "\t".join(tmp_rec)
     for i in xrange(len(dm.dataset)):
         del tmp_rec[:]
-        snp_data   = dm.dataset[i][cbv_const.KW_SNP_DATA_SECTION]
-        scores     = dm.dataset[i][cbv_const.KW_SCORES_SECTION]
+        snp_data = dm.dataset[i][cbv_const.KW_SNP_DATA]
+        scores = dm.dataset[i][cbv_const.KW_SCORES]
         tmp_rec.append(snp_data.chrom)
         tmp_rec.append(snp_data.pos)
         tmp_rec.append(snp_data.ref)
@@ -168,11 +176,5 @@ def predict_deleterious_probability(SNPs_file,
         tmp_rec.append(scores.lrt_score)
         tmp_rec.append(scores.mt_score)
         tmp_rec.append(scores.gerp_score)
-#        tmp_rec.append(scores[cbv_const.KW_PHYLOP_SCORE])
-#        tmp_rec.append(scores[cbv_const.KW_SIFT_SCORE])
-#        tmp_rec.append(scores[cbv_const.KW_PP2_SCORE])
-#        tmp_rec.append(scores[cbv_const.KW_LRT_SCORE])
-#        tmp_rec.append(scores[cbv_const.KW_MT_SCORE])
-#        tmp_rec.append(scores[cbv_const.KW_GERP_SCORE])
         print "\t".join(tmp_rec)
     sys.stdout = sys.__stdout__

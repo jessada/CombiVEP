@@ -1,22 +1,26 @@
 import os
-#import combivep.settings as combivep_settings
 
 
 # > > > > > > > > > > > > > development files & folders < < < < < < < < < <
-PUB_RES_ROOT             = '/home/jessada/development/scilifelab/assignments/20121119_CombiVEP_publication/resources'
-PUB_PARAM_FILE             = os.path.join(PUB_RES_ROOT, 'params.npz')
-PUB_RAW_PREDICTION_RESULT      = os.path.join(PUB_RES_ROOT, 'prediction_result')
-PUB_CONDEL_PREDICTION_RESULT   = os.path.join(PUB_RES_ROOT, 'full_prediction_result')
-PUB_FIGS_DIR                = os.path.join(PUB_RES_ROOT, 'figures')
+PUB_RES_ROOT = '/home/jessada/development/scilifelab/assignments/20121119_CombiVEP_publication/resources'
+
+#general resources
+PUB_RAW_PREDICTION_RESULT    = os.path.join(PUB_RES_ROOT,
+                                            'prediction_result')
+PUB_CONDEL_PREDICTION_RESULT = os.path.join(PUB_RES_ROOT,
+                                            'full_prediction_result')
+PUB_PARAM_FILE = os.path.join(PUB_RES_ROOT, 'params.npz')
+
+#figures
+PUB_FIGS_DIR = os.path.join(PUB_RES_ROOT, 'figures')
+PUB_ROC_FIG  = os.path.join(PUB_FIGS_DIR, 'roc_curve.eps')
+PUB_AUC_FIG  = os.path.join(PUB_FIGS_DIR, 'auc_curve.eps')
 PUB_SCORES_DISTR_FIG = os.path.join(PUB_FIGS_DIR, 'scores_dist.eps')
-PUB_ROC_FIG                 = os.path.join(PUB_FIGS_DIR, 'roc_curve.eps')
-PUB_AUC_FIG                 = os.path.join(PUB_FIGS_DIR, 'auc_curve.eps')
-#PUB_SCORE_DISTR_FIG  = os.path.join(PUB_FIGS_DIR, 'score_distribution.eps')
 
 
 # > > > > > > > > > > > > > file type < < < < < < < < < <
 #file type
-FILE_TYPE_SCORES = 'scores' #CombiVEP format
+FILE_TYPE_SCORES = 'scores'
 
 #SNP information key
 KEY_SCORES_CHROM  = 'SCORES_chrom'
@@ -40,7 +44,19 @@ SCORES_0_IDX_MT_SCORE     = 9
 SCORES_0_IDX_GERP_SCORE   = 10
 
 # > > > > > > > > > > > > > data structure < < < < < < < < < <
-PREDICTOR_NAMES = ('CombiVEP', 'Phylop', 'SIFT', 'PP2', 'LRT', 'MT', 'GERP', 'Condel')
-PRECISION_MEASURES = ('true_postive', 'false_negative', 'true_negative', 'false_positive', 'accuracy', 'sensitivity', 'specificity', 'balance_accuracy')
-
-
+PREDICTOR_NAMES = ('CombiVEP',
+                   'Phylop',
+                   'SIFT',
+                   'PP2',
+                   'LRT',
+                   'MT',
+                   'GERP',
+                   'Condel')
+PRECISION_MEASURES = ('true_postive',
+                      'false_negative',
+                      'true_negative',
+                      'false_positive',
+                      'accuracy',
+                      'sensitivity',
+                      'specificity',
+                      'balance_accuracy')

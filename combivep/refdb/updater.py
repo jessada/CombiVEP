@@ -31,13 +31,13 @@ def unzip(zip_file, out_dir):
     out_files = []
     for unzip_file in unzip_files.namelist():
         (dir_name, file_name) = os.path.split(unzip_file)
-        unzip_out_dir         = os.path.join(out_dir, dir_name)
+        unzip_out_dir = os.path.join(out_dir, dir_name)
         if not os.path.exists(unzip_out_dir):
             os.makedirs(unzip_out_dir)
         out_file    = os.path.join(unzip_out_dir, file_name)
         zipped_file = os.path.join(dir_name, file_name)
         if not out_file.endswith('/'):
-            fd = open(out_file,"w")
+            fd = open(out_file, "w")
             fd.write(unzip_files.read(zipped_file))
             fd.close()
             out_files.append(out_file)
@@ -46,7 +46,6 @@ def unzip(zip_file, out_dir):
 
 class Downloader(CombiVEPBase):
     """to download file"""
-
 
     def __init__(self):
         CombiVEPBase.__init__(self)
@@ -71,8 +70,8 @@ class Downloader(CombiVEPBase):
         os.chdir(current_working_dir)
         return error_code
 
-class Updater(Downloader):
 
+class Updater(Downloader):
 
     def __init__(self):
         Downloader.__init__(self)
@@ -80,15 +79,15 @@ class Updater(Downloader):
 
         #define the property of updater
         #URL of the folder that contain target files
-        self.folder_url       = None
+        self.folder_url = None
         #pattern to find the target files
-        self.files_pattern    = None
+        self.files_pattern = None
         #pattern to find the version in each file name
-        self.version_pattern  = None
+        self.version_pattern = None
         #directory to store (new) reference DB
         self.local_ref_db_dir = None
 
-        self.tmp_file         = 'tmp_list'
+        self.tmp_file = 'tmp_list'
 
     def check_new_file(self, last_version):
         """
@@ -102,7 +101,7 @@ class Updater(Downloader):
         if not self.__ready():
             return None
         self.create_dir(self.working_dir)
-        tmp_list_file  = os.path.join(self.working_dir, self.tmp_file)
+        tmp_list_file = os.path.join(self.working_dir, self.tmp_file)
         self.download(self.folder_url,
                       self.working_dir,
                       output_file_name=tmp_list_file)
@@ -112,8 +111,8 @@ class Updater(Downloader):
             return None, None
         else:
             self.new_version = max_version
-            self.new_file    = os.path.join(self.folder_url,
-                                            files_list[max_version])
+            self.new_file = os.path.join(self.folder_url,
+                                         files_list[max_version])
             return self.new_file, self.new_version
 
     def parse(self, list_file):
@@ -125,13 +124,13 @@ class Updater(Downloader):
         extract only the file of interest together with their versions
 
         """
-        out     = {}
-        fp      = re.compile(self.files_pattern)
+        out = {}
+        fp  = re.compile(self.files_pattern)
         matches = fp.finditer(open(list_file).read())
         for match in matches:
-            vp           = re.compile(self.version_pattern)
-            file_name    = match.group('file_name')
-            version      = vp.match(file_name).group('version')
+            vp        = re.compile(self.version_pattern)
+            file_name = match.group('file_name')
+            version   = vp.match(file_name).group('version')
             out[version] = file_name
         return out
 
@@ -154,7 +153,6 @@ class Updater(Downloader):
 class UcscUpdater(Updater):
     """ to check if local UCSC DB is up-to-date """
 
-
     def __init__(self):
         Updater.__init__(self)
 
@@ -173,9 +171,9 @@ class UcscUpdater(Updater):
             self.raw_db_file = self.downloaded_file
         return self.raw_db_file
 
+
 class LjbUpdater(Updater):
     """ to check if local LJB DB is up-to-date """
-
 
     def __init__(self):
         Updater.__init__(self)
@@ -195,9 +193,3 @@ class LjbUpdater(Updater):
         else:
             self.raw_db_files = self.downloaded_file
         return self.raw_db_files
-
-
-
-
-
-

@@ -62,10 +62,10 @@ MAX_ALLOWED_ERROR = 0.35
 MIN_IMPROVEMENT   = 0.000000001
 
 #default model argument values
-DEFAULT_ITERATIONS   = 30000
-DEFAULT_HIDDEN_NODES = 6
-DEFAULT_SEED         = None
-DEFAULT_FIGURE_DIR   = None
+DFLT_ITERATIONS   = 30000
+DFLT_HIDDEN_NODES = 6
+DFLT_SEED         = None
+DFLT_FIGURE_DIR   = None
 
 #proportion of data partitioning
 PROPORTION_TRAINING_DATA   = 70
@@ -92,15 +92,15 @@ LJB_VERSION_PATTERN = r"""[a-zA-Z_]*(?P<version>[\d.]*)[.][a-zA-Z.]*"""
 
 # > > > > > > > > > > > > > Dataset data structure < < < < < < < < < <
 #section key
-KW_SNP_DATA_SECTION = 'snp_data'
-KW_SCORES_SECTION   = 'scores'
+KW_SNP_DATA = 'snp_data'
+KW_SCORES   = 'scores'
 
-#global SNP data keywords
-KW_CHROM = 'chrom'
-KW_POS   = 'pos'
-KW_REF   = 'ref'
-KW_ALT   = 'alt'
-KW_TARGET = 'target'
+##global SNP data keywords
+#KW_CHROM = 'chrom'
+#KW_POS   = 'pos'
+#KW_REF   = 'ref'
+#KW_ALT   = 'alt'
+#KW_TARGET = 'target'
 
 #file type
 FILE_TYPE_CBV = 'CBV'
@@ -108,13 +108,13 @@ FILE_TYPE_VCF = 'VCF'
 
 
 # > > > > > > > > > > > > > UCSC format configuration < < < < < < < < < <
-#general key
-KW_UCSC_CHROM     = 'ucsc_chrom'
-KW_UCSC_START_POS = 'ucsc_start_pos'
-KW_UCSC_END_POS   = 'ucsc_end_pos'
-KW_UCSC_STRAND    = 'ucsc_strand'
-KW_UCSC_REF       = 'ucsc_ref'
-KW_UCSC_OBSERVED  = 'ucsc_observed'
+##general key
+#KW_UCSC_CHROM     = 'ucsc_chrom'
+#KW_UCSC_START_POS = 'ucsc_start_pos'
+#KW_UCSC_END_POS   = 'ucsc_end_pos'
+#KW_UCSC_STRAND    = 'ucsc_strand'
+#KW_UCSC_REF       = 'ucsc_ref'
+#KW_UCSC_OBSERVED  = 'ucsc_observed'
 
 #UCSC index
 #0-based index, used by python
@@ -128,19 +128,19 @@ UCSC_EXPECTED_LENGTH = 26
 
 
 # > > > > > > > > > > > > > LJB format configuration < < < < < < < < < <
-#SNP information key
-KW_LJB_CHROM = 'ljb_chrom'
-KW_LJB_POS   = 'ljb_hg19_pos'
-KW_LJB_REF   = 'ljb_ref'
-KW_LJB_ALT   = 'ljb_alt'
+##SNP information key
+#KW_LJB_CHROM = 'ljb_chrom'
+#KW_LJB_POS   = 'ljb_hg19_pos'
+#KW_LJB_REF   = 'ljb_ref'
+#KW_LJB_ALT   = 'ljb_alt'
 
-#score key
-KW_PHYLOP_SCORE = 'phylop_score'
-KW_SIFT_SCORE   = 'sift_score'
-KW_PP2_SCORE    = 'pp2_score'
-KW_LRT_SCORE    = 'lrt_score'
-KW_MT_SCORE     = 'mt_score'
-KW_GERP_SCORE   = 'gerp_score'
+##score key
+#KW_PHYLOP_SCORE = 'phylop_score'
+#KW_SIFT_SCORE   = 'sift_score'
+#KW_PP2_SCORE    = 'pp2_score'
+#KW_LRT_SCORE    = 'lrt_score'
+#KW_MT_SCORE     = 'mt_score'
+#KW_GERP_SCORE   = 'gerp_score'
 
 #LJB index
 #1-based index, used by awk for parsing
@@ -170,11 +170,11 @@ LJB_PARSED_EXPECTED_LENGTH    = 10
 
 
 # > > > > > > > > > > > > > VCF format configuration < < < < < < < < < <
-#SNP information key
-KW_VCF_CHROM = 'vcf_chrom'
-KW_VCF_POS   = 'vcf_pos'
-KW_VCF_REF   = 'vcf_ref'
-KW_VCF_ALT   = 'vcf_alt'
+##SNP information key
+#KW_VCF_CHROM = 'vcf_chrom'
+#KW_VCF_POS   = 'vcf_pos'
+#KW_VCF_REF   = 'vcf_ref'
+#KW_VCF_ALT   = 'vcf_alt'
 
 #VCF index
 #0-based index, used by python
@@ -185,12 +185,12 @@ VCF_0_IDX_ALT   = 4
 
 
 # > > > > > > > > > > CBV format (CombiVEP format) configuration < < < < < < <
-#SNP information key
-KW_CBV_CHROM  = 'CBV_chrom'
-KW_CBV_POS    = 'CBV_pos'
-KW_CBV_REF    = 'CBV_ref'
-KW_CBV_ALT    = 'CBV_alt'
-KW_CBV_TARGET = 'CBV_target'
+##SNP information key
+#KW_CBV_CHROM  = 'CBV_chrom'
+#KW_CBV_POS    = 'CBV_pos'
+#KW_CBV_REF    = 'CBV_ref'
+#KW_CBV_ALT    = 'CBV_alt'
+#KW_CBV_TARGET = 'CBV_target'
 
 #CBV index
 #0-based index, used by python
@@ -202,16 +202,15 @@ CBV_0_IDX_TARGET = 4
 
 
 # > > > > > > > > > > prediction output format < < < < < < < < < <
-PREDICTION_OUT_COLS_HEADER = []
-PREDICTION_OUT_COLS_HEADER.append('CHROM')
-PREDICTION_OUT_COLS_HEADER.append('POS')
-PREDICTION_OUT_COLS_HEADER.append('REF')
-PREDICTION_OUT_COLS_HEADER.append('ALT')
-PREDICTION_OUT_COLS_HEADER.append('ACTUAL_DELETERIOUS_EFFECT')
-PREDICTION_OUT_COLS_HEADER.append('PREDICTED_DELETERIOUS_PROBABILITY')
-PREDICTION_OUT_COLS_HEADER.append('PHYLOP_SCORE')
-PREDICTION_OUT_COLS_HEADER.append('SIFT_SCORE')
-PREDICTION_OUT_COLS_HEADER.append('PP2_SCORE')
-PREDICTION_OUT_COLS_HEADER.append('LRT_SCORT')
-PREDICTION_OUT_COLS_HEADER.append('MT_SCORE')
-PREDICTION_OUT_COLS_HEADER.append('GERP_SCORE')
+PREDICTION_OUT_COLS_HEADER = ['CHROM',
+                              'POS',
+                              'REF',
+                              'ALT',
+                              'ACTUAL_DELETERIOUS_EFFECT',
+                              'PREDICTED_DELETERIOUS_PROBABILITY',
+                              'PHYLOP_SCORE',
+                              'SIFT_SCORE',
+                              'PP2_SCORE',
+                              'LRT_SCORT',
+                              'MT_SCORE',
+                              'GERP_SCORE']

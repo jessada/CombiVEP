@@ -68,13 +68,13 @@ class TestDataSetManager(SafePreProcTester):
         dm.load_data(test_file)
         dm.validate_data()
         dm.calculate_scores()
-        snp_data_5 = dm.dataset[5][cbv_const.KW_SNP_DATA_SECTION]
+        snp_data_5 = dm.dataset[5][cbv_const.KW_SNP_DATA]
         self.assertEqual(snp_data_5.pos,
                          '190999917',
                          'DataSetManager does not calculate scores properly')
         dm.set_shuffle_seed(cbv_const.DEMO_SEED)
         dm.shuffle_data()
-        snp_data_5 = dm.dataset[5][cbv_const.KW_SNP_DATA_SECTION]
+        snp_data_5 = dm.dataset[5][cbv_const.KW_SNP_DATA]
         self.assertNotEqual(snp_data_5.pos,
                             '190999917',
                             'DataSetManager may not shuffle data correctly')

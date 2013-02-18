@@ -11,20 +11,20 @@ from combivep.preproc.reader import LjbReader
 
 class TestUcscController(SafeRefDBTester):
 
-
     def __init__(self, test_name):
         SafeRefDBTester.__init__(self, test_name)
 
     def setUp(self):
         self.test_class = 'ucsc_controller'
 
-    def init_ucsc_controller_instance(self):
-        self.__ucsc_controller = UcscController()
+    def __create_ucsc_ctrller_instance(self):
+        ucsc_ctrller = UcscController()
+        return ucsc_ctrller
 
     def test_tabix_db(self):
         #init
         self.init_test('test_tabix_database')
-        self.init_ucsc_controller_instance()
+        ucsc_ctrller = self.__create_ucsc_ctrller_instance()
         test_file         = os.path.join(self.data_dir,
                                          'test_tabix_database.txt')
         working_file      = os.path.join(self.working_dir,
@@ -34,7 +34,7 @@ class TestUcscController(SafeRefDBTester):
         self.copy_file(test_file, working_file)
 
         #test if the 'tabix' files are produced
-        out_file = self.__ucsc_controller.tabix_db(working_file)
+        out_file = ucsc_ctrller.tabix_db(working_file)
         self.assertEqual(expected_out_file, out_file,
                          "Tabix doesn't work correctly")
         self.assertTrue(os.path.exists(out_file),
@@ -59,12 +59,12 @@ class TestUcscController(SafeRefDBTester):
     def test_not_update(self):
         #init
         self.init_test('test_not_update')
-        self.init_ucsc_controller_instance()
-        self.__ucsc_controller.cfg_file = os.path.join(self.data_dir,
-                                                       'test_not_update_config_file.txt')
+        ucsc_ctrller = self.__create_ucsc_ctrller_instance()
+        ucsc_ctrller.cfg_file = os.path.join(self.data_dir,
+                                             'test_not_update_cfg_file.txt')
         #run test
-        self.assertFalse(self.__ucsc_controller.update(),
-                         "UCSC controller cannot identify correct update status")
+        self.assertFalse(ucsc_ctrller.update(),
+                         "UCSC controller can't identify valid update status")
 
     def tearDown(self):
         self.remove_working_dir()
@@ -72,37 +72,37 @@ class TestUcscController(SafeRefDBTester):
 
 class TestLjbController(SafeRefDBTester):
 
-
     def __init__(self, test_name):
         SafeRefDBTester.__init__(self, test_name)
 
     def setUp(self):
         self.test_class = 'ljb_controller'
 
-    def init_ljb_controller_instance(self):
-        self.__ljb_controller = LjbController()
+    def __create_ljb_ctrller_instance(self):
+        ljb_ctrller = LjbController()
+        return ljb_ctrller
 
     def test_clean_raw_db(self):
         #initialize variables
 #        self.individual_debug = True
         self.init_test('test_clean_raw_database')
-        self.init_ljb_controller_instance()
-        test_file         = os.path.join(self.data_dir,
-                                         'test_clean_raw_database.txt')
-        out_file          = os.path.join(self.working_dir,
-                                         'clean_database.txt')
+        ljb_ctrller = self.__create_ljb_ctrller_instance()
+        test_file = os.path.join(self.data_dir,
+                                 'test_clean_raw_database.txt')
+        out_file = os.path.join(self.working_dir,
+                                'clean_database.txt')
         expected_out_file = os.path.join(self.data_dir,
                                          'expected_clean_database.txt')
 
         #call function
-        self.__ljb_controller.clean_raw_db(test_file, out_file)
+        ljb_ctrller.clean_raw_db(test_file, out_file)
         self.assertTrue(filecmp.cmp(out_file, expected_out_file),
                         "Raw LJB database haven't been clean properly")
 
     def test_tabix_db(self):
         #init
         self.init_test('test_tabix_database')
-        self.init_ljb_controller_instance()
+        ljb_ctrller = self.__create_ljb_ctrller_instance()
         test_file    = os.path.join(self.data_dir,
                                     'test_tabix_database.txt')
         working_file = os.path.join(self.working_dir,
@@ -112,7 +112,7 @@ class TestLjbController(SafeRefDBTester):
         self.copy_file(test_file, working_file)
 
         #test if the 'tabix' files are produced
-        self.__ljb_controller.tabix_db(working_file)
+        ljb_ctrller.tabix_db(working_file)
         self.assertTrue(os.path.exists(out_file),
                         "Tabix doesn't work correctly")
         self.assertTrue(os.path.exists(out_file+'.tbi'),
@@ -135,35 +135,31 @@ class TestLjbController(SafeRefDBTester):
         #init
         self.individual_debug = True
         self.init_test('test_concat_chromosome_files')
-        self.init_ljb_controller_instance()
-        file_prefix       = os.path.join(self.data_dir,
-                                         'dummy_dbNSFP_light1.3')
-        file_suffix       = '.txt'
-        out_file          = os.path.join(self.working_dir,
-                                         'out_concat.txt')
+        ljb_ctrller = self.__create_ljb_ctrller_instance()
+        file_prefix = os.path.join(self.data_dir,
+                                   'dummy_dbNSFP_light1.3')
+        file_suffix = '.txt'
+        out_file = os.path.join(self.working_dir,
+                                'out_concat.txt')
         expected_out_file = os.path.join(self.data_dir,
                                          'expected_concat_file.txt')
 
         #runtest
-        self.__ljb_controller.concat_chromosome_files(file_prefix, file_suffix, out_file)
+        ljb_ctrller.concat_chromosome_files(file_prefix,
+                                            file_suffix,
+                                            out_file)
         self.assertTrue(filecmp.cmp(out_file, expected_out_file),
-                                    "chromosome files concatenation doesn't work properly")
+                                    "error in chromosome files concatenation")
 
     def test_not_update(self):
         #init
         self.init_test('test_not_update')
-        self.init_ljb_controller_instance()
-        self.__ljb_controller.cfg_file = os.path.join(self.data_dir,
-                                                      'test_not_update_config_file.txt')
+        ljb_ctrller = self.__create_ljb_ctrller_instance()
+        ljb_ctrller.cfg_file = os.path.join(self.data_dir,
+                                            'test_not_update_cfg_file.txt')
         #run test
-        self.assertFalse(self.__ljb_controller.update(),
-                         "LJB controller cannot identify correct update status")
+        self.assertFalse(ljb_ctrller.update(),
+                         "LJB controller can't identify valid update status")
 
     def tearDown(self):
         self.remove_working_dir()
-
-
-
-
-
-

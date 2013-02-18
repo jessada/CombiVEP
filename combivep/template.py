@@ -9,7 +9,6 @@ import combivep.settings as cbv_const
 class CombiVEPBase(object):
     """ CombiVEP base class """
 
-
     def __init__(self):
         pass
 
@@ -44,7 +43,6 @@ class CombiVEPBase(object):
 class Tester(unittest.TestCase, CombiVEPBase):
     """ general CombiVEP template for testing """
 
-
     individual_debug = False
 
     def __init__(self, test_name):
@@ -73,9 +71,9 @@ class Tester(unittest.TestCase, CombiVEPBase):
                                                                   'tmp'),
                                                      self.test_class),
                                         self.test_function)
-        self.data_dir    = os.path.join(os.path.join(os.path.dirname(__file__), 
-                                                     'data'),
-                                        self.test_class)
+        self.data_dir= os.path.join(os.path.join(os.path.dirname(__file__), 
+                                                 'data'),
+                                    self.test_class)
 
     def init_test(self, test_function):
         self.test_function = test_function
@@ -113,5 +111,3 @@ class RiskyTester(Tester):
     def remove_user_dir(self):
         if (not cbv_const.DEBUG_MODE) and (not self.individual_debug):
             self.remove_dir(cbv_const.USER_DATA_ROOT)
-
-

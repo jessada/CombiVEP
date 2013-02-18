@@ -1,20 +1,20 @@
 import numpy as np
 import combivep.settings as cbv_const
 
+
 class Mlp(object):
     """MultiLayer Perceptron class"""
 
-
     def __init__(self,
                  n_features,
-                 seed=cbv_const.DEFAULT_SEED,
-                 n_hidden_nodes=cbv_const.DEFAULT_HIDDEN_NODES):
+                 seed=cbv_const.DFLT_SEED,
+                 n_hidden_nodes=cbv_const.DFLT_HIDDEN_NODES):
         object.__init__(self)
         #set initial configuration values and memorize input
-        self.n_features     = n_features
+        self.n_features = n_features
         self.n_hidden_nodes = n_hidden_nodes
-        self.best_weights1  = []
-        self.best_weights2  = []
+        self.best_weights1 = []
+        self.best_weights2 = []
 
         #set initial values of weight matrixs to random small values
         np.random.seed(seed)
@@ -29,13 +29,13 @@ class Mlp(object):
 
     def forward_propagation(self, dataset):
         #calculate sum of product in the hidden layer
-        in1  = np.dot(self.weights1,
-                      np.concatenate((dataset.feature_vectors,
-                                      np.ones((1, dataset.n_data))
-                                      ),
-                                     axis=0
-                                     )
-                      )
+        in1 = np.dot(self.weights1,
+                     np.concatenate((dataset.feature_vectors,
+                                     np.ones((1, dataset.n_data))
+                                     ),
+                                    axis=0
+                                    )
+                     )
 
         #calculate outputs of hidden layer using non-linear function
         self.out1 = np.concatenate((2/(1+np.exp(-in1))-1,
@@ -78,7 +78,7 @@ class Mlp(object):
                       coefficient=cbv_const.MLP_COEFFICIENT,
                       step_size=cbv_const.STEP_SIZE):
         features = training_dataset.feature_vectors
-        n_data   = training_dataset.n_data
+        n_data = training_dataset.n_data
         transformed_input_features = np.concatenate((features,
                                                      np.ones((1, n_data))
                                                      ),
@@ -107,9 +107,9 @@ class Mlp(object):
         return self.weights1, self.weights2
 
     def calc_error(self, actual_output, expected_output):
-        error   = np.subtract(actual_output, expected_output)
-        n_positive_samples = expected_output[expected_output==1].shape[0]
-        n_negative_samples = expected_output[expected_output==0].shape[0]
+        error = np.subtract(actual_output, expected_output)
+        n_positive_samples = expected_output[expected_output == 1].shape[0]
+        n_negative_samples = expected_output[expected_output == 0].shape[0]
         error = np.where(expected_output == 1,
                          np.divide(error, n_positive_samples*2),
                          error)
@@ -127,6 +127,3 @@ class Mlp(object):
         params = np.load(params_file)
         self.weights1 = params['best_weights1']
         self.weights2 = params['best_weights2']
-
-
-

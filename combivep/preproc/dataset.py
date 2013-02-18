@@ -11,12 +11,8 @@ from combivep.preproc.referer import Referer
 class SnpDataRecord(CombiVEPBase):
     """ to store precalculated scores """
 
-    def __init__(self):
-        self.chrom = None
-        self.pos = None
-        self.ref = None
-        self.alt = None
-        self.target = None
+    def __init__(self, rec):
+        self.__rec = rec
 
     def __str__(self):
         return self.__repr__()
@@ -28,6 +24,26 @@ class SnpDataRecord(CombiVEPBase):
                     'alt': self.alt,
                     'target': self.target,
                     })
+
+    @property
+    def chrom(self):
+        return self.__rec.chrom
+
+    @property
+    def pos(self):
+        return self.__rec.pos
+
+    @property
+    def ref(self):
+        return self.__rec.ref
+
+    @property
+    def alt(self):
+        return self.__rec.alt
+
+    @property
+    def target(self):
+        return self.__rec.target
 
 
 class DataSet(list):
@@ -69,7 +85,7 @@ class DataSet(list):
     def __get_feature_vectors(self):
         feature_vector_arrays = []
         for item in self:
-            scores = item[cbv_const.KW_SCORES_SECTION]
+            scores = item[cbv_const.KW_SCORES]
             tmp_array = []
             tmp_array.append(float(scores.phylop_score))
             tmp_array.append(float(scores.sift_score))
@@ -87,11 +103,11 @@ class DataSet(list):
     def __get_targets(self):
         if len(self) == 0:
             return None
-        if self[0][cbv_const.KW_SNP_DATA_SECTION].target is None:
+        if self[0][cbv_const.KW_SNP_DATA].target is None:
             return None
         target_array = []
         for item in self:
-            target_array.append(item[cbv_const.KW_SNP_DATA_SECTION].target)
+            target_array.append(item[cbv_const.KW_SNP_DATA].target)
         return np.array(target_array).astype(np.int)
 
     @property
@@ -100,7 +116,7 @@ class DataSet(list):
 
     def __get_n_features(self):
         for item in self:
-            return len(item[cbv_const.KW_SCORES_SECTION])
+            return len(item[cbv_const.KW_SCORES])
             break
 
     @property
@@ -112,7 +128,6 @@ class DataSet(list):
 
 
 class DataSetManager(CombiVEPBase):
-
 
     def __init__(self, cfg_file=cbv_const.CBV_CFG_FILE):
         CombiVEPBase.__init__(self)
@@ -136,25 +151,16 @@ class DataSetManager(CombiVEPBase):
         vcf_reader = VcfReader()
         vcf_reader.read(file_name)
         for rec in vcf_reader.fetch_snps():
-            snp_data = SnpDataRecord()
-            snp_data.chrom = rec.chrom
-            snp_data.pos = rec.pos
-            snp_data.ref = rec.ref
-            snp_data.alt = rec.alt
-            self.dataset.append({cbv_const.KW_SNP_DATA_SECTION : snp_data})
+            snp_data = SnpDataRecord(rec)
+            self.dataset.append({cbv_const.KW_SNP_DATA: snp_data})
 
     def __load_cbv_data(self, file_name):
         self.clear_data()
         cbv_reader = CbvReader()
         cbv_reader.read(file_name)
         for rec in cbv_reader.fetch_snps():
-            snp_data = SnpDataRecord()
-            snp_data.chrom = rec.chrom
-            snp_data.pos = rec.pos
-            snp_data.ref = rec.ref
-            snp_data.alt = rec.alt
-            snp_data.target = rec.target
-            self.dataset.append({cbv_const.KW_SNP_DATA_SECTION : snp_data})
+            snp_data = SnpDataRecord(rec)
+            self.dataset.append({cbv_const.KW_SNP_DATA: snp_data})
 
     def validate_data(self):
         #to prevent misintepretion due to different version
@@ -162,7 +168,7 @@ class DataSetManager(CombiVEPBase):
         #if they are not exist in certain UCSC database
         tmp_dataset = DataSet()
         for item in self.dataset:
-            snp_data = item[cbv_const.KW_SNP_DATA_SECTION]
+            snp_data = item[cbv_const.KW_SNP_DATA]
             if self.referer.validate_snp(snp_data.chrom,
                                          snp_data.pos,
                                          snp_data.ref,
@@ -176,15 +182,15 @@ class DataSetManager(CombiVEPBase):
         #get scores from LJB database
         tmp_dataset = DataSet()
         for item in self.dataset:
-            snp_data = item[cbv_const.KW_SNP_DATA_SECTION]
+            snp_data = item[cbv_const.KW_SNP_DATA]
             scores = self.referer.get_scores(snp_data.chrom,
                                              snp_data.pos,
                                              snp_data.ref,
                                              snp_data.alt,
                                              )
-            item[cbv_const.KW_SCORES_SECTION] = scores
+            item[cbv_const.KW_SCORES] = scores
         #remove items from self.dataset if they don't have scores
-        self.dataset[:] = [item for item in self.dataset if item[cbv_const.KW_SCORES_SECTION] is not None]
+        self.dataset[:] = [item for item in self.dataset if item[cbv_const.KW_SCORES] is not None]
 
     def partition_data(self,
                        prop_training=cbv_const.PROPORTION_TRAINING_DATA,
@@ -195,7 +201,7 @@ class DataSetManager(CombiVEPBase):
 
     @property
     def n_training_data(self):
-        total_prop     = float(self.__prop_training + self.__prop_validation)
+        total_prop = float(self.__prop_training + self.__prop_validation)
         ratio_training = self.__prop_training / total_prop
         return int(math.floor(len(self.dataset) * ratio_training))
 
@@ -205,7 +211,7 @@ class DataSetManager(CombiVEPBase):
 
     def get_training_data(self):
         dataset = DataSet()
-        for i in  xrange(0, self.n_training_data):
+        for i in xrange(0, self.n_training_data):
             dataset.append(self.dataset[i])
         return dataset
 
