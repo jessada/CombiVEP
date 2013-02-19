@@ -212,10 +212,10 @@ def calculate_roc(patho_dataset, neutr_dataset, roc_range):
     for i in xrange(len(roc_range)):
         fp_rates[i, :] = np.matrix(np.sum(neutr_dataset > roc_range[i],
                                           axis=0
-                                          ).astype(np.float))/ neutr_data_size
+                                          ).astype(np.float))/neutr_data_size
         tp_rates[i, :] = np.matrix(np.sum(patho_dataset > roc_range[i],
                                           axis=0
-                                          ).astype(np.float))/ patho_data_size
+                                          ).astype(np.float))/patho_data_size
     return (fp_rates, tp_rates)
 
 
