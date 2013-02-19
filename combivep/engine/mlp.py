@@ -26,6 +26,8 @@ class Mlp(object):
         #set initial values of momentum matrixs to zeros
         self.momentums1 = np.zeros((n_hidden_nodes, n_features+1))
         self.momentums2 = np.zeros((1, n_hidden_nodes+1))
+        self.min_training_out = 0.5
+        self.max_training_out = 0.5
 
     def forward_propagation(self, dataset):
         #calculate sum of product in the hidden layer
@@ -50,7 +52,6 @@ class Mlp(object):
         #calculate output of mlp using non-linear function
         self.out2 = 1/(1+np.exp(-in2))
 
-        #return prediction result
         return self.out2
 
     def backward_propagation(self, training_dataset):
@@ -121,9 +122,14 @@ class Mlp(object):
     def export_best_parameters(self, params_file=cbv_const.USER_PARAMS_FILE):
         np.savez(params_file,
                  best_weights1=self.best_weights1,
-                 best_weights2=self.best_weights2)
+                 best_weights2=self.best_weights2,
+                 min_training_out=self.min_training_out,
+                 max_training_out=self.max_training_out,
+                 )
 
     def import_parameters(self, params_file=cbv_const.USER_PARAMS_FILE):
         params = np.load(params_file)
         self.weights1 = params['best_weights1']
         self.weights2 = params['best_weights2']
+        self.min_training_out = params['min_training_out']
+        self.max_training_out = params['max_training_out']

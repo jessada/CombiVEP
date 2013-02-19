@@ -60,7 +60,8 @@ class TestApp(SafeGeneralTester):
         self.assertEqual(f.readline().strip(),
                          "#"+"\t".join(cbv_const.PREDICTION_OUT_COLS_HEADER))
         self.assertEqual(f.readline().strip(),
-                         '1\t35227264\tT\tC\t1\t0.2605\t0.968087\t0.96\t0.031\t1.000000\t0.838867\t4.45')
+                         '1\t35227264\tT\tC\t1\t0.5834\t0.968087\t0.96\t0.031\t1.000000\t0.838867\t4.45',
+                         msg='Invalid prediction result')
         f.close()
 
     def test_predict_deleterious_probability_vcf(self):
@@ -84,7 +85,8 @@ class TestApp(SafeGeneralTester):
         self.assertEqual(f.readline().strip(),
                          "#"+"\t".join(cbv_const.PREDICTION_OUT_COLS_HEADER))
         self.assertEqual(f.readline().strip(),
-                         '3\t361508\tC\tT\tNone\t0.0001\t0.024209\t0.0\t0\t0.950380\t0.000019\t-2.66')
+                         '3\t361508\tC\tT\tNone\t0.0053\t0.024209\t0.0\t0\t0.950380\t0.000019\t-2.66',
+                         msg='Invalid prediction result')
         f.close()
 
     def tearDown(self):

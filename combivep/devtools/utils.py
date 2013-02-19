@@ -129,6 +129,7 @@ def filter_cbv_data(cbv_file,
     dm.load_data(cbv_file, file_type=cbv_const.FILE_TYPE_CBV)
     print report_fmt.format(caption="original",
                             value=len(dm.dataset))
+    print
 
     dm.validate_data()
     f_clean = open(cbv_file + '.clean', 'w')
@@ -147,6 +148,7 @@ def filter_cbv_data(cbv_file,
                             value=len([item for item in dm.dataset if item[cbv_const.KW_SNP_DATA].target == '0']))
     print report_fmt.format(caption="Total",
                             value=len(dm.dataset))
+    print
 
     dm.calculate_scores()
     f_scores = open(cbv_file + '.scores', 'w')
@@ -172,6 +174,7 @@ def filter_cbv_data(cbv_file,
                             value=len([item for item in dm.dataset if item[cbv_const.KW_SNP_DATA].target == '0']))
     print report_fmt.format(caption="Total",
                             value=len(dm.dataset))
+    print
 
     dm.set_shuffle_seed(cbv_const.DEMO_SEED)
     dm.shuffle_data()
@@ -187,6 +190,7 @@ def filter_cbv_data(cbv_file,
                             value=len([item for item in training_dataset if item[cbv_const.KW_SNP_DATA].target == '0']))
     print report_fmt.format(caption="Total",
                             value=len(training_dataset))
+    print
 
     print report_fmt.format(caption="Validation pathogenic",
                             value=len([item for item in validation_dataset if item[cbv_const.KW_SNP_DATA].target == '1']))

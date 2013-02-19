@@ -25,7 +25,7 @@ class TestTrainer(SafeEngineTester):
         to see if it can produce parameters file and produce figure
 
         """
-        self.individual_debug = True
+#        self.individual_debug = True
         self.init_test('test_trainer')
         self.init_trainer_instance()
         training_data   = DataSet(os.path.join(cbv_const.CBV_SAMPLE_DATASET_DIR,
@@ -70,7 +70,7 @@ class TestPredictor(SafeEngineTester):
         to see if it can correctly predict SNPs in feature-vector format
 
         """
-        self.individual_debug = True
+#        self.individual_debug = True
         self.init_test('test_predictor')
         self.init_predictor_instance()
 
@@ -82,5 +82,12 @@ class TestPredictor(SafeEngineTester):
         predictor.import_parameters(params_file=params_file)
         out = predictor.predict(test_data)
         self.assertEqual(round(out[0][0], 4),
-                         0.2729,
-                         msg='Predictor does not functional properly')
+                         0.9939,
+                         msg='Predictor does not functional properly',
+                         )
+#        self.assertEqual(round(out[0][0], 4),
+#                         0.2729,
+#                         msg='Predictor does not functional properly')
+
+    def tearDown(self):
+        self.remove_working_dir()

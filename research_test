@@ -2,5 +2,5 @@
 
 
 
-python -tt -m unittest discover -v -p test_reader.py
+python -tt -m unittest discover -v -p test_wrapper.py
 #python -tt -m unittest discover -v -p test_dataset.py
