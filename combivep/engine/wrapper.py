@@ -24,10 +24,10 @@ class Trainer(Mlp):
                      seed=seed,
                      n_hidden_nodes=n_hidden_nodes)
 
-        self.__training_dataset   = training_dataset
-        self.__validation_dataset = validation_dataset
-        self.__n_hidden_nodes     = n_hidden_nodes
-        self.__figure_dir         = figure_dir
+        self.training_data   = training_dataset
+        self.validation_data = validation_dataset
+        self.n_hidden_nodes  = n_hidden_nodes
+        self.figure_dir      = figure_dir
 
     def train(self, iterations=cbv_const.DFLT_ITERATIONS):
         training_error   = []
@@ -36,18 +36,20 @@ class Trainer(Mlp):
         best_validation_error = 0.99
         while True:
             #tune up model parameters
-            out = self.forward_propagation(self.__training_dataset)
-            self.backward_propagation(self.__training_dataset)
-            weights1, weights2 = self.weight_update(self.__training_dataset)
-            errors = self.calc_error(out, self.__training_dataset.targets)
+            training_out = self.forward_propagation(self.training_data)
+            self.backward_propagation(self.training_data)
+            weights1, weights2 = self.weight_update(self.training_data)
+            errors = self.calc_error(training_out,
+                                     self.training_data.targets)
             training_error.append(np.sum(np.absolute(errors),
                                          axis=1
                                          ).item(0)
                                   )
 
             #evaluate model using validation dataset
-            out = self.forward_propagation(self.__validation_dataset)
-            errors = self.calc_error(out, self.__validation_dataset.targets)
+            validation_out = self.forward_propagation(self.validation_data)
+            errors = self.calc_error(validation_out,
+                                     self.validation_data.targets)
             validation_error.append(np.sum(np.absolute(errors),
                                            axis=1
                                            ).item(0)
@@ -59,19 +61,25 @@ class Trainer(Mlp):
             if (current_validation_error < cbv_const.MAX_ALLOWED_ERROR):
                 improvement = best_validation_error - current_validation_error
                 if (improvement < cbv_const.MIN_IMPROVEMENT):
+                    self.best_weights1 = weights1
+                    self.best_weights2 = weights2
+                    self.min_training_out = np.amin(training_out)
+                    self.max_training_out = np.amax(training_out)
                     break
 
             #otherwise save parameters and record last error
             best_validation_error = validation_error[-1]
-            self.best_weights1 = weights1
-            self.best_weights2 = weights2
 
             #check if it reach maximum iteration
             running_round += 1
             if running_round >= iterations:
+                self.best_weights1 = weights1
+                self.best_weights2 = weights2
+                self.min_training_out = np.amin(training_out)
+                self.max_training_out = np.amax(training_out)
                 break
 
-        if self.__figure_dir:
+        if self.figure_dir:
             self.__save_figure(training_error, validation_error)
 
         return best_validation_error
@@ -84,8 +92,8 @@ class Trainer(Mlp):
         ax.set_ylabel('average error')
         ax.set_xlabel('iterations')
         ax.legend(bbox_to_anchor=(0, 0, 0.98, 0.98), loc=1, borderaxespad=0.1)
-        file_name = "%02d.eps" % (self.__n_hidden_nodes)
-        fig.savefig(os.path.join(self.__figure_dir, file_name))
+        file_name = "%02d.eps" % (self.n_hidden_nodes)
+        fig.savefig(os.path.join(self.figure_dir, file_name))
 
 
 class Predictor(Mlp):
@@ -100,4 +108,21 @@ class Predictor(Mlp):
         pass
 
     def predict(self, dataset):
-        return self.forward_propagation(dataset)
+        out = self.forward_propagation(dataset)
+
+        #scale output
+        scale = self.max_training_out - self.min_training_out
+        mid_training_out = (self.max_training_out+self.min_training_out) / 2
+        out = np.add(np.divide(np.subtract(out,
+                                           mid_training_out
+                                           ),
+                               scale
+                               ),
+                     0.5
+                     )
+
+        #bring back those that go over boundaries
+        out = np.where(out > 1, 1, out)
+        out = np.where(out < 0, 0, out)
+
+        return out

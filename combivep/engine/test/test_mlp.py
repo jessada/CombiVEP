@@ -46,6 +46,10 @@ class TestMlp(SafeEngineTester):
                                              'dummy_training_dataset'))
         mlp = Mlp(training_data.n_features, seed=20)
         out = mlp.forward_propagation(training_data)
+#        self.assertEqual(round(out[0][0], 4),
+#                         0.8021,
+#                         msg="forward propagation doesn't function properly",
+#                         )
         self.assertEqual(round(out[0][0], 4),
                          0.5022,
                          msg="forward propagation doesn't function properly")

@@ -105,7 +105,8 @@ def generate_figures():
 
     #plot scores distribution
     fig = plt.figure()
-    ax  = fig.add_subplot(211)
+    #CombiVEP
+    ax = fig.add_subplot(221)
     hist_range = (-0.005, 1.005)
     patho_hist, bins = hist(scores_data[header_data[:, 4] == '1'][:, 0],
                             bins=100,
@@ -119,8 +120,9 @@ def generate_figures():
     ax.set_title('CombiVEP score distributuion')
     ax.set_ylabel('samples')
     ax.set_xlabel('score')
-    ax.legend(bbox_to_anchor=(0.999, 0.999), loc=1)
-    ax = fig.add_subplot(212)
+    ax.legend(bbox_to_anchor=(1.6, 1.5), loc=1)
+    #Condel
+    ax = fig.add_subplot(222)
     patho_hist, bins = hist(scores_data[header_data[:, 4] == '1'][:, 7],
                             bins=100,
                             range=hist_range)
@@ -133,7 +135,37 @@ def generate_figures():
     ax.set_title('Condel score distributuion')
     ax.set_ylabel('samples')
     ax.set_xlabel('score')
-    ax.legend(bbox_to_anchor=(0.999, 0.999), loc=1)
+#    ax.legend(bbox_to_anchor=(0.999, 0.999), loc=1)
+    #PolyPhen2
+    ax = fig.add_subplot(223)
+    patho_hist, bins = hist(scores_data[header_data[:, 4] == '1'][:, 3],
+                            bins=100,
+                            range=hist_range)
+    neutr_hist, bins = hist(scores_data[header_data[:, 4] == '0'][:, 3],
+                            bins=100,
+                            range=hist_range)
+    center = (bins[:-1]+bins[1:])/2
+    ax.plot(center, patho_hist, 'r--', label='pathogenic variants')
+    ax.plot(center, neutr_hist, 'b--', label='neutral variants')
+    ax.set_title('PolyPhen2 score distributuion')
+    ax.set_ylabel('samples')
+    ax.set_xlabel('score')
+#    ax.legend(bbox_to_anchor=(0.999, 0.999), loc=1)
+    #Sift
+    ax = fig.add_subplot(224)
+    patho_hist, bins = hist(scores_data[header_data[:, 4] == '1'][:, 2],
+                            bins=100,
+                            range=hist_range)
+    neutr_hist, bins = hist(scores_data[header_data[:, 4] == '0'][:, 2],
+                            bins=100,
+                            range=hist_range)
+    center = (bins[:-1]+bins[1:])/2
+    ax.plot(center, patho_hist, 'r--', label='pathogenic variants')
+    ax.plot(center, neutr_hist, 'b--', label='neutral variants')
+    ax.set_title('SIFT score distributuion')
+    ax.set_ylabel('samples')
+    ax.set_xlabel('score')
+#    ax.legend(bbox_to_anchor=(0.999, 0.999), loc=1)
     fig.tight_layout()
     fig.savefig(dev_const.PUB_SCORES_DISTR_FIG,
                 bbox_inches='tight',
