@@ -1,19 +1,20 @@
-import matplotlib.pyplot as plt
 import numpy as np
 import os
 import combivep.settings as cbv_const
 import combivep.devtools.settings as dev_const
-from numpy import histogram as hist
+import matplotlib.pyplot as plt
 from combivep.devtools.utils import filter_cbv_data
 from combivep.devtools.utils import calculate_roc
 from combivep.devtools.utils import print_preproc
 from combivep.devtools.utils import fast_training
 from combivep.devtools.utils import fast_predict
+from combivep.devtools.utils import generate_roc_auc_figures
+from combivep.devtools.utils import generate_scores_dist_figure
+from combivep.devtools.utils import generate_precision_measurements_figures
 from combivep.devtools.utils import measure_precision
 from combivep.devtools.settings import PRECISION_MEASURES
 from combivep.devtools.settings import PREDICTOR_NAMES
 from combivep.app import predict_deleterious_probability
-from sklearn.metrics import auc
 
 
 def filter_all_cbv():
@@ -43,23 +44,16 @@ def demo_predicting():
 
 
 def generate_figures():
+    params = {'legend.fontsize': 9}
+    plt.rcParams.update(params)
     header_data = np.loadtxt(dev_const.PUB_CONDEL_PREDICTION_RESULT,
                              dtype='S20'
                              )[:, :5]
     scores_data = np.loadtxt(dev_const.PUB_CONDEL_PREDICTION_RESULT,
                              dtype='S20'
                              )[:, 5:13].astype(np.float)
-    min_value = np.amin(scores_data)
-    max_value = np.amax(scores_data)
-    predictor_names = ('CombiVEP',
-                       'Phylop',
-                       'SIFT',
-                       'PP2',
-                       'LRT',
-                       'MT',
-                       'GERP',
-                       'Condel',
-                       )
+    patho_scores = scores_data[header_data[:, 4] == '1']
+    neutr_scores = scores_data[header_data[:, 4] == '0']
     predictor_colors = ('k',
                         'm',
                         'c',
@@ -69,111 +63,32 @@ def generate_figures():
                         'darkred',
                         'r',
                         )
-
-    #produce roc data from CombiVEP, Phylop, SIFT, PP2, LRT, MT, GERP, Condel
-    fp_rates, tp_rates = calculate_roc(scores_data[header_data[:, 4] == '1'],
-                                       scores_data[header_data[:, 4] == '0'],
-                                       np.linspace(min_value, max_value, 5001))
-
-    fig = plt.figure()
-    ax = fig.add_subplot(111)
-    for i in xrange(len(predictor_names)):
-        ax.plot(fp_rates[:, i],
-                tp_rates[:, i],
-                predictor_colors[i],
-                label=predictor_names[i])
-    ax.set_ylabel('true positive rate')
-    ax.set_xlabel('false positive rate')
-    ax.legend(bbox_to_anchor=(0.9999, 0.0001), loc=4)
-    fig.savefig(dev_const.PUB_ROC_FIG, bbox_inches='tight', pad_inches=0.05)
-
-    #produce auc data from roc data
-    fig  = plt.figure()
-    aucs = []
-    ind  = []
-    ax   = fig.add_subplot(111)
-    for i in xrange(len(predictor_names)):
-        aucs.append(auc(fp_rates[:, i], tp_rates[:, i]))
-        ind.append(0.5*(i+1)-0.4)
-    ax.bar(ind, aucs, 0.3, color=predictor_colors)
-    for i in xrange(len(aucs)):
-        ax.text(ind[i], aucs[i] + 0.01, "%0.3f" % aucs[i])
-    ax.set_ylim([0.7, 0.9])
-    ax.set_xticks(np.array(ind) + 0.15)
-    ax.set_xticklabels(predictor_names, rotation=30)
-    fig.savefig(dev_const.PUB_AUC_FIG, bbox_inches='tight', pad_inches=0.05)
+    #plot roc and auc curve
+    figs = generate_roc_auc_figures(plt,
+                                    patho_scores,
+                                    neutr_scores,
+                                    PREDICTOR_NAMES,
+                                    predictor_colors)
+    auc_fig, roc_fig = figs
 
     #plot scores distribution
-    fig = plt.figure()
-    #CombiVEP
-    ax = fig.add_subplot(221)
-    hist_range = (-0.005, 1.005)
-    patho_hist, bins = hist(scores_data[header_data[:, 4] == '1'][:, 0],
-                            bins=100,
-                            range=hist_range)
-    neutr_hist, bins = hist(scores_data[header_data[:, 4] == '0'][:, 0],
-                            bins=100,
-                            range=hist_range)
-    center = (bins[:-1]+bins[1:]) / 2
-    ax.plot(center, patho_hist, 'r--', label='pathogenic variants')
-    ax.plot(center, neutr_hist, 'b--', label='neutral variants')
-    ax.set_title('CombiVEP score distributuion')
-    ax.set_ylabel('samples')
-    ax.set_xlabel('score')
-    ax.legend(bbox_to_anchor=(1.6, 1.5), loc=1)
-    #Condel
-    ax = fig.add_subplot(222)
-    patho_hist, bins = hist(scores_data[header_data[:, 4] == '1'][:, 7],
-                            bins=100,
-                            range=hist_range)
-    neutr_hist, bins = hist(scores_data[header_data[:, 4] == '0'][:, 7],
-                            bins=100,
-                            range=hist_range)
-    center = (bins[:-1]+bins[1:])/2
-    ax.plot(center, patho_hist, 'r--', label='pathogenic variants')
-    ax.plot(center, neutr_hist, 'b--', label='neutral variants')
-    ax.set_title('Condel score distributuion')
-    ax.set_ylabel('samples')
-    ax.set_xlabel('score')
-#    ax.legend(bbox_to_anchor=(0.999, 0.999), loc=1)
-    #PolyPhen2
-    ax = fig.add_subplot(223)
-    patho_hist, bins = hist(scores_data[header_data[:, 4] == '1'][:, 3],
-                            bins=100,
-                            range=hist_range)
-    neutr_hist, bins = hist(scores_data[header_data[:, 4] == '0'][:, 3],
-                            bins=100,
-                            range=hist_range)
-    center = (bins[:-1]+bins[1:])/2
-    ax.plot(center, patho_hist, 'r--', label='pathogenic variants')
-    ax.plot(center, neutr_hist, 'b--', label='neutral variants')
-    ax.set_title('PolyPhen2 score distributuion')
-    ax.set_ylabel('samples')
-    ax.set_xlabel('score')
-#    ax.legend(bbox_to_anchor=(0.999, 0.999), loc=1)
-    #Sift
-    ax = fig.add_subplot(224)
-    patho_hist, bins = hist(scores_data[header_data[:, 4] == '1'][:, 2],
-                            bins=100,
-                            range=hist_range)
-    neutr_hist, bins = hist(scores_data[header_data[:, 4] == '0'][:, 2],
-                            bins=100,
-                            range=hist_range)
-    center = (bins[:-1]+bins[1:])/2
-    ax.plot(center, patho_hist, 'r--', label='pathogenic variants')
-    ax.plot(center, neutr_hist, 'b--', label='neutral variants')
-    ax.set_title('SIFT score distributuion')
-    ax.set_ylabel('samples')
-    ax.set_xlabel('score')
-#    ax.legend(bbox_to_anchor=(0.999, 0.999), loc=1)
-    fig.tight_layout()
-    fig.savefig(dev_const.PUB_SCORES_DISTR_FIG,
-                bbox_inches='tight',
-                pad_inches=0.05)
+    scores_dist_fig = generate_scores_dist_figure(plt,
+                                                  patho_scores,
+                                                  neutr_scores)
 
-    return (dev_const.PUB_ROC_FIG,
-            dev_const.PUB_AUC_FIG,
-            dev_const.PUB_SCORES_DISTR_FIG,
+    #plot precision performance
+    figs = generate_precision_measurements_figures(plt,
+                                                   patho_scores,
+                                                   neutr_scores,
+                                                   PREDICTOR_NAMES,
+                                                   predictor_colors)
+    result_classes_fig, precision_fig = figs
+
+    return (roc_fig,
+            auc_fig,
+            scores_dist_fig,
+            result_classes_fig,
+            precision_fig,
             )
 
 

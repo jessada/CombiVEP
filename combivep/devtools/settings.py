@@ -2,7 +2,8 @@ import os
 
 
 # > > > > > > > > > > > > > development files & folders < < < < < < < < < <
-PUB_RES_ROOT = '/home/jessada/development/scilifelab/assignments/20121119_CombiVEP_publication/resources'
+PUB_ROOT = '/home/jessada/development/scilifelab/assignments/20121119_CombiVEP_publication'
+PUB_RES_ROOT = os.path.join(PUB_ROOT, 'resources')
 
 #general resources
 PUB_RAW_PREDICTION_RESULT    = os.path.join(PUB_RES_ROOT,
@@ -12,10 +13,12 @@ PUB_CONDEL_PREDICTION_RESULT = os.path.join(PUB_RES_ROOT,
 PUB_PARAM_FILE = os.path.join(PUB_RES_ROOT, 'params.npz')
 
 #figures
-PUB_FIGS_DIR = os.path.join(PUB_RES_ROOT, 'figures')
-PUB_ROC_FIG  = os.path.join(PUB_FIGS_DIR, 'roc_curve.eps')
-PUB_AUC_FIG  = os.path.join(PUB_FIGS_DIR, 'auc_curve.eps')
-PUB_SCORES_DISTR_FIG = os.path.join(PUB_FIGS_DIR, 'scores_dist.eps')
+PUB_FIGS_DIR = PUB_ROOT
+PUB_ROC_FIG  = os.path.join(PUB_FIGS_DIR, 'fig_roc.eps')
+PUB_AUC_FIG  = os.path.join(PUB_FIGS_DIR, 'fig_auc.eps')
+PUB_RESULT_CLASSES_FIG = os.path.join(PUB_FIGS_DIR, 'fig_result_classes.eps')
+PUB_PRECISION_FIG = os.path.join(PUB_FIGS_DIR, 'fig_precision.eps')
+PUB_SCORES_DISTR_FIG = os.path.join(PUB_FIGS_DIR, 'fig_scores_dist.eps')
 
 
 # > > > > > > > > > > > > > file type < < < < < < < < < <
@@ -47,13 +50,13 @@ SCORES_0_IDX_GERP_SCORE   = 10
 PREDICTOR_NAMES = ('CombiVEP',
                    'Phylop',
                    'SIFT',
-                   'PP2',
+                   'PolyPhen2',
                    'LRT',
                    'MT',
-                   'GERP',
+                   'GERP++',
                    'Condel')
 PRECISION_MEASURES = ('positive_prediction',
-                      'true_postive',
+                      'true_positive',
                       'false_positive',
                       'negative_prediction',
                       'true_negative',

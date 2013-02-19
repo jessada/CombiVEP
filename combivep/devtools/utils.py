@@ -3,6 +3,7 @@ import sys
 import numpy as np
 import combivep.devtools.settings as dev_const
 import combivep.settings as cbv_const
+from numpy import histogram as hist
 from combivep.preproc.dataset import DataSetManager
 from combivep.preproc.dataset import SnpDataRecord
 from combivep.preproc.reader import ScoresRecord
@@ -12,6 +13,7 @@ from combivep.engine.wrapper import Trainer
 from combivep.engine.wrapper import Predictor
 from collections import namedtuple
 from combivep.devtools.settings import PRECISION_MEASURES
+from sklearn.metrics import auc
 
 
 PrecisionPerformance = namedtuple("precision_performance", PRECISION_MEASURES)
@@ -332,6 +334,249 @@ def fast_predict(SNPs_file,
         tmp_rec.append(scores.gerp_score)
         print "\t".join(tmp_rec)
     sys.stdout = sys.__stdout__
+
+
+def generate_roc_auc_figures(plt,
+                             patho_scores,
+                             neutr_scores,
+                             predictor_names,
+                             predictor_colors):
+    min_value = min(np.amin(patho_scores), np.amin(neutr_scores))
+    max_value = max(np.amax(patho_scores), np.amax(neutr_scores))
+
+    #produce roc data from CombiVEP, Phylop, SIFT, PP2, LRT, MT, GERP, Condel
+    fp_rates, tp_rates = calculate_roc(patho_scores,
+                                       neutr_scores,
+                                       np.linspace(min_value, max_value, 5001))
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    for i in xrange(len(predictor_names)):
+        ax.plot(fp_rates[:, i],
+                tp_rates[:, i],
+                predictor_colors[i],
+                label=predictor_names[i])
+    ax.set_ylabel('true positive rate')
+    ax.set_xlabel('false positive rate')
+    ax.legend(bbox_to_anchor=(0.99, 0.01), loc=4)
+    fig.savefig(dev_const.PUB_ROC_FIG, bbox_inches='tight', pad_inches=0.05)
+
+    #produce auc data from roc data
+    fig  = plt.figure()
+    aucs = []
+    ind  = []
+    ax   = fig.add_subplot(111)
+    for i in xrange(len(predictor_names)):
+        aucs.append(auc(fp_rates[:, i], tp_rates[:, i]))
+        ind.append(0.5*(i+1)-0.4)
+    ax.bar(ind, aucs, 0.3, color=predictor_colors)
+    for i in xrange(len(aucs)):
+        ax.text(ind[i], aucs[i] + 0.005, "%0.3f" % aucs[i], size=10)
+    ax.set_ylim([0.7, 0.9])
+    ax.set_xticks(np.array(ind) + 0.15)
+    ax.set_xticklabels(predictor_names, rotation=30)
+    ax.set_ylabel('Area Under Curve')
+    ax.set_xlabel('Predictors')
+    fig.savefig(dev_const.PUB_AUC_FIG, bbox_inches='tight', pad_inches=0.05)
+    return dev_const.PUB_ROC_FIG, dev_const.PUB_AUC_FIG
+
+
+def scores_dist_plot(figure,
+                     subplot,
+                     patho_scores,
+                     neutr_scores,
+                     title):
+    ax = figure.add_subplot(subplot)
+    hist_range = (-0.005, 1.005)
+    patho_hist, bins = hist(patho_scores,
+                            bins=100,
+                            range=hist_range)
+    neutr_hist, bins = hist(neutr_scores,
+                            bins=100,
+                            range=hist_range)
+    center = (bins[:-1]+bins[1:]) / 2
+    ax.plot(center, patho_hist, 'r--', label='pathogenic variants')
+    ax.plot(center, neutr_hist, 'b--', label='neutral variants')
+    ax.set_title(title)
+    ax.set_ylabel('samples')
+    ax.set_xlabel('score')
+    return ax
+
+
+def generate_scores_dist_figure(plt,
+                                patho_scores,
+                                neutr_scores):
+    fig = plt.figure()
+    #CombiVEP
+    ax = scores_dist_plot(fig,
+                           221,
+                           patho_scores[:, 0],
+                           neutr_scores[:, 0],
+                           'CombiVEP scores distribution')
+    ax.legend(bbox_to_anchor=(1.435, 1.35), loc=1)
+    #Condel
+    ax = scores_dist_plot(fig,
+                           222,
+                           patho_scores[:, 7],
+                           neutr_scores[:, 7],
+                           'Condel scores distribution')
+    #PP2
+    ax = scores_dist_plot(fig,
+                           223,
+                           patho_scores[:, 3],
+                           neutr_scores[:, 3],
+                           'PolyPhen2 scores distribution')
+    #SIFT
+    ax = scores_dist_plot(fig,
+                           224,
+                           patho_scores[:, 2],
+                           neutr_scores[:, 2],
+                           'SIFT scores distribution')
+    fig.tight_layout()
+    fig.savefig(dev_const.PUB_SCORES_DISTR_FIG,
+                bbox_inches='tight',
+                pad_inches=0.05)
+    return dev_const.PUB_SCORES_DISTR_FIG
+
+
+def precision_int_plot(ax,
+                       ind,
+                       results,
+                       width,
+                       color):
+    bars = ax.bar(ind,
+                  results,
+                  width,
+                  color=color)
+    for i in xrange(len(results)):
+        ax.text(ind[i]+(width/2),
+                results[i]+5,
+                results[i],
+                size=8,
+                ha='center')
+    return bars
+
+
+def precision_float_plot(ax,
+                         ind,
+                         results,
+                         width,
+                         color):
+    bars = ax.bar(ind,
+                  results,
+                  width,
+                  color=color)
+    for i in xrange(len(results)):
+        ax.text(ind[i]+(width/2),
+                results[i]+0.01,
+                "%.4f" % results[i],
+                size=8,
+                ha='center')
+    return bars
+
+
+def generate_precision_measurements_figures(plt,
+                                            patho_scores,
+                                            neutr_scores,
+                                            predictor_names,
+                                            predictor_colors):
+    #measure precision by using 0.5 as a discriminant retio
+    precision_performances = []
+    for i in xrange(patho_scores.shape[1]):
+        precision_performances.append(measure_precision(0.5,
+                                                        patho_scores[:, i],
+                                                        neutr_scores[:, i]))
+
+    width = 0.1
+    ind = np.subtract(np.multiply(np.add(np.arange(len(predictor_names)),
+                                         1),
+                                  0.5),
+                      0.4)
+    #plot number of results in each class for each predictor
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    bars1 = precision_int_plot(ax,
+                               ind,
+                               map(lambda x: x.true_positive,
+                                   precision_performances),
+                               width,
+                               'g')
+    bars2 = precision_int_plot(ax,
+                               ind+width,
+                               map(lambda x: x.false_positive,
+                                   precision_performances),
+                               width,
+                               'darkred')
+    bars3 = precision_int_plot(ax,
+                               ind+(2*width),
+                               map(lambda x: x.true_negative,
+                                   precision_performances),
+                               width,
+                               'b')
+    bars4 = precision_int_plot(ax,
+                               ind+(3*width),
+                               map(lambda x: x.false_negative,
+                                   precision_performances),
+                               width,
+                               'r')
+    ax.set_ylim([0, 1400])
+    ax.set_xticks(ind + 0.2)
+    ax.set_xticklabels(predictor_names, rotation=30)
+    ax.set_ylabel('Precision performance')
+    ax.set_xlabel('Predictors')
+    ax.legend((bars1[0], bars2[0], bars3[0], bars4[0]),
+              ('True positive results',
+               'False positive results',
+               'True negative results',
+               'False negative results'),
+              bbox_to_anchor=(0.99, 0.99),
+              loc=1)
+    fig.savefig(dev_const.PUB_RESULT_CLASSES_FIG,
+                bbox_inches='tight',
+                pad_inches=0.05)
+    #plot precision measurement
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    bars1 = precision_float_plot(ax,
+                                 ind,
+                                 map(lambda x: x.accuracy,
+                                     precision_performances),
+                                 width,
+                                 'g')
+    bars2 = precision_float_plot(ax,
+                                 ind+width,
+                                 map(lambda x: x.sensitivity,
+                                     precision_performances),
+                                 width,
+                                 'darkred')
+    bars3 = precision_float_plot(ax,
+                                 ind+(2*width),
+                                 map(lambda x: x.specificity,
+                                     precision_performances),
+                                 width,
+                                 'b')
+    bars4 = precision_float_plot(ax,
+                                 ind+(3*width),
+                                 map(lambda x: x.balance_accuracy,
+                                     precision_performances),
+                                 width,
+                                 'r')
+    ax.set_ylim([0, 1.19])
+    ax.set_xticks(ind + 0.2)
+    ax.set_xticklabels(predictor_names, rotation=30)
+    ax.set_ylabel('Precision performance')
+    ax.set_xlabel('Predictors')
+    ax.legend((bars1[0], bars2[0], bars3[0], bars4[0]),
+              ('Accuracy',
+               'Sensitivity',
+               'Specificity',
+               'Balance accuracy'),
+              bbox_to_anchor=(0.9999, 0.9999),
+              loc=1)
+    fig.savefig(dev_const.PUB_PRECISION_FIG,
+                bbox_inches='tight',
+                pad_inches=0.05)
+    return dev_const.PUB_RESULT_CLASSES_FIG, dev_const.PUB_PRECISION_FIG
 
 
 def measure_precision(ratio,
