@@ -343,6 +343,9 @@ def measure_precision(ratio,
     true_neg  = len(neg_samples_scores[neg_samples_scores < ratio])
     false_pos = len(neg_samples_scores[neg_samples_scores >= ratio])
 
+    pos_prediction = true_pos + false_pos
+    neg_prediction = true_neg + false_neg
+
     total_samples = true_pos + true_neg + false_pos + false_neg
 
     accuracy = float(true_pos+true_neg) / total_samples
@@ -350,10 +353,12 @@ def measure_precision(ratio,
     specificity = float(true_neg) / (true_neg+false_pos)
     balance_accuracy = (sensitivity+specificity) / 2
 
-    return PrecisionPerformance(true_pos,
-                                false_neg,
-                                true_neg,
+    return PrecisionPerformance(pos_prediction,
+                                true_pos,
                                 false_pos,
+                                neg_prediction,
+                                true_neg,
+                                false_neg,
                                 accuracy,
                                 sensitivity,
                                 specificity,
