@@ -204,9 +204,9 @@ def filter_cbv_data(cbv_file,
 
 def calculate_roc(patho_dataset, neutr_dataset, roc_range):
     fp_rates = np.zeros([len(roc_range),
-                                     patho_dataset.shape[1]])
+                         patho_dataset.shape[1]])
     tp_rates = np.zeros([len(roc_range),
-                                     neutr_dataset.shape[1]])
+                         neutr_dataset.shape[1]])
     patho_data_size = patho_dataset.shape[0]
     neutr_data_size = neutr_dataset.shape[0]
     for i in xrange(len(roc_range)):
@@ -409,29 +409,29 @@ def generate_scores_dist_figure(plt,
     fig = plt.figure()
     #CombiVEP
     ax = scores_dist_plot(fig,
-                           221,
-                           patho_scores[:, 0],
-                           neutr_scores[:, 0],
-                           'CombiVEP scores distribution')
+                          221,
+                          patho_scores[:, 0],
+                          neutr_scores[:, 0],
+                          'CombiVEP scores distribution')
     ax.legend(bbox_to_anchor=(1.435, 1.35), loc=1)
     #Condel
     ax = scores_dist_plot(fig,
-                           222,
-                           patho_scores[:, 7],
-                           neutr_scores[:, 7],
-                           'Condel scores distribution')
+                          222,
+                          patho_scores[:, 7],
+                          neutr_scores[:, 7],
+                          'Condel scores distribution')
     #PP2
     ax = scores_dist_plot(fig,
-                           223,
-                           patho_scores[:, 3],
-                           neutr_scores[:, 3],
-                           'PolyPhen2 scores distribution')
+                          223,
+                          patho_scores[:, 3],
+                          neutr_scores[:, 3],
+                          'PolyPhen2 scores distribution')
     #SIFT
     ax = scores_dist_plot(fig,
-                           224,
-                           patho_scores[:, 2],
-                           neutr_scores[:, 2],
-                           'SIFT scores distribution')
+                          224,
+                          patho_scores[:, 2],
+                          neutr_scores[:, 2],
+                          'SIFT scores distribution')
     fig.tight_layout()
     fig.savefig(dev_const.PUB_SCORES_DISTR_FIG,
                 bbox_inches='tight',
