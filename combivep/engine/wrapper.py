@@ -111,18 +111,33 @@ class Predictor(Mlp):
         out = self.forward_propagation(dataset)
 
         #scale output
-        scale = self.max_training_out - self.min_training_out
-        mid_training_out = (self.max_training_out+self.min_training_out) / 2
-        out = np.add(np.divide(np.subtract(out,
-                                           mid_training_out
-                                           ),
-                               scale
-                               ),
-                     0.5
-                     )
+        out = self.__scale(out)
+#        self.max_training_out = 9
+#        self.min_training_out = 3
+#        self.__scale(np.matrix([0.3, 0.4, 0.6, 0.9]))
 
         #bring back those that go over boundaries
         out = np.where(out > 1, 1, out)
         out = np.where(out < 0, 0, out)
 
         return out
+
+    def __scale(self, vals):
+        """scale vals according to min and max training output"""
+
+#        print vals
+#        left_scale = 0.5 / (0.5-self.min_trainin_out)
+#        print left_scale
+#        low_vals = vals[vals < 0.5]
+
+
+        scale = self.max_training_out - self.min_training_out
+        mid_training_out = (self.max_training_out+self.min_training_out) / 2
+        vals = np.add(np.divide(np.subtract(vals,
+                                            mid_training_out
+                                            ),
+                                scale
+                                ),
+                      0.5
+                      )
+        return vals

@@ -95,7 +95,7 @@ def generate_figures():
 def generate_preproc_report():
     n_original_neutr = 21561
     n_original_patho = 21401
-    print_preproc("", "Neutral SNPs", "Pathogenic SNPs")
+    print_preproc("", "Neutral SNPs", "Pathogenic SNPs", "Total")
     print_preproc("Parsed VariBench samples",
                   str(n_original_neutr),
                   str(n_original_patho))
@@ -140,8 +140,12 @@ def generate_preproc_report():
                   str(n_scores_patho_test+n_scores_patho_training),
                   )
     print_preproc("Training dataset",
-                  str(n_scores_neutr_training),
-                  str(n_scores_patho_training),
+                  str(int(round(float(n_scores_neutr_training)*70/85))),
+                  str(int(round(float(n_scores_patho_training)*70/85))),
+                  )
+    print_preproc("Validation dataset",
+                  str(int(round(float(n_scores_neutr_training)*15/85))),
+                  str(int(round(float(n_scores_patho_training)*15/85))),
                   )
     print_preproc("Test dataset",
                   str(n_scores_neutr_test),

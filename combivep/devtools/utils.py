@@ -219,11 +219,18 @@ def calculate_roc(patho_dataset, neutr_dataset, roc_range):
     return (fp_rates, tp_rates)
 
 
-def print_preproc(col1, col2, col3):
-    report_fmt = "{measurement:<40}{neutr_val:>18}{patho_val:>18}"
-    print report_mt.format(measurement=col1,
-                           neutr_val=col2,
-                           patho_val=col3)
+def print_preproc(col1, col2, col3, col4=None):
+    report_fmt = "{measurement:<40}{neutr_val:>18}{patho_val:>18}{total_val:>18}"
+    if col4 is None:
+        print report_fmt.format(measurement=col1,
+                                neutr_val=col2,
+                                patho_val=col3,
+                                total_val=int(col2)+int(col3))
+    else:
+        print report_fmt.format(measurement=col1,
+                                neutr_val=col2,
+                                patho_val=col3,
+                                total_val=col4)
 
 
 def info(msg):
@@ -371,11 +378,11 @@ def generate_roc_auc_figures(plt,
         ind.append(0.5*(i+1)-0.4)
     ax.bar(ind, aucs, 0.3, color=predictor_colors)
     for i in xrange(len(aucs)):
-        ax.text(ind[i], aucs[i] + 0.005, "%0.3f" % aucs[i], size=10)
+        ax.text(ind[i], aucs[i] + 0.005, "%0.4f" % aucs[i], size=10)
     ax.set_ylim([0.7, 0.9])
     ax.set_xticks(np.array(ind) + 0.15)
     ax.set_xticklabels(predictor_names, rotation=30)
-    ax.set_ylabel('Area Under Curve')
+    ax.set_ylabel('Area Under ROC Curve')
     ax.set_xlabel('Predictors')
     fig.savefig(dev_const.PUB_AUC_FIG, bbox_inches='tight', pad_inches=0.05)
     return dev_const.PUB_ROC_FIG, dev_const.PUB_AUC_FIG
@@ -386,7 +393,7 @@ def scores_dist_plot(figure,
                      patho_scores,
                      neutr_scores,
                      title):
-    ax = figure.add_subplot(subplot)
+    #calculate histogram
     hist_range = (-0.005, 1.005)
     patho_hist, bins = hist(patho_scores,
                             bins=100,
@@ -395,9 +402,19 @@ def scores_dist_plot(figure,
                             bins=100,
                             range=hist_range)
     center = (bins[:-1]+bins[1:]) / 2
+    #add the first and the last data point to smooth the plot
+    center = np.concatenate((np.array([-0.005]), center), axis=0)
+    center = np.concatenate((center, np.array([1.005])), axis=0)
+    patho_hist = np.concatenate((np.array([0]), patho_hist), axis=0)
+    patho_hist = np.concatenate((patho_hist, np.array([0])), axis=0)
+    neutr_hist = np.concatenate((np.array([0]), neutr_hist), axis=0)
+    neutr_hist = np.concatenate((neutr_hist, np.array([0])), axis=0)
+    ax = figure.add_subplot(subplot)
     ax.plot(center, patho_hist, 'r--', label='pathogenic variants')
     ax.plot(center, neutr_hist, 'b--', label='neutral variants')
     ax.set_title(title)
+    ax.set_ylim([0, 450])
+    ax.set_xlim([-0.05, 1.05])
     ax.set_ylabel('samples')
     ax.set_xlabel('score')
     return ax
@@ -467,9 +484,9 @@ def precision_float_plot(ax,
                   width,
                   color=color)
     for i in xrange(len(results)):
-        ax.text(ind[i]+(width/2),
+        ax.text(ind[i]+(width/2)-0.02,
                 results[i]+0.01,
-                "%.4f" % results[i],
+                "%.2f" % results[i],
                 size=8,
                 ha='center')
     return bars
@@ -491,7 +508,7 @@ def generate_precision_measurements_figures(plt,
     ind = np.subtract(np.multiply(np.add(np.arange(len(predictor_names)),
                                          1),
                                   0.5),
-                      0.4)
+                      0.45)
     #plot number of results in each class for each predictor
     fig = plt.figure()
     ax = fig.add_subplot(111)
