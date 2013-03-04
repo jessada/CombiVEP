@@ -112,9 +112,6 @@ class Predictor(Mlp):
 
         #scale output
         out = self.__scale(out)
-#        self.max_training_out = 9
-#        self.min_training_out = 3
-#        self.__scale(np.matrix([0.3, 0.4, 0.6, 0.9]))
 
         #bring back those that go over boundaries
         out = np.where(out > 1, 1, out)
@@ -125,19 +122,16 @@ class Predictor(Mlp):
     def __scale(self, vals):
         """scale vals according to min and max training output"""
 
-#        print vals
-#        left_scale = 0.5 / (0.5-self.min_trainin_out)
-#        print left_scale
-#        low_vals = vals[vals < 0.5]
-
-
-        scale = self.max_training_out - self.min_training_out
-        mid_training_out = (self.max_training_out+self.min_training_out) / 2
-        vals = np.add(np.divide(np.subtract(vals,
-                                            mid_training_out
-                                            ),
-                                scale
-                                ),
-                      0.5
-                      )
-        return vals
+        left_scale = 0.5 / (0.5-self.min_training_out)
+        vals_scale_left = np.subtract(0.5,
+                                      np.multiply(np.subtract(0.5,
+                                                              vals),
+                                                  left_scale)
+                                      )
+        right_scale = 0.5 / (self.max_training_out-0.5)
+        vals_scale_right = np.add(0.5,
+                                  np.multiply(np.subtract(vals,
+                                                          0.5),
+                                              right_scale)
+                                  )
+        return np.where(vals < 0.5, vals_scale_left, vals_scale_right)
