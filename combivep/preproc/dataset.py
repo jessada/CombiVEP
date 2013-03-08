@@ -2,11 +2,16 @@ import math
 import random
 import numpy as np
 import combivep.settings as cbv_const
+import multiprocessing
 from combivep.template import CombiVEPBase
 from combivep.preproc.reader import VcfReader
 from combivep.preproc.reader import CbvReader
 from combivep.preproc.referer import Referer
-
+from multiprocessing.managers import BaseProxy
+#from multiprocessing.managers import MakeProxyType
+from multiprocessing import Pool
+from multiprocessing.managers import BaseManager
+from functools import partial
 
 class SnpDataRecord(CombiVEPBase):
     """ to store precalculated scores """
@@ -127,6 +132,58 @@ class DataSet(list):
         return len(self)
 
 
+class MyManager(BaseManager):
+    pass
+
+
+class DataSetProxy(BaseProxy):
+    _exposed_ = ('__iter__', 'append', '__next__', '__len__')
+    def __iter__(self):
+        return self._callmethod('__iter__')
+    def append(self, item):
+        return self._callmethod('append', item)
+    def __len__(self):
+        return self._callmethod('__len__')
+    def __next__(self):
+        return self._callmethod('__next__')
+
+MyManager.register('DataSet', DataSet, DataSetProxy)
+MyManager.register('Referer', Referer)
+
+
+def validate_item(item):
+#def validate_item(item, referer, valid_items):
+#    valid_items.append(item)
+    referer = Referer()
+    referer.cfg_file = cbv_const.CBV_CFG_FILE
+    referer.load_cfg()
+    snp_data = item[cbv_const.KW_SNP_DATA]
+    if referer.validate_snp(snp_data.chrom,
+                            snp_data.pos,
+                            snp_data.ref,
+                            snp_data.alt,
+                            ):
+        return item
+#        valid_items.append(item)
+def calculate_score(item):
+    referer = Referer()
+    referer.cfg_file = cbv_const.CBV_CFG_FILE
+    referer.load_cfg()
+    #get score from LJB database
+    snp_data = item[cbv_const.KW_SNP_DATA]
+    scores = referer.get_scores(snp_data.chrom,
+                                snp_data.pos,
+                                snp_data.ref,
+                                snp_data.alt,
+                                )
+#    return item, scores
+#    out = item
+#    out[cbv_const.KW_SCORES] = scores
+#    return out
+    item[cbv_const.KW_SCORES] = scores
+    return item
+
+
 class DataSetManager(CombiVEPBase):
 
     def __init__(self, cfg_file=cbv_const.CBV_CFG_FILE):
@@ -166,31 +223,104 @@ class DataSetManager(CombiVEPBase):
         #to prevent misintepretion due to different version
         #between each data point by removing items from self.dataset
         #if they are not exist in certain UCSC database
-        tmp_dataset = DataSet()
-        for item in self.dataset:
-            snp_data = item[cbv_const.KW_SNP_DATA]
-            if self.referer.validate_snp(snp_data.chrom,
-                                         snp_data.pos,
-                                         snp_data.ref,
-                                         snp_data.alt,
-                                         ):
-                tmp_dataset.append(item)
+        n_cpu = multiprocessing.cpu_count()
+        manager = MyManager()
+        manager.start()
+        tmp_dataset = manager.DataSet()
+#        result_queue = manager.list()
+
+        pool = Pool(processes=n_cpu)
+        result = pool.map_async(validate_item, self.dataset)
+#        pool.map_async(partial(validate_item, valid_items=tmp_dataset, referer=self.referer),
+#                       self.dataset)
+        pool.close()
+        pool.join()
         del self.dataset[:]
-        self.dataset = tmp_dataset
+        for item in result.get():
+            if item is not None:
+                self.dataset.append(item)
+#        for item in self.dataset:
+#            print item
+
+#    def validate_data(self):
+#        #to prevent misintepretion due to different version
+#        #between each data point by removing items from self.dataset
+#        #if they are not exist in certain UCSC database
+#        tmp_dataset = DataSet()
+#        for item in self.dataset:
+#            self.validate_item(item, tmp_dataset, self.referer)
+##            snp_data = item[cbv_const.KW_SNP_DATA]
+##            if self.referer.validate_snp(snp_data.chrom,
+##                                         snp_data.pos,
+##                                         snp_data.ref,
+##                                         snp_data.alt,
+##                                         ):
+##                tmp_dataset.append(item)
+#        del self.dataset[:]
+#        self.dataset = tmp_dataset
+#
+#    def validate_item(self, item, valid_items, referer):
+#        snp_data = item[cbv_const.KW_SNP_DATA]
+#        if referer.validate_snp(snp_data.chrom,
+#                                snp_data.pos,
+#                                snp_data.ref,
+#                                snp_data.alt,
+#                                ):
+#            valid_items.append(item)
+#
+#    def calculate_scores(self):
+#        n_cpu = multiprocessing.cpu_count()
+#        manager = MyManager()
+#        manager.start()
+#        tmp_dataset = manager.DataSet()
+##        result_queue = manager.list()
+#
+#        pool = Pool(processes=n_cpu)
+#        result = pool.map_async(calculate_score, self.dataset)
+##        pool.map_async(partial(validate_item, valid_items=tmp_dataset, referer=self.referer),
+##                       self.dataset)
+#        pool.close()
+#        pool.join()
+##        print self.dataset
+#        out = list(result.get())
+##        for item in out:
+##            print "item >>", item
+#        del self.dataset[:]
+#        self.dataset[:] = [item for item in out if item[cbv_const.KW_SCORES] is not None]
+##        for item in self.dataset:
+##            print "dataset >>", item
+##        del self.dataset[:]
+##        for item in result.get():
+##            if item[1] is not None:
+##                item[0][cbv_const.KW_SCORES] = item[1]
+##                self.dataset.append(item[0])
+###                print item[0]
+###                self.dataset.append(item)
 
     def calculate_scores(self):
-        #get scores from LJB database
         tmp_dataset = DataSet()
         for item in self.dataset:
-            snp_data = item[cbv_const.KW_SNP_DATA]
-            scores = self.referer.get_scores(snp_data.chrom,
-                                             snp_data.pos,
-                                             snp_data.ref,
-                                             snp_data.alt,
-                                             )
-            item[cbv_const.KW_SCORES] = scores
+            self.calculate_score(item, self.referer)
+#            snp_data = item[cbv_const.KW_SNP_DATA]
+#            scores = self.referer.get_scores(snp_data.chrom,
+#                                             snp_data.pos,
+#                                             snp_data.ref,
+#                                             snp_data.alt,
+#                                             )
+#            item[cbv_const.KW_SCORES] = scores
         #remove items from self.dataset if they don't have scores
+#        self.dataset[:] = [self.dataset[i] for i in xrange(len(self.dataset)) if self.dataset[i][cbv_const.KW_SCORES] is not None]
         self.dataset[:] = [item for item in self.dataset if item[cbv_const.KW_SCORES] is not None]
+
+    def calculate_score(self, item, referer):
+        #get score from LJB database
+        snp_data = item[cbv_const.KW_SNP_DATA]
+        scores = referer.get_scores(snp_data.chrom,
+                                    snp_data.pos,
+                                    snp_data.ref,
+                                    snp_data.alt,
+                                    )
+        item[cbv_const.KW_SCORES] = scores
 
     def partition_data(self,
                        prop_training=cbv_const.PROPORTION_TRAINING_DATA,

@@ -195,6 +195,10 @@ class LjbReader(CombiVEPBase):
         return None
 
     @property
+    def tabix_file(self):
+        return self.__tabix_file
+
+    @property
     def format_error(self):
         return "Invalid formatting is found at:\n{data}"
 
